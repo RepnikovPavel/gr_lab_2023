@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<!--    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG"></script>-->
+<!--    <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>-->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<!--    <link rel="stylesheet" href="css/main.css">-->
+<!--    <script src="js/app.js" defer></script>-->
+
+</head>
+
+<body>
+
+<div class = "equations">
+    $$\frac{d}{dt}y_0=(a_44 * F_carb - y_0) / a_70$$
+$$\frac{d}{dt}y_1=(y_0 - y_1) / a_70$$
+$$\frac{d}{dt}y_2=(a_45 * F_fat - y_2) / a_71$$
+$$\frac{d}{dt}y_3=(y_2 - y_3) / a_71$$
+$$\frac{d}{dt}y_4=(a_46 * F_prot - y_4) / a_72$$
+$$\frac{d}{dt}y_5=(y_4 - y_5) / a_72$$
+$$\frac{d}{dt}y_6=a_1 * y_1 + a_12 * y_3 + a_33 * y_5 - a_0 * y_6$$
+$$\frac{d}{dt}y_7=y_1 - f(y_6,a_7,a_18,a_39,a_28)* y_7$$
+$$\frac{d}{dt}y_8=y_5 - a_56 * y_8 + f(y_8,a_6,a_17,a_38,a_27) * y_31$$
+$$\frac{d}{dt}y_9=y_3 - a_47 * y_9$$
+$$\frac{d}{dt}y_10=a_47 * y_9 - f(y_6,a_2,a_13,a_34,a_23) * y_10 - [SP]_{myo}$$
+$$\frac{d}{dt}y_11=f(y_6,a_2,a_13,a_34,a_23) * y_10 + 3 * f(y_6,a_8,a_19,a_40,a_29)*y_14 - a_55 * y_11$$
+$$\frac{d}{dt}y_12=a_55 * y_11 - a_65 * y_12 - a_68 * y_12 * y_15$$
+$$\frac{d}{dt}y_13=a_68 * y_12 * y_15 - a_69 * y_13$$
+$$\frac{d}{dt}y_14=a_69 * y_13 - f(y_6,a_8,a_19,a_40,a_29)*y_14$$
+$$\frac{d}{dt}y_15=a_62 * y_16 * y_22 - a_68 * y_12 * y_15 - a_63 * y_15$$
+$$\frac{d}{dt}y_16=a_63 * y_15 + f(y_6,a_10,a_21,a_42,a_31) * y_17 - a_62 * y_16 * y_22 - a_49 * y_16 * y_22 * y_23$$
+$$\frac{d}{dt}y_17=f(y_6,a_9,a_20,a_41,a_30) * y_18 + a_48 * y_19 - f(y_6,a_10,a_21,a_42,a_31) * y_17 - f(y_6,a_11,a_22,a_43,a_32) * y_17$$
+$$\frac{d}{dt}y_18=f(y_6,a_7,a_18,a_39,a_28)* y_7 - f(y_6,a_9,a_20,a_41,a_30) * y_18$$
+$$\frac{d}{dt}y_19=f(y_6,a_11,a_22,a_43,a_32) * y_17 - a_48 * y_19$$
+$$\frac{d}{dt}y_20=a_49 * y_16 * y_22 * y_23 + a_52 * y_31 - f(y_6,a_3,a_14,a_35,a_24)*f(y_25,a_4,a_15,a_36, a_25)*y_20 - a_57 * y_20 * y_22$$
+$$\frac{d}{dt}y_21=a_57 * y_20 * y_22 - a_58 * y_21$$
+$$\frac{d}{dt}y_22=a_49 * y_16 * y_22 * y_23 - a_57 * y_20 * y_22 - a_62 * y_16 * y_22$$
+$$\frac{d}{dt}y_23=a_49 * y_16 * y_22 * y_23 - a_66 * y_23$$
+$$\frac{d}{dt}y_24=a_63 * y_15 - a_64 * y_24$$
+$$\frac{d}{dt}y_25=f(y_6,a_3,a_14,a_35,a_24)*f(y_25,a_4,a_15,a_36, a_25)*y_20 + a_65 * y_12 + a_51 * y_31 + a_50 * [KB-plasma] - a_67 * y_25$$
+$$\frac{d}{dt}y_26=a_67 * y_25 - a_59 * y_26$$
+$$\frac{d}{dt}y_27=a_53 * y_31 + a_59 * y_26 - a_67 * y_25$$
+$$\frac{d}{dt}y_28=a_59 * y_26 + f(y_6,a_3,a_14,a_35,a_24)*f(y_25,a_4,a_15,a_36, a_25)*y_20$$
+$$\frac{d}{dt}y_29=a_59 * y_26 + a_64 * y_24 - a_60 * y_29$$
+$$\frac{d}{dt}y_30=a_60 * y_29 - a_61 * y_30 - a_66 * y_23$$
+$$\frac{d}{dt}y_31=a_56 * y_8 + f(y_8,a_5,a_16,a_37,a_26) * y_32 - a_51 * y_31 - a_52 * y_31 - a_53 * y_31 - a_54 * y_31 - f(y_8,a_6,a_17,a_38,a_27) * y_31$$
+$$\frac{d}{dt}y_32=a_54 * y_31 - f(y_8,a_5,a_16,a_37,a_26) * y_32$$
+
+</div>
+
+</body>
+</html>

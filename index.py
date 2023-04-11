@@ -5,7 +5,13 @@ from copy import deepcopy
 
 import numpy as np
 
+from django.template import Template, Context
+from django.conf import settings
+from django.template.loader import get_template
+import django
+
 import de_config
+import mysite.settings
 
 
 def get_all_Y_names(des_str: Dict[str, str]):
@@ -96,6 +102,44 @@ def build_var_name_mapping(deqs_: Dict[str,str]):
     return from_source_to_new, from_new_to_source
 
 
+class HtmlGenerator:
+    t: None
+
+    __list_of_equations: List[str]
+
+    def __init__(self):
+        settings.configure(TEMPLATES=mysite.settings.TEMPLATES)
+        django.setup()
+        self.t = get_template('frontend_template.html')
+        self.__list_of_equations = []
+    def write_to_html(self, string_to_write):
+        self.__list_of_equations.append(string_to_write)
+        # c = Context({"equations": "equations here"})
+    def render(self):
+        str_to_render = ''
+        for el in self.__list_of_equations:
+            str_to_render += el
+
+        rendered = self.t.render({"equations": str_to_render})
+        file1 = open('frontend/templates/frontend.html', "w")
+        file1.write(rendered)
+        file1.close()
+
+
+
+def get_latex_view_of_dict(dict_: Dict[str, str]):
+    latex_str = ''
+    for k, v in dict_.items():
+        eq_ = '$$'
+        eq_ += r'\frac{d}{dt}'
+        eq_ += k
+        eq_ += '='
+        eq_ += v
+        eq_ += '$$'
+        latex_str += eq_
+        latex_str += '\n'
+    return latex_str
+
 
 if __name__ == '__main__':
     aliases_str, des_str = de_config.aliases_, de_config.des_str_
@@ -103,5 +147,11 @@ if __name__ == '__main__':
     map_to_Y_name, map_to_source_name = build_Y_name_mapping(get_all_Y_names(des_str))
     des_str = replace_substrings(des_str, map_to_Y_name)
     to_new_var_name, to_source_var_name = build_var_name_mapping(des_str)
-    des_str = replace_substrings(des_str,to_new_var_name)
-    pprint(des_str)
+
+    des_str = replace_substrings(des_str, to_new_var_name)
+    # pprint(des_str)
+    latex_str = get_latex_view_of_dict(des_str)
+
+    view = HtmlGenerator()
+    view.write_to_html(latex_str)
+    view.render()
