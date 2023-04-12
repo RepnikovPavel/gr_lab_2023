@@ -3,7 +3,7 @@
 # функции выделяются '#' с обеих сторон
 # врехний индекс запрещен
 # вложенный нижний индекс запрещен
-
+import numpy as np
 
 
 system_functions = {
@@ -15,16 +15,22 @@ system_functions = {
     r'f':           {'py_name': 'sigmoid',      'module': 'de_config'}
 }
 
+
 def KB_plasma(x):
-    return 0.0
+    return 0.2
+
 def F_carb(x):
-    return 0.0
+    return np.exp(-1.0*x)
+
 def F_fat(x):
-    return 0.0
+    return np.exp(-2.0*x)
+
 def F_prot(x):
-    return 0.0
+    return np.exp(-3.0*x)
+
 def SP_myo(x):
-    return 0.0
+    return 0.2
+
 def sigmoid(x, alpha, beta, gamma, delta):
     if x < alpha:
         return gamma
@@ -35,7 +41,7 @@ def sigmoid(x, alpha, beta, gamma, delta):
 
 
 params_values = {
-    '$CL$':             0.1,
+    '$CL$':             1.0,
     r'$\alpha$':        0.1,
     r'$\alpha_{1}$':      0.1,
     r'$\alpha_{12}$':     0.1,

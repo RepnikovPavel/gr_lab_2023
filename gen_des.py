@@ -7,7 +7,7 @@ from de_config import SP_myo
 from de_config import sigmoid
 
 
-def F_vec(t, y_vec, param_vec):
+def F_vec(y_vec,t, param_vec):
 	buffer = np.zeros(shape=(33,))
 	buffer[0] = (param_vec[47]*F_carb(t) - y_vec[0])/param_vec[44]
 	buffer[1] = (y_vec[0] - y_vec[1])/param_vec[44]

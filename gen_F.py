@@ -350,7 +350,7 @@ def gen_python_code(gen_file: str, des_dict_: Dict[str, str], sys_funcs, from_y_
         import_str += 'from '+module+' import '+py_name+'\n'
 
     F_str = '\n\n'
-    F_str += 'def F_vec(t, y_vec, param_vec):\n'
+    F_str += 'def F_vec(y_vec,t, param_vec):\n'
     F_str += '\tbuffer = np.zeros(shape=('+str(number_of_equations)+',))\n'
     for index_of_equation, right_side_of_eq in equations.items():
         F_str += '\t'+ 'buffer['+index_of_equation+']'+' = '+right_side_of_eq+'\n'
@@ -383,6 +383,17 @@ def get_start_point_values(source_y_dict_with_start_point:Dict[str,float], from_
         index_of_y = get_index_of_y(new_latex_name)
         start_point[int(index_of_y)] = v
     return start_point
+
+
+def get_y_latex_name_from_index(index: int):
+    index = str(index)
+    return 'y_{'+index+'}'
+
+def get_y_name_by_index_of_solution(index_of_solution:int, from_new_to_old_y_names_dict):
+    y_latex_name = get_y_latex_name_from_index(index_of_solution)
+    for k, v in from_new_to_old_y_names_dict.items():
+        if v==y_latex_name:
+            return k
 
 
 
