@@ -374,6 +374,15 @@ def make_params_vec_from_params_dict(source_params_values:Dict[str, float], from
         params_vec[int(index_of_param)] = v
     return params_vec
 
+def get_start_point_values(source_y_dict_with_start_point:Dict[str,float], from_source_y_name_to_new:Dict[str,str]):
+    number_of_y = len(source_y_dict_with_start_point)
+    start_point = np.zeros(shape=(number_of_y , ))
+    for k, v in source_y_dict_with_start_point.items():
+        source_latex_name = k
+        new_latex_name = from_source_y_name_to_new[source_latex_name]
+        index_of_y = get_index_of_y(new_latex_name)
+        start_point[int(index_of_y)] = v
+    return start_point
 
 
 
@@ -397,7 +406,10 @@ if __name__ == '__main__':
                     sys_funcs=de_config.system_functions,
                     from_y_name_to_source_name=map_to_source_name)
     create_dir_if_not_exist(config.translators_of_names_path)
-    torch.save(obj=to_new_var_name, f=config.map_from_old_to_new_name_dict_filename)
+    torch.save(obj=to_new_var_name, f=config.map_from_old_param_name_to_new_name_dict_filename)
+    torch.save(obj=map_to_Y_name, f=config.map_from_old_y_name_to_new_name_dict_filename)
+
+
 
     # params_vec = make_params_vec_from_params_dict(source_params_values=de_config.params_values,
     #                                              from_source_param_name_to_new=to_new_var_name)
