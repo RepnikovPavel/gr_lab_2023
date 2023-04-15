@@ -24,7 +24,8 @@ def plot_solutions(solutions, time_grid, names_dict):
             layout=go.Layout(
             # title="Mt Bruno Elevation",
             xaxis_title='$t,s$',
-            yaxis_title='$n$',
+            yaxis_title=r'$n, \frac{mol}{L}$',
+            # xaxis=dict(rangeslider=dict(visible=True)), # add slider
             # width=1900, height=4000
             # margin=dict(
             #     l=0,
