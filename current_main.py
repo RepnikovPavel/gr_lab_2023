@@ -59,6 +59,50 @@ def plot_solutions(solutions, time_grid, names_dict):
     # open figure in browser
     fig.show()
 
+    # plotly multiple plots in one html
+    # with open(config.plotly_plotting_html, 'w') as f:
+    #     number_of_solutions = solutions.shape[1]
+    #     for i_of_sol in range(number_of_solutions):
+    #
+    #
+    #
+    #         line_name = get_y_name_by_index_of_solution(index_of_solution= i_of_sol,
+    #                                                     from_new_to_old_y_names_dict=names_dict)
+    #
+    #
+    #         ith_solution = solutions[:, i_of_sol]
+    #         line_style = None
+    #         if np.sum(np.where(ith_solution<0))>0:
+    #             line_style ='dot'
+    #
+    #         fig_i = go.Figure(
+    #             layout=go.Layout(
+    #                 # title="Mt Bruno Elevation",
+    #                 xaxis_title='$t,s$',
+    #                 yaxis_title=r'$n, \frac{mol}{L}$',
+    #                 title='$'+line_name+'$',
+    #                 # xaxis=dict(rangeslider=dict(visible=True)), # add slider
+    #                 # width=1900, height=4000
+    #                 # margin=dict(
+    #                 #     l=0,
+    #                 #     r=0,
+    #                 #     b=0,
+    #                 #     t=0,
+    #                 #     pad=4
+    #                 # ),
+    #             ))
+    #
+    #         fig_i.add_trace(go.Scatter(x=time_grid,
+    #                                  y=ith_solution,
+    #                                  name='$'+line_name+'$',
+    #                                  fill=None,
+    #                                  line=dict(width=4, dash=line_style)
+    #                                  )
+    #                       )
+    #
+    #         f.write(fig_i.to_html(full_html=False, include_plotlyjs='cdn'))
+
+
     # matplotlib
     # plt.rcParams["figure.figsize"] = [14, 7]
     # plt.rcParams["figure.autolayout"] = True
