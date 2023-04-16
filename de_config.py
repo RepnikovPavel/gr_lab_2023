@@ -32,6 +32,9 @@ def SP_myo(x):
     return 0.0
 
 def sigmoid(x, alpha, beta, gamma, delta):
+    # limitations
+    # beta > alpha
+    # delta >= gamma
     if x < alpha:
         return gamma
     if x > beta:
@@ -40,6 +43,7 @@ def sigmoid(x, alpha, beta, gamma, delta):
         return (delta-gamma)/(beta-alpha)*x+(gamma*beta-delta*alpha)/(beta-alpha)
 
 
+# параметры alpha beta gamma delta должны быть того же порядка как и аргументы для функции f
 params_values = {
     '$CL$':               1.0,
     r'$\alpha$':          1.0,
@@ -54,26 +58,26 @@ params_values = {
     r'$\alpha_{8}$':      1.0,
     r'$\alpha_{9}$':      1.0,
     r'$\beta$':           1.0,
-    r'$\beta_{1}$':       1.0,
-    r'$\beta_{12}$':      1.0,
-    r'$\beta_{122}$':     1.0,
-    r'$\beta_{17}$':      1.0,
-    r'$\beta_{19}$':      1.0,
-    r'$\beta_{23}$':      1.0,
-    r'$\beta_{31}$':      1.0,
-    r'$\beta_{7}$':       1.0,
-    r'$\beta_{8}$':       1.0,
-    r'$\beta_{9}$':       1.0,
-    r'$\delta_{1}$':      1.0,
-    r'$\delta_{12}$':     1.0,
-    r'$\delta_{122}$':    1.0,
-    r'$\delta_{17}$':     1.0,
-    r'$\delta_{19}$':     1.0,
-    r'$\delta_{23}$':     1.0,
-    r'$\delta_{31}$':     1.0,
-    r'$\delta_{7}$':      1.0,
-    r'$\delta_{8}$':      1.0,
-    r'$\delta_{9}$':      1.0,
+    r'$\beta_{1}$':       2.0,
+    r'$\beta_{12}$':      2.0,
+    r'$\beta_{122}$':     2.0,
+    r'$\beta_{17}$':      2.0,
+    r'$\beta_{19}$':      2.0,
+    r'$\beta_{23}$':      2.0,
+    r'$\beta_{31}$':      2.0,
+    r'$\beta_{7}$':       2.0,
+    r'$\beta_{8}$':       2.0,
+    r'$\beta_{9}$':       2.0,
+    r'$\delta_{1}$':      2.0,
+    r'$\delta_{12}$':     2.0,
+    r'$\delta_{122}$':    2.0,
+    r'$\delta_{17}$':     2.0,
+    r'$\delta_{19}$':     2.0,
+    r'$\delta_{23}$':     2.0,
+    r'$\delta_{31}$':     2.0,
+    r'$\delta_{7}$':      2.0,
+    r'$\delta_{8}$':      2.0,
+    r'$\delta_{9}$':      2.0,
     r'$\gamma$':          1.0,
     r'$\gamma_{1}$':      1.0,
     r'$\gamma_{12}$':     1.0,
@@ -120,41 +124,75 @@ params_values = {
 # некоторые единицы https://unitslab.com/ru/node/40 с базой
 
 start_point = {
-    'D_{carb}':                 0.0,
-    'D_{fat}':                  0.0,
-    'D_{prot}':                 0.0,
-    'J_{carb}':                 0.0,
-    'J_{fat}':                  0.0, # mmol/L
-    'J_{prot}':                 0.0,
-    '[AA-food]':                0.0,
-    '[AA]_{myo}':               100*(10**(-6)),# мкмоль/л
-    '[ATP-c]_{myo}':            2*(10**(-3)), # 2 mmol/L
-    '[ATP-m]_{myo}':            2*(10**(-3)), # 2 mmol/L
-    '[Ac-CoA]_{myo}':           0.0, # ng/uL
-    '[CO_2]_{myo}':             26*(10**(-3)), # 23-29 mmol/L
-    '[Cytr]_{myo}':             0.0, # 75nm # https://doi.org/10.1074/jbc.274.23.16010
-    '[FA-CoA]_{myo}':           0.0,
-    '[FFA]_{myo}':              0.0,
-    '[FFA^{loc}_{pl}]_{myo}':   0.0,
-    '[G3P]_{myo}':              0.0,
-    '[G6P]_{myo}':              0.0,
-    '[GG]_{myo}':               0.5*(10**(-6)), #  8-61 МЕ/л # GGT- 33-48 IU/L 0.5 мкимоль/(с*л)
-    '[Gluc-plasma]':            4.99*(10**(-3)), # mmol/L # КЛИНИЧЕСКОЕ ЗНАЧЕНИЕ ПОКАЗАТЕЛЕЙ УГЛЕВОДНОГО ОБМЕНА.doc
-    '[Gluc]_{myo}':             3.9*(10**(-3)),  # 3.9(1.03) mmol/L #  DOI: 10.1016/j.ejogrb.2005.08.028 # 3,33—5,55 ммоль/л в крови
-    '[Gly3P]_{myo}':            0.0,
-    '[INS]':                    138*(10**(-12)), # 138 pmol/L
-    '[LD]_{myo}':               0.0,
-    '[Lac]_{myo}':              0.0,
-    '[OAA]_{myo}':              100*(10**(-6)), # мкмоль/?
-    '[Pyr]_{myo}':              0.0,
-    '[TAG-plasma]':             0.0,
-    '[TAG]_{myo}':              0.0,
-    '[[H]f-m]_{myo}':           8*(10**(-3)), # 8 млмоль/?
-    '[[H]n-c]_{myo}':           8*(10**(-3)), # 8 млмоль/?
-    '[[H]nf-m]_{myo}':          8*(10**(-3)), # 8 млмоль/?
-    '[muscle]_{myo}':           0.0
+    'D_{carb}':                 1.0,
+    'D_{fat}':                  1.0,
+    'D_{prot}':                 1.0,
+    'J_{carb}':                 1.0,
+    'J_{fat}':                  1.0, # mmol/L
+    'J_{prot}':                 1.0,
+    '[AA-food]':                1.0,
+    '[AA]_{myo}':               1.0,# мкмоль/л
+    '[ATP-c]_{myo}':            1.0, # 2 mmol/L
+    '[ATP-m]_{myo}':            1.0, # 2 mmol/L
+    '[Ac-CoA]_{myo}':           1.0, # ng/uL
+    '[CO_2]_{myo}':             1.0, # 23-29 mmol/L
+    '[Cytr]_{myo}':             1.0, # 75nm # https://doi.org/10.1074/jbc.274.23.16010
+    '[FA-CoA]_{myo}':           1.0,
+    '[FFA]_{myo}':              1.0,
+    '[FFA^{loc}_{pl}]_{myo}':   1.0,
+    '[G3P]_{myo}':              1.0,
+    '[G6P]_{myo}':              1.0,
+    '[GG]_{myo}':               1.0, #  8-61 МЕ/л # GGT- 33-48 IU/L 0.5 мкимоль/(с*л)
+    '[Gluc-plasma]':            1.0, # mmol/L # КЛИНИЧЕСКОЕ ЗНАЧЕНИЕ ПОКАЗАТЕЛЕЙ УГЛЕВОДНОГО ОБМЕНА.doc
+    '[Gluc]_{myo}':             1.0,  # 3.9(1.03) mmol/L #  DOI: 10.1016/j.ejogrb.2005.08.028 # 3,33—5,55 ммоль/л в крови
+    '[Gly3P]_{myo}':            1.0,
+    '[INS]':                    1.0, # 138 pmol/L
+    '[LD]_{myo}':               1.0,
+    '[Lac]_{myo}':              1.0,
+    '[OAA]_{myo}':              1.0, # мкмоль/?
+    '[Pyr]_{myo}':              1.0,
+    '[TAG-plasma]':             1.0,
+    '[TAG]_{myo}':              1.0,
+    '[[H]f-m]_{myo}':           1.0, # 8 млмоль/?
+    '[[H]n-c]_{myo}':           1.0, # 8 млмоль/?
+    '[[H]nf-m]_{myo}':          1.0, # 8 млмоль/?
+    '[muscle]_{myo}':           1.0
 }
-
+# start_point = {
+#     'D_{carb}':                 0.0,
+#     'D_{fat}':                  0.0,
+#     'D_{prot}':                 0.0,
+#     'J_{carb}':                 0.0,
+#     'J_{fat}':                  0.0, # mmol/L
+#     'J_{prot}':                 0.0,
+#     '[AA-food]':                0.0,
+#     '[AA]_{myo}':               100*(10**(-6)),# мкмоль/л
+#     '[ATP-c]_{myo}':            2*(10**(-3)), # 2 mmol/L
+#     '[ATP-m]_{myo}':            2*(10**(-3)), # 2 mmol/L
+#     '[Ac-CoA]_{myo}':           0.0, # ng/uL
+#     '[CO_2]_{myo}':             26*(10**(-3)), # 23-29 mmol/L
+#     '[Cytr]_{myo}':             0.0, # 75nm # https://doi.org/10.1074/jbc.274.23.16010
+#     '[FA-CoA]_{myo}':           0.0,
+#     '[FFA]_{myo}':              0.0,
+#     '[FFA^{loc}_{pl}]_{myo}':   0.0,
+#     '[G3P]_{myo}':              0.0,
+#     '[G6P]_{myo}':              0.0,
+#     '[GG]_{myo}':               0.5*(10**(-6)), #  8-61 МЕ/л # GGT- 33-48 IU/L 0.5 мкимоль/(с*л)
+#     '[Gluc-plasma]':            4.99*(10**(-3)), # mmol/L # КЛИНИЧЕСКОЕ ЗНАЧЕНИЕ ПОКАЗАТЕЛЕЙ УГЛЕВОДНОГО ОБМЕНА.doc
+#     '[Gluc]_{myo}':             3.9*(10**(-3)),  # 3.9(1.03) mmol/L #  DOI: 10.1016/j.ejogrb.2005.08.028 # 3,33—5,55 ммоль/л в крови
+#     '[Gly3P]_{myo}':            0.0,
+#     '[INS]':                    138*(10**(-12)), # 138 pmol/L
+#     '[LD]_{myo}':               0.0,
+#     '[Lac]_{myo}':              0.0,
+#     '[OAA]_{myo}':              100*(10**(-6)), # мкмоль/?
+#     '[Pyr]_{myo}':              0.0,
+#     '[TAG-plasma]':             0.0,
+#     '[TAG]_{myo}':              0.0,
+#     '[[H]f-m]_{myo}':           8*(10**(-3)), # 8 млмоль/?
+#     '[[H]n-c]_{myo}':           8*(10**(-3)), # 8 млмоль/?
+#     '[[H]nf-m]_{myo}':          8*(10**(-3)), # 8 млмоль/?
+#     '[muscle]_{myo}':           0.0
+# }
 
 
 aliases_ = {

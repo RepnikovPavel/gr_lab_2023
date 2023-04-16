@@ -38,15 +38,18 @@ def plot_solutions(solutions, time_grid, names_dict):
     number_of_solutions = solutions.shape[1]
     for i_of_sol in range(number_of_solutions):
 
-        line_name = get_y_name_by_index_of_solution(index_of_solution= i_of_sol,
+        line_name = get_y_name_by_index_of_solution(index_of_solution = i_of_sol,
                                                     from_new_to_old_y_names_dict=names_dict)
         ith_solution = solutions[:, i_of_sol]
         line_style = None
         if np.sum(np.where(ith_solution<0))>0:
             line_style ='dot'
 
-        fig.add_trace(go.Scatter(x=time_grid,
-                                 y=ith_solution,
+        number_of_points = ith_solution.shape[0]
+        target_number_of_points = 1000
+        step_ = int(number_of_points/target_number_of_points)
+        fig.add_trace(go.Scatter(x=time_grid[::step_],
+                                 y=ith_solution[::step_],
                                  name='$'+line_name+'$',
                                  fill=None,
                                  line=dict(width=4, dash=line_style)
@@ -136,7 +139,16 @@ if __name__ == '__main__':
 
     start_point = get_start_point_values(source_y_dict_with_start_point=de_config.start_point,
                                          from_source_y_name_to_new=to_new_y_name)
-    time_grid = np.linspace(start=0.0, stop=5, num=10000)
+    y_vec_len = start_point.shape[0]
+
+    start_point = np.random.uniform(low=0.5,high=2.5,size=y_vec_len)
+
+    tau = 0.001
+    t_0 = 0.0
+    t_end = 5
+    N = int((t_end-t_0)/tau)+1
+
+    time_grid = np.linspace(start=t_0, stop=t_end, num=N)
     solutions = odeint(func=F_vec, y0=start_point, t=time_grid, args=(params_vec,))
 
     # scipy.integrate.solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False, events=None,
