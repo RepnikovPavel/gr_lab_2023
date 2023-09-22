@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<!--    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG"></script>-->
+<!--    <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>-->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<!--    <link rel="stylesheet" href="css/main.css">-->
+<!--    <script src="js/app.js" defer></script>-->
+
+</head>
+
+<body>
+
+    <style type="text/css">
+        .tg  {border-collapse:collapse;border-spacing:0;}
+        .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+          overflow:hidden;padding:10px 5px;word-break:normal;}
+        .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+          font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+        .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+        .tg .tg-0lax{text-align:left;vertical-align:top}
+        </style>
+        <table class="tg">
+        <thead>
+          <tr>
+            <th class="tg-0pky">\(BM\)</th>
+            <th class="tg-0pky">Bone mineral mass in g</th>
+            <th class="tg-0pky">Минеральная масса костной ткани в граммах</th>
+            <th class="tg-0pky"></th>
+            <th class="tg-0pky"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tg-0pky">\(BW\)</td>
+            <td class="tg-0pky">Body weight in g</td>
+            <td class="tg-0pky">Масса тела в граммах</td>
+            <td class="tg-0pky"></td>
+            <td class="tg-0pky"></td>
+          </tr>
+          <tr>
+            <td class="tg-0pky">\(CarbOx\)</td>
+            <td class="tg-0pky">Rate of carbohydrate oxidation in kcal/day</td>
+            <td class="tg-0pky">Скорость окисления углеводов в ккал/день</td>
+            <td class="tg-0pky"></td>
+            <td class="tg-0pky"></td>
+          </tr>
+          <tr>
+            <td class="tg-0pky">\(CI\)</td>
+            <td class="tg-0pky">Carbohydrate intake rate in kcal/day</td>
+            <td class="tg-0pky">Норма потребления углеводов в ккал/день</td>
+            <td class="tg-0pky"></td>
+            <td class="tg-0pky"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(D_{F}\)</td>
+            <td class="tg-0lax">Rate of endogenous lipolysis in g/day</td>
+            <td class="tg-0lax">Скорость эндогенного липолиза в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(D_{G}\)</td>
+            <td class="tg-0lax">Rate of glycogenolysis in g/day</td>
+            <td class="tg-0lax">Скорость гликогенолиза в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(DNL\)</td>
+            <td class="tg-0lax">Rate of de novo lipogenesis in kcal/day</td>
+            <td class="tg-0lax">Скорость липогенеза de novo в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(D_{P}\)</td>
+            <td class="tg-0lax">Rate of proteolysis in g/day</td>
+            <td class="tg-0lax">Скорость протеолиза в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(ECF\)</td>
+            <td class="tg-0lax">Extracellular fluid mass in g</td>
+            <td class="tg-0lax">Масса внеклеточной жидкости в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(ECP\)</td>
+            <td class="tg-0lax">Extracellular protein mass in g</td>
+            <td class="tg-0lax">Масса внеклеточного белка в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(EI\)</td>
+            <td class="tg-0lax">Energy intake in kcal/day</td>
+            <td class="tg-0lax">Потребление энергии в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(FM\)</td>
+            <td class="tg-0lax">Body fat mass in g</td>
+            <td class="tg-0lax">Масса жировых отложений в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(FatOx\)</td>
+            <td class="tg-0lax">Rate of fat oxidation in kcal/day</td>
+            <td class="tg-0lax">Скорость окисления жиров в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(f_{C}\)</td>
+            <td class="tg-0lax">Carbohydrate oxidation fraction</td>
+            <td class="tg-0lax">Фракция окисления углеводов</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(f_{F}\)</td>
+            <td class="tg-0lax">Fat oxidation fraction</td>
+            <td class="tg-0lax">Фракция окисления жира</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(FFM\)</td>
+            <td class="tg-0lax">Fat-free body mass in g</td>
+            <td class="tg-0lax">Масса тела без жира в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(FI\)</td>
+            <td class="tg-0lax">Fat intake rate in kcal/day</td>
+            <td class="tg-0lax">Норма потребления жиров в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(f_{P}\)</td>
+            <td class="tg-0lax">Protein oxidation fraction</td>
+            <td class="tg-0lax">Фракция окисления белка</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(G\)</td>
+            <td class="tg-0lax">Body glycogen mass in g</td>
+            <td class="tg-0lax">Масса гликогена в организме в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(G3P\)</td>
+            <td class="tg-0lax">Rate of glycerol 3-phosphate synthesis in kcal/day</td>
+            <td class="tg-0lax">Скорость синтеза глицерол-3-фосфата в ккал/сутки</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(GNG_{F}\)</td>
+            <td class="tg-0lax">Rate of gluconeogenesis from glycerol in kcal/day</td>
+            <td class="tg-0lax">Скорость глюконеогенеза из глицерина в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(GNG_{P}\)</td>
+            <td class="tg-0lax">Rate of gluconeogenesis from protein in kcal/day</td>
+            <td class="tg-0lax">Скорость глюконеогенеза из белка в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(ICS\)</td>
+            <td class="tg-0lax">Intracellular solid mass in g</td>
+            <td class="tg-0lax">Внутриклеточная твердая масса в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(ICW\)</td>
+            <td class="tg-0lax">Intracellular water mass in g</td>
+            <td class="tg-0lax">Масса внутриклеточной воды в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(KetOx\)</td>
+            <td class="tg-0lax">Rate of ketone oxidation in kcal/day</td>
+            <td class="tg-0lax">Скорость окисления кетонов в ккал/сутки</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(KTG\)</td>
+            <td class="tg-0lax">Rate of ketogenesis in kcal/day</td>
+            <td class="tg-0lax">Скорость кетогенеза в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(KU_{excr}\)</td>
+            <td class="tg-0lax">Rate of ketone excretion in kcal/day</td>
+            <td class="tg-0lax">Скорость выведения кетонов в ккал/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(LCM\)</td>
+            <td class="tg-0lax">Lean tissue cell mass in g</td>
+            <td class="tg-0lax">Масса клеток мышечной ткани в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(N_{excr}\)</td>
+            <td class="tg-0lax">Nitrogen excretion rate in g/day</td>
+            <td class="tg-0lax">Скорость выведения азота в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(NPRQ\)</td>
+            <td class="tg-0lax">Nonprotein respiratory quotient</td>
+            <td class="tg-0lax">Небелковый респираторный коэффициент</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(P\)</td>
+            <td class="tg-0lax">Intracellular protein mass in g</td>
+            <td class="tg-0lax">Масса внутриклеточного белка в граммах</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(PAE\)</td>
+            <td class="tg-0lax">Physical activity energy expenditure in kcal/day</td>
+            <td class="tg-0lax">Расход энергии при физической активности в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(PI\)</td>
+            <td class="tg-0lax">Protein intake rate in kcal/day</td>
+            <td class="tg-0lax">Норма потребления белка в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(ProtOx\)</td>
+            <td class="tg-0lax">Rate of protein oxidation in kcal/day</td>
+            <td class="tg-0lax">Скорость окисления белка в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(RMR\)</td>
+            <td class="tg-0lax">Resting metabolic rate in kcal/day</td>
+            <td class="tg-0lax">Скорость метаболизма в состоянии покоя в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(RQ\)</td>
+            <td class="tg-0lax">Respiratory quotient</td>
+            <td class="tg-0lax">Дыхательный коэффициент</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(Synth_{F}\)</td>
+            <td class="tg-0lax">Rate of fat synthesis in g/day</td>
+            <td class="tg-0lax">Скорость синтеза жира в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(Synth_{G}\)</td>
+            <td class="tg-0lax">Rate of glycogen synthesis in g/day</td>
+            <td class="tg-0lax">Скорость синтеза гликогена в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(Synth_{P}\)</td>
+            <td class="tg-0lax">Rate of protein synthesis in g/day</td>
+            <td class="tg-0lax">Скорость синтеза белка в г/сут</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(T\)</td>
+            <td class="tg-0lax">Adaptive thermogenesis</td>
+            <td class="tg-0lax">Адаптивный термогенез</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(TEE\)</td>
+            <td class="tg-0lax">Total energy expenditure in kcal/day</td>
+            <td class="tg-0lax">Общий расход энергии в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(TEF\)</td>
+            <td class="tg-0lax">Thermic effect of feeding in kcal/day</td>
+            <td class="tg-0lax">Тепловой эффект питания в ккал/день</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(TG\)</td>
+            <td class="tg-0lax">Triacylglyceride</td>
+            <td class="tg-0lax">Триацилглицерид</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(\dot{V}_{CO_{2}}\)</td>
+            <td class="tg-0lax">Rate of carbon dioxide production in liters/day</td>
+            <td class="tg-0lax">Скорость производства углекислого газа в литрах/сутки</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+          <tr>
+            <td class="tg-0lax">\(\dot{V}_{O_{2}}\)</td>
+            <td class="tg-0lax">Rate of oxygen consumption in liters/day</td>
+            <td class="tg-0lax">Норма потребления кислорода в литрах/сутки</td>
+            <td class="tg-0lax"></td>
+            <td class="tg-0lax"></td>
+          </tr>
+        </tbody>
+        </table>
+
+</body>
+</html>
