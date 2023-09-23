@@ -200,3 +200,15 @@ def make_Ffat(diet_data):
     return chunks,out
 
 
+def get_start_point_names_mapping(dict_of_start_points):
+    index_by_name = {}
+    name_by_index = {}
+    start_point = np.zeros(shape=(len(dict_of_start_points,)),dtype=np.float32)
+    i_ = 0
+    for Y_name,Y_0 in dict_of_start_points.items():
+        start_point[i_] = Y_0
+        index_by_name.update({Y_name:i_})
+        name_by_index.update({i_:Y_name})
+        i_+=1
+    return index_by_name, name_by_index, start_point
+

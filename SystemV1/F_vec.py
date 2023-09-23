@@ -1,9 +1,5 @@
 import numpy as np
 import numba 
-from sysv1_de_config import F_carb
-from sysv1_de_config import F_fat
-from sysv1_de_config import F_prot
-from sysv1_de_config import sigmoid
 from input import *
 import torch
 from local_contributor_config import problem_folder
@@ -207,9 +203,63 @@ j_4 = 1.0
 # J_jat_func = 
 # J_prot_func = 
 
+start_point_dict = {
+    'Glu_ef':1.0,
+    'AA_ef':1.0,
+    'Glycerol_ef':1.0,
+    'FFA_ef':1.0,
+    'Lac_m':1.0,
+    'KB_ef':1.0,
+    'Cholesterol_pl':1.0,
+    'TG_pl':1.0,
+    'G6_a':1.0,
+    'G3_a':1.0,
+    'Pyr_a':1.0,
+    'Ac_CoA_a':1.0,
+    'FA_CoA_a':1.0,
+    'Cit_a':1.0,
+    'OAA_a':1.0,
+    'AA_a':1.0,
+    'NADPH_a':1.0,
+    'TG_a':1.0,
+    'GG_m':1.0,
+    'G6_m':1.0,
+    'G3_m':1.0,
+    'Pyr_m':1.0,
+    'Ac_CoA_m':1.0,
+    'FA_CoA_m':1.0,
+    'Cit_m':1.0,
+    'OAA_m':1.0,
+    'H_cyt_m':1.0,
+    'H_mit_m':1.0,
+    'AA_m':1.0,
+    'Muscle_m':1.0,
+    'CO2_m':1.0,
+    'H2O_m':1.0,
+    'ATP_cyt_m':1.0,
+    'ATP_mit_m':1.0,
+    'GG_h':1.0,
+    'G6_h':1.0,
+    'G3_h':1.0,
+    'Pyr_h':1.0,
+    'Ac_CoA_h':1.0,
+    'FA_CoA_h':1.0,
+    'MVA_h':1.0,
+    'Cit_h':1.0,
+    'OAA_h':1.0,
+    'NADPH_h':1.0,
+    'AA_h':1.0,
+    'TG_h':1.0,
+    'INS':1.0,
+    'CAM':1.0,
+    'GLN':1.0,
+    'Urea_ef':1.0,
+}
+
+
 buffer = np.zeros(shape=(50,))
 
-def F_vec(y_vec: np.array,t: float, param_vec: np.array):
+def F_vec(y_vec: np.array,t: float):
     # свободные функции 
     J_carb = J_carb_func(t)
     J_prot = J_prot_func(t)
@@ -423,7 +473,7 @@ def F_vec(y_vec: np.array,t: float, param_vec: np.array):
 
     # Гормоны:
     right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
-    right_GLN = lambda_ * (1.0/np.minimum(Glu_ef, 0.001)) - CL_GLN * GLN
+    right_GLN = lambda_ * (1.0/np.maximum(Glu_ef, 0.1)) - CL_GLN * GLN
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
 

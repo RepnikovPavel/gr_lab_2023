@@ -38,7 +38,7 @@ def init_figure(x_label='$t,s$',y_label=r'$n, \frac{mol}{L}$'):
             # ),
         ))
     return fig
-def plot_solutions(fig, solutions, time_grid, names_dict):
+def plot_solutions(fig, solutions, time_grid, name_by_index):
 
     # https://towardsdatascience.com/8-visualizations-with-python-to-handle-multiple-time-series-data-19b5b2e66dd0
 
@@ -47,9 +47,7 @@ def plot_solutions(fig, solutions, time_grid, names_dict):
 
     number_of_solutions = solutions.shape[1]
     for i_of_sol in range(number_of_solutions):
-
-        line_name = get_y_name_by_index_of_solution(index_of_solution = i_of_sol,
-                                                    from_new_to_old_y_names_dict=names_dict)
+        line_name= name_by_index[i_of_sol]
         ith_solution = solutions[:, i_of_sol]
         line_style = None
         if np.sum(np.where(ith_solution<0))>0:

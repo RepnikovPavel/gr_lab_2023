@@ -214,7 +214,7 @@ class func_on_linear_grid:
         self.t_end = t_end
         self.values  = values
     def __call__(self, t:float)->float:
-        if not (t < self.t_0 and t > self.t_end):
+        if not (t < self.t_0 or t > self.t_end):
             i = int(np.rint(t/self.tau))
             return self.values[i]
         else:
