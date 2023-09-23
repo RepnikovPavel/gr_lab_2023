@@ -271,9 +271,6 @@ params_values = {
     '$h_{27}$':            10.0**(-5),
     '$h_{28}$':            10.0**(-5),
     '$h_{29}$':            10.0**(-5),
-
-
-
 }
 # print(len(params_values.keys()))
 # raise SystemExit

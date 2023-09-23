@@ -141,48 +141,62 @@ def piki(t: float, t_0: np.array, t_end: np.array, A: np.array):
 # IL = diet_data["IL"]
 # GI = diet_data["GI"]
 # II = diet_data["II"]
+class chunck:
+    t1:float
+    t2:float
+    mass:float
+    rho: float
+    def __init__(self,t1,t2,mass) -> None:
+        self.t1=t1
+        self.t2=t2
+        self.mass=mass
+        self.rho = mass / (t2-t1)
+
 def make_Fcarb(diet_data: Dict[str, np.array]):
     t_0 = diet_data["t_0"]
     t_end = diet_data["t_end"]
     Carbs0 = diet_data["Carbs0"]
-    # t_0 = t_0 - 480.0
-    # t_end = t_end - 480.0
-
-    @jit(nopython=True, cache=True)
+    chunks = [chunck(t1=t_0[i],t2=t_end[i],mass=Carbs0[i]) for i in range(len(t_0))]
     def out(t:float):
-        # return np.maximum((np.sin(2 * np.pi / 30.0 * t))*10.0, 0.0)
-        # return 0.0
-        return piki(t,t_0,t_end,Carbs0)
-
-    return out
-
+        for i in range(len(t_0)):
+            t1 = t_0[i]
+            t2 = t_end[i]
+            mass = Carbs0[i]
+            if t>= t1 and t<=t2:
+                return mass/(t2-t1)
+        return 0.0
+    return chunks,out
 
 def make_Fprot(diet_data):
 
     t_0 = diet_data["t_0"]
     t_end = diet_data["t_end"]
     Prots0 = diet_data["Prots0"]
-    # t_0 = t_0 - 480.0
-    # t_end = t_end - 480.0
-    @jit(nopython=True, cache=True)
-    def out(t: float):
-        # return np.maximum((np.sin(2 * np.pi / 30.0 * t))*5.0, 0.0)
-        return piki(t, t_0, t_end, Prots0)
-
-    return out
+    chunks = [chunck(t1=t_0[i],t2=t_end[i],mass=Prots0[i]) for i in range(len(t_0))]
+    def out(t:float):
+        for i in range(len(t_0)):
+            t1 = t_0[i]
+            t2 = t_end[i]
+            mass = Prots0[i]
+            if t>= t1 and t<=t2:
+                return mass/(t2-t1)
+        return 0.0
+    return chunks,out
 
 
 def make_Ffat(diet_data):
     t_0 = diet_data["t_0"]
     t_end = diet_data["t_end"]
     Fats0 = diet_data["Fats0"]
-    # t_0 = t_0 - 480.0
-    # t_end = t_end - 480.0
-    @jit(nopython=True, cache=True)
-    def out(t: float):
-        # return np.maximum((np.sin(2 * np.pi / 30.0 * t))*5.0, 0.0)
-        return piki(t, t_0, t_end, Fats0)
-
-    return out
+    chunks = [chunck(t1=t_0[i],t2=t_end[i],mass=Fats0[i]) for i in range(len(t_0))]
+    def out(t:float):
+        for i in range(len(t_0)):
+            t1 = t_0[i]
+            t2 = t_end[i]
+            mass = Fats0[i]
+            if t>= t1 and t<=t2:
+                return mass/(t2-t1)
+        return 0.0
+    return chunks,out
 
 

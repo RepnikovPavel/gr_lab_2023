@@ -4,6 +4,24 @@ from sysv1_de_config import F_carb
 from sysv1_de_config import F_fat
 from sysv1_de_config import F_prot
 from sysv1_de_config import sigmoid
+from input import *
+import torch
+from local_contributor_config import problem_folder
+
+# take grid on from FPC.ipynb file 
+tau_grid = 0.1 # [min]
+t_0 = 0.0 # [min]
+t_end = 6000.0 # [min]
+
+
+# make input data
+J_prot_func = torch.load(
+    os.path.join(problem_folder, 'ddt_AA_ef'))
+
+J_carb_func = torch.load(
+    os.path.join(problem_folder, 'ddt_Glu_ef'))
+J_fat_func = torch.load(
+    os.path.join(problem_folder, 'ddt_TG_pl'))
 
 
 lambda_ = 1.0
@@ -185,66 +203,71 @@ j_2 = 1.0
 j_3 = 1.0
 j_4 = 1.0
 
+# J_carb_func =  
+# J_jat_func = 
+# J_prot_func = 
+
+buffer = np.zeros(shape=(50,))
+
 def F_vec(y_vec: np.array,t: float, param_vec: np.array):
-    buffer = np.zeros(shape=(48,))
     # свободные функции 
-    J_carb = 0.0
-    J_prot = 0.0
-    J_fat  = 0.0
+    J_carb = J_carb_func(t)
+    J_prot = J_prot_func(t)
+    J_fat  = J_fat_func(t)
     HeartRate = 80.0
 
     # Y_{t} values
     # значения в момент времени t
-    Glu_ef  = y_vec[0]                  
-    AA_ef   = y_vec[1]                   
-    Glycerol_ef     = y_vec[2]             
-    FFA_ef  = y_vec[3]                 
-    Lac_m   = y_vec[4]                   
-    KB_ef   = y_vec[5]                  
-    Cholestreol_pl   = y_vec[6]           
-    TG_pl   = y_vec[7]                   
-    G6_a    = y_vec[8]                    
-    G3_a    = y_vec[9]            
-    Pyr_a   = y_vec[10]           
-    Ac_CoA_a    = y_vec[11]        
-    FA_CoA_a    = y_vec[12]        
-    Cit_a   = y_vec[13]           
-    OAA_a   = y_vec[14]           
-    AA_a    = y_vec[15]            
-    NADPH_a     = y_vec[16]         
-    TG_a    = y_vec[17]                     
-    GG_m    = y_vec[18]                     
-    G6_m    = y_vec[19]            
-    G3_m    = y_vec[20]            
-    Pyr_m   = y_vec[21]           
-    Ac_CoA_m    = y_vec[22]        
-    FA_CoA_m    = y_vec[23]        
-    Cit_m   = y_vec[24]           
-    OAA_m   = y_vec[25]           
-    H_cyt_m     = y_vec[26]         
-    H_mit_m     = y_vec[27]         
-    AA_m    = y_vec[28]            
-    Muscle_m    = y_vec[29]                 
-    CO2_m   = y_vec[30]           
-    H20_m   = y_vec[31]           
-    ATP_cyt_m   = y_vec[32]        
-    ATP_mit_m   = y_vec[33]        
-    GG_h    = y_vec[34]                    
-    G6_h    = y_vec[35]            
-    G3_h    = y_vec[36]            
-    Pyr_h   = y_vec[37]           
-    Ac_CoA_h    = y_vec[38]        
-    FA_CoA_h    = y_vec[39]        
-    MVA_h   = y_vec[40]           
-    Cit_h   = y_vec[41]           
-    OAA_h   = y_vec[42]           
-    NADPH_h     = y_vec[43]         
-    AA_h    = y_vec[44]            
-    TG_h    = y_vec[45]
-    INS     = y_vec[46]
+    Glu_ef = y_vec[0]                  
+    AA_ef = y_vec[1]                   
+    Glycerol_ef = y_vec[2]             
+    FFA_ef = y_vec[3]                 
+    Lac_m = y_vec[4]                   
+    KB_ef = y_vec[5]                  
+    Cholesterol_pl   = y_vec[6]           
+    TG_pl = y_vec[7]                   
+    G6_a = y_vec[8]                    
+    G3_a = y_vec[9]            
+    Pyr_a = y_vec[10]           
+    Ac_CoA_a = y_vec[11]        
+    FA_CoA_a = y_vec[12]        
+    Cit_a = y_vec[13]           
+    OAA_a = y_vec[14]           
+    AA_a = y_vec[15]            
+    NADPH_a = y_vec[16]         
+    TG_a = y_vec[17]                     
+    GG_m = y_vec[18]                     
+    G6_m = y_vec[19]            
+    G3_m = y_vec[20]            
+    Pyr_m = y_vec[21]           
+    Ac_CoA_m = y_vec[22]        
+    FA_CoA_m = y_vec[23]        
+    Cit_m = y_vec[24]           
+    OAA_m = y_vec[25]           
+    H_cyt_m = y_vec[26]         
+    H_mit_m = y_vec[27]         
+    AA_m = y_vec[28]            
+    Muscle_m = y_vec[29]                 
+    CO2_m = y_vec[30]           
+    H2O_m = y_vec[31]           
+    ATP_cyt_m = y_vec[32]        
+    ATP_mit_m = y_vec[33]        
+    GG_h = y_vec[34]                    
+    G6_h = y_vec[35]            
+    G3_h = y_vec[36]            
+    Pyr_h = y_vec[37]           
+    Ac_CoA_h = y_vec[38]        
+    FA_CoA_h = y_vec[39]        
+    MVA_h = y_vec[40]           
+    Cit_h = y_vec[41]           
+    OAA_h = y_vec[42]           
+    NADPH_h = y_vec[43]         
+    AA_h = y_vec[44]            
+    TG_h = y_vec[45]
+    INS = y_vec[46]
     CAM = y_vec[47]
     GLN = y_vec[48]            
-    Urea_ef     = y_vec[49]                 
+    Urea_ef = y_vec[49]                 
 
     J_0 = j_0 * TG_pl
     J_1 = j_1 * Glu_ef
@@ -378,20 +401,10 @@ def F_vec(y_vec: np.array,t: float, param_vec: np.array):
     right_H2O_m=    M_16
     right_ATP_cyt_m=    M_10 # Anaerob
     right_ATP_mit_m=    2*M_16 # Aerob
-     # Далее три величины, которые требуют обсуждения.
-     # Работа (аэробная и анаэробная) - является ли она интегральной величиной?
-     # Или это просто "депо" ккал, которое должно обнуляться каждую полночь?
-     # Зависит ли концентрация кислорода от ЧСС, или он просто всегда в избытке (равен единице)?
-
      #   '[O2]_{m}': r'
      #   'ANAEROB': r'
      #   'AEROB': r'
-
-
     # 4. Extracellular fluid
-
-    # Плазма крови для TG и межклеточная жидкость для всех остальных.
-    # Отличие - в объеме: плазма - 5,5 л, вся МЖ - около 10 л).
 
     # Diet-induced concentrations (нутриенты в крови):
     right_Glu_ef = J_carb + H_2 - H_3 - M_1 - A_4 - J_1
@@ -403,70 +416,68 @@ def F_vec(y_vec: np.array,t: float, param_vec: np.array):
     right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4 - J_3
     right_Lac_m=  M_2 - H_5
     right_KB_ef=  H_6 - M_3 - J_2
-    right_Cholesterol_pl= H_7
-    right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
 
     # Excreted substances (мочевина, холестерин):
-    # Для этих веществ нужно добавить в уравнение экскрецию как вычитаемую константу EXCR_{},
-    # либо обнулять их депо каждую полночь.
-
-    # '[Urea]_{ef}': r'J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29' #- EXCR_{Urea},
-    #  '[Cholesterol]_{pl}': r'H_6 + J_{cholesterol} - EXCR_{Cholesterol}
+    right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
+    right_Cholesterol_pl= H_7
 
     # Гормоны:
     right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
     right_GLN = lambda_ * (1.0/np.minimum(Glu_ef, 0.001)) - CL_GLN * GLN
     right_CAM = sigma * HeartRate - CL_CAM * CAM
+    right_Muscle_m = M_20 - M_21
 
 
 
-    right_Glu_ef                  
-    right_AA_ef                   
-    right_Glycerol_ef             
-    right_FFA_ef                 
-    right_Lac_m                   
-    right_KB_ef                  
-    right_Cholesterol_pl           
-    right_TG_pl                   
-    right_G6_a                    
-    right_G3_a            
-    right_Pyr_a           
-    right_Ac_CoA_a        
-    right_FA_CoA_a        
-    right_Cit_a           
-    right_OAA_a           
-    right_AA_a            
-    right_NADPH_a         
-    right_TG_a                     
-    right_GG_m                     
-    right_G6_m            
-    right_G3_m            
-    right_Pyr_m           
-    right_Ac_CoA_m        
-    right_FA_CoA_m        
-    right_Cit_m           
-    right_OAA_m           
-    right_H_cyt_m         
-    right_H_mit_m         
-    right_AA_m            
-    right_Muscle_m                 
-    right_CO2_m           
-    right_H20_m           
-    right_ATP_cyt_m        
-    right_ATP_mit_m        
-    right_GG_h                    
-    right_G6_h            
-    right_G3_h            
-    right_Pyr_h           
-    right_Ac_CoA_h        
-    right_FA_CoA_h        
-    right_MVA_h           
-    right_Cit_h           
-    right_OAA_h           
-    right_NADPH_h         
-    right_AA_h            
-    right_TG_h
-    right_INS
-    right_CAM
-    right_GLN            
-    right_Urea_ef
+    # output buffer
+    buffer[0] = right_Glu_ef
+    buffer[1] = right_AA_ef
+    buffer[2] = right_Glycerol_ef
+    buffer[3] = right_FFA_ef
+    buffer[4] = right_Lac_m
+    buffer[5] = right_KB_ef
+    buffer[6] = right_Cholesterol_pl
+    buffer[7] = right_TG_pl
+    buffer[8] = right_G6_a
+    buffer[9] = right_G3_a
+    buffer[10] = right_Pyr_a
+    buffer[11] = right_Ac_CoA_a
+    buffer[12] = right_FA_CoA_a
+    buffer[13] = right_Cit_a
+    buffer[14] = right_OAA_a
+    buffer[15] = right_AA_a
+    buffer[16] = right_NADPH_a
+    buffer[17] = right_TG_a
+    buffer[18] = right_GG_m
+    buffer[19] = right_G6_m
+    buffer[20] = right_G3_m
+    buffer[21] = right_Pyr_m
+    buffer[22] = right_Ac_CoA_m
+    buffer[23] = right_FA_CoA_m
+    buffer[24] = right_Cit_m
+    buffer[25] = right_OAA_m
+    buffer[26] = right_H_cyt_m
+    buffer[27] = right_H_mit_m
+    buffer[28] = right_AA_m
+    buffer[29] = right_Muscle_m
+    buffer[30] = right_CO2_m
+    buffer[31] = right_H2O_m
+    buffer[32] = right_ATP_cyt_m
+    buffer[33] = right_ATP_mit_m
+    buffer[34] = right_GG_h
+    buffer[35] = right_G6_h
+    buffer[36] = right_G3_h
+    buffer[37] = right_Pyr_h
+    buffer[38] = right_Ac_CoA_h
+    buffer[39] = right_FA_CoA_h
+    buffer[40] = right_MVA_h
+    buffer[41] = right_Cit_h
+    buffer[42] = right_OAA_h
+    buffer[43] = right_NADPH_h
+    buffer[44] = right_AA_h
+    buffer[45] = right_TG_h
+    buffer[46] = right_INS
+    buffer[47] = right_CAM
+    buffer[48] = right_GLN
+    buffer[49] = right_Urea_ef
+    return buffer
