@@ -6,9 +6,11 @@ from local_contributor_config import problem_folder
 
 # take grid on from FPC.ipynb file 
 tau_grid = 0.1 # [min]
-t_0 = 0.0 # [min]
-t_end = 6000.0 # [min]
+t_0 = 500.0 # [min]
+t_end = 1440.0 # [min]
 
+N = int((t_end-t_0)/tau_grid)+1
+time_grid = np.linspace(start=t_0, stop=t_end, num=N)
 
 # make input data
 J_prot_func = torch.load(
@@ -21,183 +23,183 @@ J_fat_func = torch.load(
 
 
 lambda_ = 1.0
-sigma = 1.0
+sigma = 0.001
 
 ### INS
 
-CL_INS    = 0.1
-alpha       = 2.0
-alpha_a2    = 1.0
-alpha_a4    = 1.0
-alpha_a5    = 1.0
-alpha_a7    = 1.0
-alpha_a10   =1.0
-alpha_m1    = 1.0
-alpha_m3    = 1.0
-alpha_m6    = 1.0
-alpha_m8    = 1.0
-alpha_m10   =1.0
-alpha_h3    = 1.0
-alpha_h6    = 1.0
-alpha_h8    = 1.0
-alpha_h10   =1.0
-alpha_h12   =1.0
-alpha_h17   =1.0
-alpha_h29   =1.0
-alpha_h30   =1.0
-beta=         0.02
-beta_a2=        2.0
-beta_a4=        2.0
-beta_a5=        2.0
-beta_a7=        2.0
-beta_a10=       2.0
-beta_m1=        2.0
-beta_m3=        2.0
-beta_m6=        2.0
-beta_m8=        2.0
-beta_m10=       2.0
-beta_h3=        2.0
-beta_h6=        2.0
-beta_h8=        2.0
-beta_h10=       2.0
-beta_h12=       2.0
-beta_h17=       2.0
-beta_h29=       2.0
-beta_h30=       2.0
-delta_a2=       2.0
-delta_a4=       2.0
-delta_a5=       2.0
-delta_a7=       2.0
-delta_a10=      2.0
-delta_m1=       2.0
-delta_m3=       2.0
-delta_m6=       2.0
-delta_m8=       2.0
-delta_m10=      2.0
-delta_h3=       2.0
-delta_h6=       2.0
-delta_h8=       2.0
-delta_h10=      2.0
-delta_h12=      2.0
-delta_h17=      2.0
-delta_h29=      2.0
-delta_h30=      2.0
-gamma =        1.0
-gamma_a4=       1.0
-gamma_a5=       1.0
-gamma_a7=       1.0
-gamma_a10=      1.0
-gamma_m1=       1.0
-gamma_m3=       1.0
-gamma_m6=       1.0
-gamma_m8=       1.0
-gamma_m10=      1.0
-gamma_h3=       1.0
-gamma_h6=       1.0
-gamma_h8=       1.0
-gamma_h10=      1.0
-gamma_h12=      1.0
-gamma_h17=      1.0
-gamma_h29=      1.0
-gamma_h30=      1.0
+CL_INS_base    = 0.1
+alpha_base       = 2.0
+alpha_a2_base    = 1.0
+alpha_a4_base    = 1.0
+alpha_a5_base    = 1.0
+alpha_a7_base    = 1.0
+alpha_a10_base   =1.0
+alpha_m1_base    = 1.0
+alpha_m3_base    = 1.0
+alpha_m6_base    = 1.0
+alpha_m8_base    = 1.0
+alpha_m10_base   =1.0
+alpha_h3_base    = 1.0
+alpha_h6_base    = 1.0
+alpha_h8_base    = 1.0
+alpha_h10_base   =1.0
+alpha_h12_base   =1.0
+alpha_h17_base   =1.0
+alpha_h29_base   =1.0
+alpha_h30_base   =1.0
+beta_base=         0.02
+beta_a2_base=        2.0
+beta_a4_base=        2.0
+beta_a5_base=        2.0
+beta_a7_base=        2.0
+beta_a10_base=       2.0
+beta_m1_base=        2.0
+beta_m3_base=        2.0
+beta_m6_base=        2.0
+beta_m8_base=        2.0
+beta_m10_base=       2.0
+beta_h3_base=        2.0
+beta_h6_base=        2.0
+beta_h8_base=        2.0
+beta_h10_base=       2.0
+beta_h12_base=       2.0
+beta_h17_base=       2.0
+beta_h29_base=       2.0
+beta_h30_base=       2.0
+delta_a2_base=       2.0
+delta_a4_base=       2.0
+delta_a5_base=       2.0
+delta_a7_base=       2.0
+delta_a10_base=      2.0
+delta_m1_base=       2.0
+delta_m3_base=       2.0
+delta_m6_base=       2.0
+delta_m8_base=       2.0
+delta_m10_base=      2.0
+delta_h3_base=       2.0
+delta_h6_base=       2.0
+delta_h8_base=       2.0
+delta_h10_base=      2.0
+delta_h12_base=      2.0
+delta_h17_base=      2.0
+delta_h29_base=      2.0
+delta_h30_base=      2.0
+gamma_base =        1.0
+gamma_a4_base=       1.0
+gamma_a5_base=       1.0
+gamma_a7_base=       1.0
+gamma_a10_base=      1.0
+gamma_m1_base=       1.0
+gamma_m3_base=       1.0
+gamma_m6_base=       1.0
+gamma_m8_base=       1.0
+gamma_m10_base=      1.0
+gamma_h3_base=       1.0
+gamma_h6_base=       1.0
+gamma_h8_base=       1.0
+gamma_h10_base=      1.0
+gamma_h12_base=      1.0
+gamma_h17_base=      1.0
+gamma_h29_base=      1.0
+gamma_h30_base=      1.0
 ### GLN
-CL_GLN=           0.1
-lambda_a3=      1.0
-lambda_a9=      1.0
-lambda_a11=     1.0
-lambda_m7=      1.0
-lambda_h2=      1.0
-lambda_h11=     1.0
-lambda_h15=     1.0
-lambda_h25=     1.0
+CL_GLN_base=           0.1
+lambda_a3_base=      1.0
+lambda_a9_base=      1.0
+lambda_a11_base=     1.0
+lambda_m7_base=      1.0
+lambda_h2_base=      1.0
+lambda_h11_base=     1.0
+lambda_h15_base=     1.0
+lambda_h25_base=     1.0
 ### CAM
-CL_CAM=           0.1
-sigma_a3=       1.0
-sigma_m7=       1.0
-sigma_h11=      1.0
-tau_carb=     60.0     # [min]
-tau_fat=      110.0    # [min]
-tau_prot=     90.0     # [min}
-a_carb=         1.0
-a_fat=          1.0
-a_prot  =       1.0
+CL_CAM_base=           0.1
+sigma_a3_base=       1.0
+sigma_m7_base=       1.0
+sigma_h11_base=      1.0
+tau_carb_base=     60.0     # [min]
+tau_fat_base=      110.0    # [min]
+tau_prot_base=     90.0     # [min}
+a_carb_base=         1.0
+a_fat_base=          1.0
+a_prot_base  =       1.0
     # номера коэффициентов
-a_1=            10.0**(-5)
-a_2=            10.0**(-5)
-a_3=            10.0**(-5)
-a_4=            10.0**(-5)
-a_5=            10.0**(-5)
-a_6=            10.0**(-5)
-a_7=            10.0**(-5)
-a_8=            10.0**(-5)
-a_9=            10.0**(-5)
-a_10=            10.0**(-5)
-a_11=            10.0**(-5)
-a_12=            10.0**(-5)
-a_13=            10.0**(-5)
-a_14=            10.0**(-5)
-a_15=            10.0**(-5)
-a_16=            10.0**(-5)
-a_17=            10.0**(-5)
-a_18=            10.0**(-5)
-a_19=            10.0**(-5)
-m_1=            10.0**(-5)
-m_2=            10.0**(-5)
-m_3=            10.0**(-5)
-m_4=            10.0**(-5)
-m_5=            10.0**(-5)
-m_6=            10.0**(-5)
-m_7=            10.0**(-5)
-m_8=            10.0**(-5)
-m_9=            10.0**(-5)
-m_10=           10.0**(-5)
-m_11=           10.0**(-5)
-m_12=           10.0**(-5)  # *[Carnitin]
-m_13=           10.0**(-5)
-m_14=           10.0**(-5)
-m_15=           10.0**(-5)
-m_16=           10.0**(-5) # *[Creatin]
-m_17=           10.0**(-5)
-m_18=           10.0**(-5)
-m_19=           10.0**(-5)
-m_20=           10.0**(-5)
-m_21=           10.0**(-5)
-h_1=            10.0**(-5)
-h_2=            10.0**(-5)
-h_3=            10.0**(-5)
-h_4=            10.0**(-5)
-h_5=            10.0**(-5)
-h_6=            10.0**(-5)
-h_7=            10.0**(-5)
-h_8=            10.0**(-5)
-h_9=            10.0**(-5)
-h_10=            10.0**(-5)
-h_11=            10.0**(-5)
-h_12=            10.0**(-5)
-h_13=            10.0**(-5)
-h_14=            10.0**(-5)
-h_15=            10.0**(-5)
-h_16=            10.0**(-5)
-h_17=            10.0**(-5)
-h_18=            10.0**(-5)
-h_19=            10.0**(-5)
-h_20=            10.0**(-5)
-h_21=            10.0**(-5)
-h_22=            10.0**(-5)
-h_23=            10.0**(-5)
-h_24=            10.0**(-5)
-h_25=            10.0**(-5)
-h_26=            10.0**(-5)
-h_27=            10.0**(-5)
-h_28=            10.0**(-5)
-h_29=            10.0**(-5)
+a_1_base=            10.0**(-1)
+a_2_base=            10.0**(-1)
+a_3_base=            10.0**(-1)
+a_4_base=            10.0**(-1)
+a_5_base=            10.0**(-1)
+a_6_base=            10.0**(-1)
+a_7_base=            10.0**(-1)
+a_8_base=            10.0**(-1)
+a_9_base=            10.0**(-1)
+a_10_base=            10.0**(-1)
+a_11_base=            10.0**(-1)
+a_12_base=            10.0**(-1)
+a_13_base=            10.0**(-1)
+a_14_base=            10.0**(-1)
+a_15_base=            10.0**(-1)
+a_16_base=            10.0**(-1)
+a_17_base=            10.0**(-1)
+a_18_base=            10.0**(-1)
+a_19_base=            10.0**(-1)
+m_1_base=            10.0**(-1)
+m_2_base=            10.0**(-1)
+m_3_base=            10.0**(-1)
+m_4_base=            10.0**(-1)
+m_5_base=            10.0**(-1)
+m_6_base=            10.0**(-1)
+m_7_base=            10.0**(-1)
+m_8_base=            10.0**(-1)
+m_9_base=            10.0**(-1)
+m_10_base=           10.0**(-1)
+m_11_base=           10.0**(-1)
+m_12_base=           10.0**(-1)  # *[Carnitin]
+m_13_base=           10.0**(-1)
+m_14_base=           10.0**(-1)
+m_15_base=           10.0**(-1)
+m_16_base=           10.0**(-1) # *[Creatin]
+m_17_base=           10.0**(-1)
+m_18_base=           10.0**(-1)
+m_19_base=           10.0**(-1)
+m_20_base=           10.0**(-1)
+m_21_base=           10.0**(-1)
+h_1_base=            10.0**(-1)
+h_2_base=            10.0**(-1)
+h_3_base=            10.0**(-1)
+h_4_base=            10.0**(-1)
+h_5_base=            10.0**(-1)
+h_6_base=            10.0**(-1)
+h_7_base=            10.0**(-1)
+h_8_base=            10.0**(-1)
+h_9_base=            10.0**(-1)
+h_10_base=            10.0**(-1)
+h_11_base=            10.0**(-1)
+h_12_base=            10.0**(-1)
+h_13_base=            10.0**(-1)
+h_14_base=            10.0**(-1)
+h_15_base=            10.0**(-1)
+h_16_base=            10.0**(-1)
+h_17_base=            10.0**(-1)
+h_18_base=            10.0**(-1)
+h_19_base=            10.0**(-1)
+h_20_base=            10.0**(-1)
+h_21_base=            10.0**(-1)
+h_22_base=            10.0**(-1)
+h_23_base=            10.0**(-1)
+h_24_base=            10.0**(-1)
+h_25_base=            10.0**(-1)
+h_26_base=            10.0**(-1)
+h_27_base=            10.0**(-1)
+h_28_base=            10.0**(-1)
+h_29_base=            10.0**(-1)
 
 
-j_0 = 1.0
-j_1 = 1.0
-j_2 = 1.0
-j_3 = 1.0
-j_4 = 1.0
+j_0_base = 1.0
+j_1_base = 1.0
+j_2_base = 1.0
+j_3_base = 1.0
+j_4_base = 1.0
 
 # J_carb_func =  
 # J_jat_func = 
@@ -257,14 +259,17 @@ start_point_dict = {
 }
 
 
+
 buffer = np.zeros(shape=(50,))
+
+HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
 
 def F_vec(y_vec: np.array,t: float):
     # свободные функции 
     J_carb = J_carb_func(t)
     J_prot = J_prot_func(t)
     J_fat  = J_fat_func(t)
-    HeartRate = 80.0
+    HeartRate = HeartRate_func(t)
 
     # Y_{t} values
     # значения в момент времени t
@@ -319,11 +324,49 @@ def F_vec(y_vec: np.array,t: float):
     GLN = y_vec[48]            
     Urea_ef = y_vec[49]                 
 
-    J_0 = j_0 * TG_pl
-    J_1 = j_1 * Glu_ef
-    J_2 = j_2 * KB_ef
-    J_3 = j_3 * FFA_ef
-    J_4 = j_4 * AA_ef
+
+    # голубой
+    insulin_activation_coefficient =  50.0
+    h_10 = Heviside(INS-insulin_activation_coefficient) * h_10_base 
+    h_12 = Heviside(INS-insulin_activation_coefficient) * h_12_base
+    h_24 = Heviside(INS-insulin_activation_coefficient) * h_24_base
+    h_20 = Heviside(INS-insulin_activation_coefficient) * h_20_base
+    h_17 = Heviside(INS-insulin_activation_coefficient) * h_17_base
+    h_16 = Heviside(INS-insulin_activation_coefficient) * h_16_base
+    h_26 = Heviside(INS-insulin_activation_coefficient) * h_26_base
+    h_19 = Heviside(INS-insulin_activation_coefficient) * h_19_base
+    h_7 = Heviside(INS-insulin_activation_coefficient) * h_7_base
+    h_3 = Heviside(INS-insulin_activation_coefficient) * h_3_base
+    j_0 = Heviside(INS-insulin_activation_coefficient) * j_0_base
+    a_4 = Heviside(INS-insulin_activation_coefficient) * a_4_base
+    a_2 = Heviside(INS-insulin_activation_coefficient) * a_2_base
+    a_5 = Heviside(INS-insulin_activation_coefficient) * a_5_base
+    a_7 = Heviside(INS-insulin_activation_coefficient) * a_7_base
+    a_13 = Heviside(INS-insulin_activation_coefficient) * a_13_base
+    a_14 = Heviside(INS-insulin_activation_coefficient) * a_14_base
+    a_10 = Heviside(INS-insulin_activation_coefficient) * a_10_base
+    a_12 = Heviside(INS-insulin_activation_coefficient) * a_12_base
+    m_7 = Heviside(INS-insulin_activation_coefficient) * m_7_base
+    m_9 = Heviside(INS-insulin_activation_coefficient) * m_9_base
+    m_1 = Heviside(INS-insulin_activation_coefficient) * m_1_base
+    m_11 = Heviside(INS-insulin_activation_coefficient) * m_11_base
+
+    glucagon_adrenilin_activation_coefficient = Glu_ef/CAM
+    h_23 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) * h_23_base
+    h_18 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) * h_18_base 
+    h_13 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) * h_13_base
+    h_2 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) *  h_2_base
+    a_9 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) *  a_9_base
+
+    # фиолетовый
+    glucagon_adrenalin_insulin_activation_coefficient = (Glu_ef+CAM)/INS
+    h_11 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * h_11_base 
+    h_25 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * h_25_base
+    h_6 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * h_6_base
+    a_3 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * a_3_base
+    a_11 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * a_11_base
+    m_8 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * m_8_base
+
 
     # два - выходы мочевины и холестерола.
 
@@ -334,6 +377,54 @@ def F_vec(y_vec: np.array,t: float):
 
       #   'J_{cholesterol}': 0,4 г/сут
       #   'EXCR_{Cholesterol}': 1,2 г/сут
+
+
+    m_2 = m_2_base 
+    m_3 = m_3_base 
+    m_4 = m_4_base 
+    m_5 = m_5_base 
+    m_6 = m_6_base 
+    m_10 = m_10_base
+
+
+    m_12 = m_12_base
+    m_13 = m_13_base
+    m_14 = m_14_base
+    m_15 = m_15_base
+    m_16 = m_16_base
+    m_17 = m_17_base
+    m_18 = m_18_base
+    m_19 = m_19_base
+    m_20 = m_20_base
+    m_21 = m_21_base
+
+    a_1 = a_1_base
+    a_6 = a_6_base
+    a_8 = a_8_base
+
+    a_15 = a_15_base
+    a_16 = a_16_base
+    a_17 = a_17_base
+    a_18 = a_18_base
+    a_19 = a_19_base
+
+    h_1 = h_1_base
+    h_4 = h_4_base
+    h_5 = h_5_base
+    h_8 = h_8_base
+    h_9 = h_9_base
+    h_14 = h_14_base
+    h_15 = h_15_base
+    h_21 = h_21_base
+    h_22 = h_22_base
+    h_27 = h_27_base
+    h_28 = h_28_base
+    h_29 = h_29_base
+
+    j_1 = j_1_base
+    j_2 = j_2_base
+    j_3 = j_3_base
+    j_4 = j_4_base
 
     # 2. Myocyte
     M_1 = m_1 * Glu_ef
@@ -408,6 +499,13 @@ def F_vec(y_vec: np.array,t: float):
     H_28=h_28 * AA_h
     H_29=h_29 * AA_h
 
+    J_0 = j_0 * TG_pl
+    J_1 = j_1 * Glu_ef
+    J_2 = j_2 * KB_ef
+    J_3 = j_3 * FFA_ef
+    J_4 = j_4 * AA_ef
+
+
     # непостредственно вычисление вектора F(t) в точке t
 
     #                                 Метаболиты
@@ -472,6 +570,14 @@ def F_vec(y_vec: np.array,t: float):
     right_Cholesterol_pl= H_7
 
     # Гормоны:
+
+    alpha = alpha_base
+    beta = beta_base
+    gamma = gamma_base
+    CL_INS = CL_INS_base
+    CL_GLN = CL_GLN_base
+    CL_CAM =CL_CAM_base
+
     right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
     right_GLN = lambda_ * (1.0/np.maximum(Glu_ef, 0.1)) - CL_GLN * GLN
     right_CAM = sigma * HeartRate - CL_CAM * CAM

@@ -12,6 +12,7 @@ from numba import jit
 
 from typing import Any
 from tqdm import tqdm
+from tslearn import generators
 
 def plot_float_distribution(data,fig_size=(4,3),title=''):
     fig, ax = plt.subplots()
@@ -52,6 +53,18 @@ def Heviside(x:float) -> float:
     if x < 0.0:
         return 0.0
     return 1.0
+@jit(nopython=True)
+def LeftHeviside(x:float) -> float:
+    if x <= 0.0:
+        return 0.0
+    return 1.0
+
+@jit(nopython=True)
+def RightHeviside(x:float) -> float:
+    if x < 0.0:
+        return 0.0
+    return 1.0
+
 
 class J_ch:
     t1:                     float
@@ -215,8 +228,19 @@ class func_on_linear_grid:
         self.values  = values
     def __call__(self, t:float)->float:
         if not (t < self.t_0 or t > self.t_end):
-            i = int(np.rint(t/self.tau))
+            i = int(np.rint((t-self.t_0)/self.tau))
             return self.values[i]
         else:
             return 0.0
 
+def HeartRate_gen(tau, time_grid,hlow=60,hhigh=120):
+    N  = len(time_grid)
+    y_=  generators.random_walks(n_ts=1,sz=N).flatten()
+    a_ = np.min(y_)
+    b_ = np.max(y_)
+    y_ = (y_-a_)/(b_-a_)
+    c_ = hlow
+    d_ = hhigh
+    y_ *= (d_-c_)
+    y_ += c_
+    return func_on_linear_grid(tau,time_grid[0],time_grid[-1],y_) 
