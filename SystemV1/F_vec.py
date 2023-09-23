@@ -6,6 +6,9 @@ from sysv1_de_config import F_prot
 from sysv1_de_config import sigmoid
 
 
+lambda_ = 1.0
+sigma = 1.0
+
 ### INS
 
 CL_INS    = 0.1
@@ -175,15 +178,30 @@ h_27=            10.0**(-5)
 h_28=            10.0**(-5)
 h_29=            10.0**(-5)
 
+
+j_0 = 1.0
+j_1 = 1.0
+j_2 = 1.0
+j_3 = 1.0
+j_4 = 1.0
+
 def F_vec(y_vec: np.array,t: float, param_vec: np.array):
+    buffer = np.zeros(shape=(48,))
+    # свободные функции 
+    J_carb = 0.0
+    J_prot = 0.0
+    J_fat  = 0.0
+    HeartRate = 80.0
+
     # Y_{t} values
+    # значения в момент времени t
     Glu_ef  = y_vec[0]                  
     AA_ef   = y_vec[1]                   
     Glycerol_ef     = y_vec[2]             
     FFA_ef  = y_vec[3]                 
     Lac_m   = y_vec[4]                   
     KB_ef   = y_vec[5]                  
-    Cholestrol_pl   = y_vec[6]           
+    Cholestreol_pl   = y_vec[6]           
     TG_pl   = y_vec[7]                   
     G6_a    = y_vec[8]                    
     G3_a    = y_vec[9]            
@@ -222,223 +240,152 @@ def F_vec(y_vec: np.array,t: float, param_vec: np.array):
     OAA_h   = y_vec[42]           
     NADPH_h     = y_vec[43]         
     AA_h    = y_vec[44]            
-    TG_h    = y_vec[45]                    
-    Urea_ef     = y_vec[46]                 
+    TG_h    = y_vec[45]
+    INS     = y_vec[46]
+    CAM = y_vec[47]
+    GLN = y_vec[48]            
+    Urea_ef     = y_vec[49]                 
 
-
-
-    '@f([INS]_{j0})@': r'1', #
-    '@f([INS]_{a2})@': r'1', # r'#f([INS],$\alpha_{a2}$,$\beta_{a2}$,$\gamma_{a2}$,$\delta_{a2}$)#',
-    '@f([INS]_{a4})@': r'1', # r'#f([INS],$\alpha_{a4}$,$\beta_{a4}$,$\gamma_{a4}$,$\delta_{a4}$)#',
-    '@f([INS]_{a5})@': r'1', # r'#f([INS],$\alpha_{a5}$,$\beta_{a5}$,$\gamma_{a5}$,$\delta_{a5}$)#',
-    '@f([INS]_{a7})@': r'1', # r'#f([INS],$\alpha_{a7}$,$\beta_{a7}$,$\gamma_{a7}$,$\delta_{a7}$)#',
-    '@f([INS]_{a10})@': r'1', # r'#f([INS],$\alpha_{a10}$,$\beta_{a10}$,$\gamma_{a10}$,$\delta_{a10}$)#',
-    '@f([INS]_{a12})@': r'1', #
-    '@f([INS]_{a13})@': r'1', #
-    '@f([INS]_{a14})@': r'1', #
-    '@f([INS]_{m1})@': r'1', # r'#f([INS],$\alpha_{m1}$,$\beta_{m1}$,$\gamma_{m1}$,$\delta_{m1}$)#',
-    '@f([INS]_{m7})@': r'1', # r'#f([INS],$\alpha_{m7}$,$\beta_{m7}$,$\gamma_{m7}$,$\delta_{m7}$)#',
-    '@f([INS]_{m9})@': r'1', # r'#f([INS],$\alpha_{m9}$,$\beta_{m9}$,$\gamma_{m9}$,$\delta_{m9}$)#',
-    '@f([INS]_{m11})@': r'1', # r'#f([INS],$\alpha_{m11}$,$\beta_{m11}$,$\gamma_{m11}$,$\delta_{m11}$)#',
-    '@f([INS]_{h3})@': r'1', # r'#f([INS],$\alpha_{h3}$,$\beta_{h3}$,$\gamma_{h3}$,$\delta_{h3}$)#',
-    '@f([INS]_{h6})@': r'1', # чем меньше АУК инсулина за последние 3 часа, тем выше скорость H6
-    '@f([INS]_{h7})@': r'1', # r'#f([INS],$\alpha_{h7}$,$\beta_{h7}$,$\gamma_{h7}$,$\delta_{h8}$)#',
-    '@f([INS]_{h10})@': r'1', # r'#f([INS],$\alpha_{h10}$,$\beta_{h10}$,$\gamma_{h10}$,$\delta_{h10}$)#',
-    '@f([INS]_{h12})@': r'1', # r'#f([INS],$\alpha_{h12}$,$\beta_{h12}$,$\gamma_{h12}$,$\delta_{h12}$)#',
-    '@f([INS]_{h16})@': r'1', # r'#f([INS],$\alpha_{h167}$,$\beta_{h16}$,$\gamma_{h16}$,$\delta_{h16}$)#',
-    '@f([INS]_{h19})@': r'1', #
-    '@f([INS]_{h24})@': r'1', # r'#f([INS],$\alpha_{h24}$,$\beta_{h24}$,$\gamma_{h24}$,$\delta_{h24}$)#',
-    '@f([INS]_{h26})@': r'1', # r'#f([INS],$\alpha_{h26}$,$\beta_{h26}$,$\gamma_{h26}$,$\delta_{h26}$)#',
-    '@f([GLN]_{a3})@': r'1', #r'#f([G6]_{ef},$\lambda_{a3}$)#',
-    '@f([GLN]_{a9})@': r'1', #r'#f([G6]_{ef},$\lambda_{a9}$)#',
-    '@f([GLN]_{a11})@': r'1', #r'#f([G6]_{ef},$\lambda_{a11}$)#',
-    '@f([GLN]_{m8})@': r'1', #r'#f([G6]_{ef},$\lambda_{m8}$)#',
-    '@f([GLN]_{h2})@': r'1', #r'#f([G6]_{ef},$\lambda_{h2}$)#',
-    '@f([GLN]_{h11})@': r'1', #r'#f([G6]_{ef},$\lambda_{h11}$)#',
-    '@f([GLN]_{h13})@': r'1', #r'#f([G6]_{ef},$\lambda_{h13}$)#',
-    '@f([GLN]_{h23})@': r'1',  # r'#f([G6]_{ef},$\lambda_{h23}$)#',
-    '@f([GLN]_{h25})@': r'1', #r'#f([G6]_{ef},$\lambda_{h25}$)#',
-    '@f([CAM]_{a3})@': r'1', #r'#f([Heart Rate],$\sigma_{a3}$)#',
-    '@f([CAM]_{a11})@': r'1',  # r'#f([Heart Rate],$\sigma_{a11}$)#',
-    '@f([CAM]_{m8})@': r'1', #r'#f([Heart Rate],$\sigma_{m8}$)#',
-    '@f([CAM]_{h11})@': r'1', #r'#f([Heart Rate],$\sigma_{h11}$)#',
-    '@f([CAM]_{h25})@': r'1', #r'#f([Heart Rate],$\sigma_{h25}$)#',
-    '@J_0@': r'$j_{0}$ * [TG]_{pl} * #f([INS]_{j0})#',
-    '@J_1@': r'$j_{1}$ * [Glu]_{ef}',
-    '@J_2@': r'$j_{2}$ * [KB]_{ef}',
-    '@J_3@': r'$j_{3}$ * [FFA]_{ef}',
-    '@J_4@': r'$j_{4}$ * [AA]_{ef}',
-    # три - входы БЖУ;
-
-      #  '@J_{carb}@':
-      #  '@J_{prot}@':
-      #  '@J_{fat}@':
-
-    # Ниже в коде есть такая часть:
-
-        # Вход нутриентов (часть старого кода)
-
-        #    'D_{carb}': r'($a_{carb}$ * #F_{carb}(t)# - D_{carb}) / $\tau_{carb}$',
-        #    'J_{carb}': r'(D_{carb} - J_{carb}) / $\tau_{carb}$',
-        #    'D_{fat}': r'($a_{fat}$ * #F_{fat}(t)# - D_{fat}) / $\tau_{fat}$',
-        #    'J_{fat}': r'(D_{fat} - J_{fat}) / $\tau_{fat}$',
-        #    'D_{prot}': r'($a_{prot}$ * #F_{prot}(t)# - D_{prot}) / $\tau_{prot}$',
-        #    'J_{prot}': r'(D_{prot} - J_{prot}) / $\tau_{prot}$',
-
+    J_0 = j_0 * TG_pl
+    J_1 = j_1 * Glu_ef
+    J_2 = j_2 * KB_ef
+    J_3 = j_3 * FFA_ef
+    J_4 = j_4 * AA_ef
 
     # два - выходы мочевины и холестерола.
 
       #   Экскреция мочевины = UUN (Urine urea nitrogen) - мочевина в суточной моче, в среднем 570 ммоль/сут
-      #   '@EXCR_{Urea}@': 570 (10**(-3))
+      #   'EXCR_{Urea}': 570 (10**(-3))
 
       #    Холестерин: синтезируется 0,8 г/сут, приходит с пищей 0,4 г/сут, экскреция 1,2 г/сут
 
-      #   '@J_{cholesterol}@': 0,4 г/сут
-      #   '@EXCR_{Cholesterol}@': 1,2 г/сут
-
+      #   'J_{cholesterol}': 0,4 г/сут
+      #   'EXCR_{Cholesterol}': 1,2 г/сут
 
     # 2. Myocyte
-
-    '@M_1@': r'$m_{1}$ * [Glu]_{ef} * #f([INS]_{m1})#',
-    '@M_2@': r'$m_{2}$ * [Pyr]_{m}',
-    '@M_3@': r'$m_{3}$ * [KB]_{ef}',
-    '@M_4@': r'$m_{4}$ * [FFA]_{ef} * #f([INS]_{m4})#',
-    '@M_5@': r'$m_{5}$ * [AA]_{ef}',
-    '@M_6@': r'$m_{6}$ * [AA]_{m}',
-    '@M_7@': r'$m_{7}$ * [G6]_{m} * #f([INS]_{m7})#',
-    '@M_8@': r'$m_{8}$ * [GG]_{m} * #f([GLN]_{m8})# * #f([CAM]_{m8})#',
-    '@M_9@': r'$m_{9}$ * [G6]_{m} * #f([INS]_{m9})#',
-    '@M_10@': r'$m_{10}$ * [G3]_{m}',
-    '@M_11@': r'$m_{11}$ * [Pyr]_{m} * #f([INS]_{m11})#',
-    '@M_12@': r'$m_{12}$ * [FA-CoA]_{m}',
-    '@M_13@': r'$m_{13}$ * [Ac-CoA]_{m} * [OAA]_{m}',
-    '@M_14@': r'$m_{14}$ * [Cit]_{m}',
-    '@M_15@': r'$m_{15}$ * [H-cyt]_{m}',
-    '@M_16@': r'$m_{16}$ * [H-mit]_{m}', # * [O2]',
-    '@M_17@': r'$m_{17}$ * [AA]_{m}',
-    '@M_18@': r'$m_{18}$ * [AA]_{m}',
-    '@M_19@': r'$m_{19}$ * [AA]_{m}',
-    '@M_20@': r'$m_{20}$ * [AA]_{m}',
-    '@M_21@': r'$m_{21}$ * [Muscle]_{m}',
-
-
-
+    M_1 = m_1 * Glu_ef
+    M_2 = m_2 * Pyr_m
+    M_3 = m_3 * KB_ef
+    M_4 = m_4 * FFA_ef
+    M_5 = m_5 * AA_ef
+    M_6 = m_6 * AA_m
+    M_7 = m_7 * G6_m
+    M_8 = m_8 * GG_m
+    M_9 = m_9 * G6_m
+    M_10 = m_10 * G3_m
+    M_11 = m_11 * Pyr_m
+    M_12 = m_12 * FA_CoA_m
+    M_13 = m_13 * Ac_CoA_m * OAA_m
+    M_14 = m_14 * Cit_m
+    M_15 = m_15 * H_cyt_m
+    M_16 = m_16 * H_mit_m # * [O2]
+    M_17 = m_17 * AA_m
+    M_18 = m_18 * AA_m
+    M_19 = m_19 * AA_m
+    M_20 = m_20 * AA_m
+    M_21 = m_21 * Muscle_m
     #3. Adipocyte
-
-    '@A_1@': r'$a_{1}$ * [AA]_{ef}',
-    '@A_2@': r'$a_{2}$ * [FFA]_{ef} * #f([INS]_{a2})#',
-    '@A_3@': r'$a_{3}$ * [TG]_{a} * #f([GLN]_{a3})# * #f([CAM]_{a3})#',
-    '@A_4@': r'$a_{4}$ * [Glu]_{ef} * #f([INS]_{a4})#',
-    '@A_5@': r'$a_{5}$ * [G6]_{a} * #f([INS]_{a5})#',
-    '@A_6@': r'$a_{6}$ * [G6]_{a}',
-    '@A_7@': r'$a_{7}$ * [G3]_{a} * [FA-CoA]_{a} * #f([INS]_{a7})#',
-    '@A_8@': r'$a_{8}$ * [G3]_{a}',
-    '@A_9@': r'$a_{9}$ * [OAA]_{a} * #f([GLN]_{a9})#',
-    '@A_10@': r'$a_{10}$ * [Pyr]_{a} * #f([INS]_{a10})#',
-    '@A_11@': r'$a_{11}$ * [Pyr]_{a} * #f([GLN]_{a11})#',
-    '@A_12@': r'$a_{12}$ * [OAA]_{a}',
-    '@A_13@': r'$a_{13}$ * [Ac-CoA]_{a} * [NADPH]_{a}',
-    '@A_14@': r'$a_{14}$ * [Cit]_{a} * #f([INS]_{a14})#',
-    '@A_15@': r'$a_{15}$ * [Cit]_{a}',
-    '@A_16@': r'$a_{16}$ * [OAA]_{a} * [Cit]_{a}',
-    '@A_17@': r'$a_{17}$ * [AA]_{a}',
-    '@A_18@': r'$a_{18}$ * [AA]_{a}',
-    '@A_19@': r'$a_{19}$ * [AA]_{a}',
-
+    A_1=a_1 * AA_ef
+    A_2=a_2 * FFA_ef
+    A_3=a_3 * TG_a
+    A_4=a_4 * Glu_ef
+    A_5=a_5 * G6_a
+    A_6=a_6 * G6_a
+    A_7=a_7 * G3_a * FA_CoA_a
+    A_8=a_8 * G3_a
+    A_9=a_9 * OAA_a
+    A_10=a_10 * Pyr_a
+    A_11=a_11 * Pyr_a
+    A_12=a_12 * OAA_a
+    A_13=a_13 * Ac_CoA_a * NADPH_a
+    A_14=a_14 * Cit_a
+    A_15=a_15 * Cit_a
+    A_16=a_16 * OAA_a * Cit_a
+    A_17=a_17 * AA_a
+    A_18=a_18 * AA_a
+    A_19=a_19 * AA_a
     #4. Hepatocyte
+    H_1=h_1 * AA_ef
+    H_2=h_2 * G6_h
+    H_3=h_3 * Glu_ef
+    H_4=h_4 * Glycerol_ef
+    H_5=h_5 * Lac_m
+    H_6=h_6 * Ac_CoA_h
+    H_7=h_7 * MVA_h
+    H_8=h_8 * FFA_ef
+    H_9=h_9 * TG_h
+    H_10=h_10 * G6_h
+    H_11=h_11 * GG_h
+    H_12=h_12 * G6_h
+    H_13=h_13 * G3_h
+    H_14=h_14 * G6_h
+    H_15=h_15 * G3_h
+    H_16=h_16 * Pyr_h
+    H_17=h_17 * Ac_CoA_h * NADPH_h
+    H_18=h_18 * FA_CoA_h
+    H_19=h_19 * Ac_CoA_h * NADPH_h
+    H_20=h_20 * G3_h * FA_CoA_h
+    H_21=h_21 * Ac_CoA_h * OAA_h
+    H_22=h_22 * Cit_h
+    H_23=h_23 * OAA_h
+    H_24=h_24 * OAA_h
+    H_25=h_25 * Pyr_h
+    H_26=h_26 * AA_h
+    H_27=h_27 * AA_h
+    H_28=h_28 * AA_h
+    H_29=h_29 * AA_h
 
-    '@H_1@': r'$h_{1}$ * [AA]_{ef}',
-    '@H_2@': r'$h_{2}$ * [G6]_{h} * #f([GLN]_{h2})#',
-    '@H_3@': r'$h_{3}$ * [Glu]_{ef} * #f([INS]_{h3})#',
-    '@H_4@': r'$h_{4}$ * [Glycerol]_{ef}',
-    '@H_5@': r'$h_{5}$ * [Lac]_{m}',
-    '@H_6@': r'$h_{6}$ * [Ac-CoA]_{h} * #f([INS]_{h6})#',
-    '@H_7@': r'$h_{7}$ * [MVA]_{h} * #f([INS]_{h7})#',
-    '@H_8@': r'$h_{8}$ * [FFA]_{ef}',
-    '@H_9@': r'$h_{9}$ * [TG]_{h}',
-    '@H_10@': r'$h_{10}$ * [G6]_{h} * #f([INS]_{h10})#',
-    '@H_11@': r'$h_{11}$ * [GG]_{h} * #f([GLN]_{h11})# * #f([CAM]_{h11})#',
-    '@H_12@': r'$h_{12}$ * [G6]_{h} * #f([INS]_{h12})#',
-    '@H_13@': r'$h_{13}$ * [G3]_{h}',
-    '@H_14@': r'$h_{14}$ * [G6]_{h}',
-    '@H_15@': r'$h_{15}$ * [G3]_{h}',
-    '@H_16@': r'$h_{16}$ * [Pyr]_{h} * #f([INS]_{h16})#',
-    '@H_17@': r'$h_{17}$ * [Ac-CoA]_{h} * [NADPH]_{h} * #f([INS]_{h17})#',
-    '@H_18@': r'$h_{18}$ * [FA-CoA]_{h}  * #f([GLN]_{h18})#',
-    '@H_19@': r'$h_{19}$ * [Ac-CoA]_{h} * [NADPH]_{h} * #f([INS]_{h19})#',
-    '@H_20@': r'$h_{20}$ * [G3]_{h} * [FA-CoA]_{h} * #f([INS]_{h20})#',
-    '@H_21@': r'$h_{21}$ * [Ac-CoA]_{h} * [OAA]_{h}',
-    '@H_22@': r'$h_{22}$ * [Cit]_{h}',
-    '@H_23@': r'$h_{23}$ * [OAA]_{h} * #f([GLN]_{h23})#',
-    '@H_24@': r'$h_{24}$ * [OAA]_{h} * #f([INS]_{h24})#',
-    '@H_25@': r'$h_{25}$ * [Pyr]_{h} * #f([GLN]_{h25})# * #f([CAM]_{h25})#',
-    '@H_26@': r'$h_{26}$ * [AA]_{h}',
-    '@H_27@': r'$h_{27}$ * [AA]_{h}',
-    '@H_28@': r'$h_{28}$ * [AA]_{h}',
-    '@H_29@': r'$h_{29}$ * [AA]_{h}',
+    # непостредственно вычисление вектора F(t) в точке t
 
-
-}
-des_str_ = {
-
-    # Метаболиты
-
+    #                                 Метаболиты
     # 1. Adipocyte
-
-    r'[TG]_{a}': r'@A_7@ - @A_3@',
-    r'[AA]_{a}': r'@A_1@ - @A_17@ - @A_18@ - @A_19@',
-    r'[G6]_{a}': r'@A_4@ - @A_5@ - @A_6@',
-    r'[G3]_{a}': r'2*@A_5@ + @A_6@ + @A_9@ - @A_7@ - @A_8@',
-    r'[Pyr]_{a}': r'@A_8@ + @A_12@ + @A_19@ - @A_10@ - @A_11@',
-    r'[Ac-CoA]_{a}': r'@A_10@ + @A_14@ + @A_18@ - 8*@A_13@ - @A_16@',
-    r'[FA-CoA]_{a}': r'@A_2@ + @A_13@ - 3*@A_7@',
-    r'[Cit]_{a}': r'@A_16@ - @A_14@ - @A_15@',
-    r'[OAA]_{a}': r'@A_11@ + @A_14@ + @A_15@ + @A_17@ - @A_9@ - @A_12@ - @A_16@ ',
-    r'[NADPH]_{a}': r'@A_6@ + @A_12@ - 14*@A_13@',
-
+    right_TG_a=A_7 - A_3
+    right_AA_a=A_1 - A_17 - A_18 - A_19
+    right_G6_a=A_4 - A_5 - A_6
+    right_G3_a=2*A_5 + A_6 + A_9 - A_7 - A_8
+    right_Pyr_a=A_8 + A_12 + A_19 - A_10 - A_11
+    right_Ac_CoA_a=A_10 + A_14 + A_18 - 8*A_13 - A_16
+    right_FA_CoA_a=A_2 + A_13 - 3*A_7
+    right_Cit_a=A_16 - A_14 - A_15
+    right_OAA_a=A_11 + A_14 + A_15 + A_17 - A_9 - A_12 - A_16 
+    right_NADPH_a=A_6 + A_12 - 14*A_13
     # 2. Hepatocyte
-
-    r'[GG]_{h}': r'@H_10@ - @H_11@',
-    r'[G6]_{h}': r'@H_3@ + @H_11@ + @H_13@ - @H_2@ - @H_10@ - @H_12@ - @H_14@',
-    r'[G3]_{h}': r'@H_4@ + 2*@H_12@ + @H_14@ + @H_23@ - 2*@H_13@ - @H_15@ - @H_20@',
-    r'[Pyr]_{h}': r'@H_5@ + @H_15@ + @H_24@ + @H_29@ - @H_16@ - @H_25@',
-    r'[Ac-CoA]_{h}': r'@H_16@ + 8*@H_18@ + @H_26@ + @H_27@ - 3*@H_17@ - 8*@H_19@',
-    r'[FA-CoA]_{h}': r'@H_8@ + @H_19@ - @H_18@ - 3*@H_20@',
-    r'[TG]_{h}': r'@H_20@ - @H_9@',
-    r'[MVA]_{h}': r'@H_17@ - @H_7@',
-    r'[OAA]_{h}': r'@H_22@ + @H_25@ + @H_26@  + @H_28@ - @H_21@ - @H_23@ - @H_24@',
-    r'[Cit]_{h}': r'@H_21@ - @H_22@ - @H_26@',
-    r'[AA]_{h}': r'@H_1@ - @H_27@ - @H_28@ - @H_29@',
-    r'[NADPH]_{h}': r'6*@H_14@ + @H_24@ - 14*@H_19@',
-
+    right_GG_h= H_10 - H_11
+    right_G6_h= H_3 + H_11 + H_13 - H_2 - H_10 - H_12 - H_14
+    right_G3_h= H_4 + 2*H_12 + H_14 + H_23 - 2*H_13 - H_15 - H_20
+    right_Pyr_h=    H_5 + H_15 + H_24 + H_29 - H_16 - H_25
+    right_Ac_CoA_h= H_16 + 8*H_18 + H_26 + H_27 - 3*H_17 - 8*H_19
+    right_FA_CoA_h= H_8 + H_19 - H_18 - 3*H_20
+    right_TG_h= H_20 - H_9
+    right_MVA_h=    H_17 - H_7
+    right_OAA_h=    H_22 + H_25 + H_26  + H_28 - H_21 - H_23 - H_24
+    right_Cit_h=    H_21 - H_22 - H_26
+    right_AA_h= H_1 - H_27 - H_28 - H_29
+    right_NADPH_h=  6*H_14 + H_24 - 14*H_19
     # 3. Myocyte
-
-    r'[GG]_{m}': r'@M_7@ - @M_8@',
-    r'[G6]_{m}': r'@M_1@ + @M_8@ - @M_7@ - @M_9@',
-    r'[G3]_{m}': r'2*@M_9@ - @M_10@',
-    r'[Pyr]_{m}': r'@M_10@ + @M_17@ - @M_11@ - @M_2@',
-    r'[Ac-CoA]_{m}': r'2*@M_3@ + @M_11@ + 8*@M_12@ + @M_18@ - @M_13@',
-    r'[FA-CoA]_{m}': r'@M_4@ - @M_12@',
-    r'[AA]_{m}': r'@M_5@ + @M_21@ - @M_6@ - @M_17@ - @M_18@ - @M_19@ - @M_20@',
-    r'[Cit]_{m}': r'@M_13@ - @M_14@',
-    r'[OAA]_{m}': r'@M_14@ + @M_19@ - @M_13@',
-    r'[H-cyt]_{m}': r'2*@M_10@ - @M_2@ - @M_15@',
-    r'[H-mit]_{m}': r'@M_3@ + 14*@M_12@ + @M_15@ - @M_16@',
-    r'[CO2]_{m}': r'@M_11@ + 2*@M_14@',
-    r'[H2O]_{m}': r'@M_16@',
-
-    r'[ATP-cyt]_{m}': r'@M_10@', # Anaerob
-    r'[ATP-mit]_{m}': r'2*@M_16@', # Aerob
-
-
+    right_GG_m= M_7 - M_8
+    right_G6_m= M_1 + M_8 - M_7 - M_9
+    right_G3_m= 2*M_9 - M_10
+    right_Pyr_m=    M_10 + M_17 - M_11 - M_2
+    right_Ac_CoA_m= 2*M_3 + M_11 + 8*M_12 + M_18 - M_13
+    right_FA_CoA_m= M_4 - M_12
+    right_AA_m= M_5 + M_21 - M_6 - M_17 - M_18 - M_19 - M_20
+    right_Cit_m=    M_13 - M_14
+    right_OAA_m=    M_14 + M_19 - M_13
+    right_H_cyt_m=  2*M_10 - M_2 - M_15
+    right_H_mit_m=  M_3 + 14*M_12 + M_15 - M_16
+    right_CO2_m=    M_11 + 2*M_14
+    right_H2O_m=    M_16
+    right_ATP_cyt_m=    M_10 # Anaerob
+    right_ATP_mit_m=    2*M_16 # Aerob
      # Далее три величины, которые требуют обсуждения.
      # Работа (аэробная и анаэробная) - является ли она интегральной величиной?
      # Или это просто "депо" ккал, которое должно обнуляться каждую полночь?
      # Зависит ли концентрация кислорода от ЧСС, или он просто всегда в избытке (равен единице)?
 
-     #   '[O2]_{m}': r'',
-     #   'ANAEROB': r'',
-     #   'AEROB': r'',
+     #   '[O2]_{m}': r'
+     #   'ANAEROB': r'
+     #   'AEROB': r'
 
 
     # 4. Extracellular fluid
@@ -447,48 +394,79 @@ des_str_ = {
     # Отличие - в объеме: плазма - 5,5 л, вся МЖ - около 10 л).
 
     # Diet-induced concentrations (нутриенты в крови):
-    r'[Glu]_{ef}': r'J_{carb} + @H_2@ - @H_3@ - @M_1@ - @A_4@ - @J_1@',
-    r'[AA]_{ef}': r'J_{prot} + @M_6@ - @A_1@ - @H_1@ - @J_4@ - @M_5@',
-    r'[TG]_{pl}': r'J_{fat} + @H_9@ - @J_0@',
+    right_Glu_ef = J_carb + H_2 - H_3 - M_1 - A_4 - J_1
+    right_AA_ef =  J_prot + M_6 - A_1 - H_1 - J_4 - M_5
+    right_TG_pl =  J_fat + H_9 - J_0
 
     # Metabolome (метаболиты в крови):
-    r'[Glycerol]_{ef}': r'@J_0@ + @A_3@ - @H_4@',
-    r'[FFA]_{ef}': r'3*@J_0@ + 3*@A_3@ - @A_2@ - @H_8@ - @M_4@ - @J_3@',
-    r'[Lac]_{m}': r'@M_2@ - @H_5@',
-    r'[KB]_{ef}': r'@H_6@ - @M_3@ - @J_2@',
-    r'[Cholesterol]_{pl}': r'@H_7@',
-    r'[Urea]_{ef}': r'@J_4@ + @A_17@ + @A_18@ + @A_19@ + @M_17@ + @M_18@ + @M_19@ + @H_27@ + @H_28@ + @H_29@',
+    right_Glycerol_ef=    J_0 + A_3 - H_4
+    right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4 - J_3
+    right_Lac_m=  M_2 - H_5
+    right_KB_ef=  H_6 - M_3 - J_2
+    right_Cholesterol_pl= H_7
+    right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
 
     # Excreted substances (мочевина, холестерин):
     # Для этих веществ нужно добавить в уравнение экскрецию как вычитаемую константу EXCR_{},
     # либо обнулять их депо каждую полночь.
 
-    # '[Urea]_{ef}': r'@J_4@ + @A_17@ + @A_18@ + @A_19@ + @M_17@ + @M_18@ + @M_19@ + @H_27@ + @H_28@ + @H_29@' #- EXCR_{Urea},
-    #  '[Cholesterol]_{pl}': r'@H_6@ + J_{cholesterol}@ - EXCR_{Cholesterol}',
-
-
-
-    # Вход нутриентов (здесь ничего не меняю, это часть старого кода)
-    r'D_{carb}': r'($a_{carb}$ * #F_{carb}(t)# - D_{carb}) / $\tau_{carb}$',
-    r'J_{carb}': r'(D_{carb} - J_{carb}) / $\tau_{carb}$',
-    r'D_{fat}': r'($a_{fat}$ * #F_{fat}(t)# - D_{fat}) / $\tau_{fat}$',
-    r'J_{fat}': r'(D_{fat} - J_{fat}) / $\tau_{fat}$',
-    r'D_{prot}': r'($a_{prot}$ * #F_{prot}(t)# - D_{prot}) / $\tau_{prot}$',
-    r'J_{prot}': r'(D_{prot} - J_{prot}) / $\tau_{prot}$',
+    # '[Urea]_{ef}': r'J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29' #- EXCR_{Urea},
+    #  '[Cholesterol]_{pl}': r'H_6 + J_{cholesterol} - EXCR_{Cholesterol}
 
     # Гормоны:
+    right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
+    right_GLN = lambda_ * (1.0/np.minimum(Glu_ef, 0.001)) - CL_GLN * GLN
+    right_CAM = sigma * HeartRate - CL_CAM * CAM
 
-    r'[INS]': r'$\alpha$ * J_{carb} +$\beta$ * J_{fat} + $\gamma$ * J_{prot} - $CL_{INS}$ * [INS]',
 
-    # Добавим две новые функции гормонов (их надо обсудить и исправить):
 
-    #'[GLN]': r'$\lambda$ * (1/[Glu]_{ef}) - $CL_{GLN}$ * [GLN]',
-    #'[CAM]': r'$\sigma$ * [Heart Rate] - $CL_{CAM}$ * [CAM]'
-
-    # Глюкагон [GLN] обратно зависим от концентрации [Glu]_{ef} (глюкозы в межклет жидкости).
-    # GLN Выделяется при [Glu]_{ef} < 4 mmol/l.
-
-    # Андреналин/норадреналин [CAM] можно отслеживать по пульсу.
-    # Если пульс выше возрастной нормы, значит, [CAM] повышен.
-
-    # Клиренс у всех трёх гормонов: полный - 5 минут, 50% - около 1 минуты. Падает экспоненциально.
+    right_Glu_ef                  
+    right_AA_ef                   
+    right_Glycerol_ef             
+    right_FFA_ef                 
+    right_Lac_m                   
+    right_KB_ef                  
+    right_Cholesterol_pl           
+    right_TG_pl                   
+    right_G6_a                    
+    right_G3_a            
+    right_Pyr_a           
+    right_Ac_CoA_a        
+    right_FA_CoA_a        
+    right_Cit_a           
+    right_OAA_a           
+    right_AA_a            
+    right_NADPH_a         
+    right_TG_a                     
+    right_GG_m                     
+    right_G6_m            
+    right_G3_m            
+    right_Pyr_m           
+    right_Ac_CoA_m        
+    right_FA_CoA_m        
+    right_Cit_m           
+    right_OAA_m           
+    right_H_cyt_m         
+    right_H_mit_m         
+    right_AA_m            
+    right_Muscle_m                 
+    right_CO2_m           
+    right_H20_m           
+    right_ATP_cyt_m        
+    right_ATP_mit_m        
+    right_GG_h                    
+    right_G6_h            
+    right_G3_h            
+    right_Pyr_h           
+    right_Ac_CoA_h        
+    right_FA_CoA_h        
+    right_MVA_h           
+    right_Cit_h           
+    right_OAA_h           
+    right_NADPH_h         
+    right_AA_h            
+    right_TG_h
+    right_INS
+    right_CAM
+    right_GLN            
+    right_Urea_ef
