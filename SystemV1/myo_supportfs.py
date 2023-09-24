@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple
 from numba import jit
-
+from copy import deepcopy
+from tqdm import tqdm
+import plotly
+import plotly.graph_objects as go
 # def F_carb(x): # [g]
 #     return np.exp(-1.0*x)*10 * np.abs(np.cos(2*x))
 #
@@ -211,4 +214,84 @@ def get_start_point_names_mapping(dict_of_start_points):
         name_by_index.update({i_:Y_name})
         i_+=1
     return index_by_name, name_by_index, start_point
+
+def get_intervals_of_processes(processes):
+    time_vec = processes['time_point']
+    # print('start get interval func')
+    # # filter data
+    # pr_copy = deepcopy(processes)
+    # time_vec = pr_copy['time_point']
+    # # упорядочить по времени
+    # time_argsort = np.argsort(time_vec)
+    # sorted_time = np.sort(time_vec)
+    # new_pr = {}
+    # for ProcessName, Values in processes.items():
+    #     if ProcessName == 'time_point':
+    #         continue
+    #     new_v = [Values[pos] for pos in time_argsort]
+    #     new_pr.update({ProcessName:new_v})
+    # # удалить дупликаты по времени
+    # uniq_time = np.sort(np.unique(sorted_time))
+    # positions_of_unique_time_points = []
+    # for i in range(len(uniq_time)):
+    #     t_i = uniq_time[i]
+    #     where_t_i = np.argwhere(sorted_time == t_i).flatten()[0]
+    #     positions_of_unique_time_points.append(where_t_i)
+    
+    # new_pr_ = {}
+    # for ProcessName, Values in processes.items():
+    #     if ProcessName == 'time_point':
+    #         continue
+    #     new_v=  [Values[el] for el in positions_of_unique_time_points]
+    #     new_pr_.update({ProcessName:new_v})
+
+    # print('start main cycle')
+
+    intervals_of_active_process = {}
+    for ProcessName, Values in processes.items():
+        if ProcessName == 'time_point':
+            continue
+        intervals = []
+        current_value = 0
+        for i in range(len(time_vec)):
+            v_i = Values[i]
+            t_i = time_vec[i]
+            if current_value == 1 and v_i == 1:
+                # отрезок продолжается
+                continue
+            elif current_value == 1 and v_i ==0:
+                # отрезок закончился
+                current_value = 0
+                intervals[-1].append(time_vec[i-1])
+            elif current_value == 0 and v_i ==1:
+                # отрезок начался
+                intervals.append([])
+                intervals[-1].append(t_i)
+                current_value = 1
+            elif current_value == 0 and v_i == 0:
+                # отрезок не начался
+                continue 
+        intervals_of_active_process.update({ProcessName: intervals})
+    return intervals_of_active_process
+
+def plot_intervals_to_plotly_fig(fig, intervals_dict, ProcessNameHighsOfLines, ProcessColor):
+    for ProcessName, intervals in intervals_dict.items():
+        for i in range(len(intervals)):
+            interval = intervals[i]
+            y_1 = ProcessNameHighsOfLines[ProcessName]
+            y_2 = y_1
+            x_1 = interval[0]
+            x_2 =  interval[1]
+            fig.add_trace(go.Scatter(x=[x_1,x_2],
+                                    y=[y_1,y_2],
+                                    name=ProcessName,
+                                    fill=None,
+                                    line=dict(width=4 ,color=ProcessColor[ProcessName])
+                                    )
+                        )
+            fig.add_vline(x=x_1,line_color= "#FFFFFF",line_dash="dash")
+            fig.add_vline(x=x_2,line_color= "#FFFFFF",line_dash="dash")
+            
+            
+    return fig  
 

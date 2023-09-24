@@ -264,7 +264,9 @@ buffer = np.zeros(shape=(50,))
 
 HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
 
-def F_vec(y_vec: np.array,t: float):
+
+
+def F_vec(y_vec: np.array,t: float,processes):
     # свободные функции 
     J_carb = J_carb_func(t)
     J_prot = J_prot_func(t)
@@ -326,46 +328,62 @@ def F_vec(y_vec: np.array,t: float):
 
 
     # голубой
-    insulin_activation_coefficient =  50.0
-    h_10 = Heviside(INS-insulin_activation_coefficient) * h_10_base 
-    h_12 = Heviside(INS-insulin_activation_coefficient) * h_12_base
-    h_24 = Heviside(INS-insulin_activation_coefficient) * h_24_base
-    h_20 = Heviside(INS-insulin_activation_coefficient) * h_20_base
-    h_17 = Heviside(INS-insulin_activation_coefficient) * h_17_base
-    h_16 = Heviside(INS-insulin_activation_coefficient) * h_16_base
-    h_26 = Heviside(INS-insulin_activation_coefficient) * h_26_base
-    h_19 = Heviside(INS-insulin_activation_coefficient) * h_19_base
-    h_7 = Heviside(INS-insulin_activation_coefficient) * h_7_base
-    h_3 = Heviside(INS-insulin_activation_coefficient) * h_3_base
-    j_0 = Heviside(INS-insulin_activation_coefficient) * j_0_base
-    a_4 = Heviside(INS-insulin_activation_coefficient) * a_4_base
-    a_2 = Heviside(INS-insulin_activation_coefficient) * a_2_base
-    a_5 = Heviside(INS-insulin_activation_coefficient) * a_5_base
-    a_7 = Heviside(INS-insulin_activation_coefficient) * a_7_base
-    a_13 = Heviside(INS-insulin_activation_coefficient) * a_13_base
-    a_14 = Heviside(INS-insulin_activation_coefficient) * a_14_base
-    a_10 = Heviside(INS-insulin_activation_coefficient) * a_10_base
-    a_12 = Heviside(INS-insulin_activation_coefficient) * a_12_base
-    m_7 = Heviside(INS-insulin_activation_coefficient) * m_7_base
-    m_9 = Heviside(INS-insulin_activation_coefficient) * m_9_base
-    m_1 = Heviside(INS-insulin_activation_coefficient) * m_1_base
-    m_11 = Heviside(INS-insulin_activation_coefficient) * m_11_base
+    insulin_activation_coefficient =  17.0
+    is_insulin_process = Heviside(INS-insulin_activation_coefficient)
+    h_10 = is_insulin_process * h_10_base 
+    h_12 = is_insulin_process * h_12_base
+    h_24 = is_insulin_process * h_24_base
+    h_20 = is_insulin_process * h_20_base
+    h_17 = is_insulin_process * h_17_base
+    h_16 = is_insulin_process * h_16_base
+    h_26 = is_insulin_process * h_26_base
+    h_19 = is_insulin_process * h_19_base
+    h_7 = is_insulin_process * h_7_base
+    h_3 = is_insulin_process * h_3_base
+    j_0 = is_insulin_process * j_0_base
+    a_4 = is_insulin_process * a_4_base
+    a_2 = is_insulin_process * a_2_base
+    a_5 = is_insulin_process * a_5_base
+    a_7 = is_insulin_process * a_7_base
+    a_13 = is_insulin_process * a_13_base
+    a_14 = is_insulin_process * a_14_base
+    a_10 = is_insulin_process * a_10_base
+    a_12 = is_insulin_process * a_12_base
+    m_7 = is_insulin_process * m_7_base
+    m_9 = is_insulin_process * m_9_base
+    m_1 = is_insulin_process * m_1_base
+    m_11 = is_insulin_process * m_11_base
 
     glucagon_adrenilin_activation_coefficient = Glu_ef/CAM
-    h_23 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) * h_23_base
-    h_18 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) * h_18_base 
-    h_13 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) * h_13_base
-    h_2 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) *  h_2_base
-    a_9 = Heviside(glucagon_adrenilin_activation_coefficient-1.0) *  a_9_base
+    is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-1.0)
+    h_23 = is_glucagon_adrenalin_process * h_23_base
+    h_18 = is_glucagon_adrenalin_process * h_18_base 
+    h_13 = is_glucagon_adrenalin_process * h_13_base
+    h_2 = is_glucagon_adrenalin_process *  h_2_base
+    a_9 = is_glucagon_adrenalin_process *  a_9_base
 
     # фиолетовый
     glucagon_adrenalin_insulin_activation_coefficient = (Glu_ef+CAM)/INS
-    h_11 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * h_11_base 
-    h_25 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * h_25_base
-    h_6 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * h_6_base
-    a_3 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * a_3_base
-    a_11 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * a_11_base
-    m_8 = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0) * m_8_base
+    is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
+    h_11 = is_glucagon_adrenalin_insulin_process * h_11_base 
+    h_25 = is_glucagon_adrenalin_insulin_process * h_25_base
+    h_6 = is_glucagon_adrenalin_insulin_process * h_6_base
+    a_3 = is_glucagon_adrenalin_insulin_process * a_3_base
+    a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
+    m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
+
+    if len(processes['time_point']) != 0:
+        if processes['time_point'][-1] < t:
+            processes['time_point'].append(t)
+            processes['GLU_CAM'].append(int(is_glucagon_adrenalin_process))
+            processes['GLU_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
+            processes['INS'].append(int(is_insulin_process))
+    else:
+        processes['time_point'].append(t)
+        processes['GLU_CAM'].append(int(is_glucagon_adrenalin_process))
+        processes['GLU_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
+        processes['INS'].append(int(is_insulin_process))
+
 
 
     # два - выходы мочевины и холестерола.
