@@ -354,8 +354,8 @@ def F_vec(y_vec: np.array,t: float,processes):
     m_1 = is_insulin_process * m_1_base
     m_11 = is_insulin_process * m_11_base
 
-    glucagon_adrenilin_activation_coefficient = Glu_ef/CAM
-    is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-1.0)
+    glucagon_adrenilin_activation_coefficient = Glu_ef+CAM
+    is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-2.0)
     h_23 = is_glucagon_adrenalin_process * h_23_base
     h_18 = is_glucagon_adrenalin_process * h_18_base 
     h_13 = is_glucagon_adrenalin_process * h_13_base
@@ -363,7 +363,7 @@ def F_vec(y_vec: np.array,t: float,processes):
     a_9 = is_glucagon_adrenalin_process *  a_9_base
 
     # фиолетовый
-    glucagon_adrenalin_insulin_activation_coefficient = (Glu_ef+CAM)/INS
+    glucagon_adrenalin_insulin_activation_coefficient = INS/(Glu_ef+CAM)
     is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
     h_11 = is_glucagon_adrenalin_insulin_process * h_11_base 
     h_25 = is_glucagon_adrenalin_insulin_process * h_25_base

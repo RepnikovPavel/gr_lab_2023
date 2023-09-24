@@ -271,6 +271,8 @@ def get_intervals_of_processes(processes):
             elif current_value == 0 and v_i == 0:
                 # отрезок не начался
                 continue 
+        if current_value==1 and Values[-1] == 1:
+            intervals[-1].append(time_vec[-1])
         intervals_of_active_process.update({ProcessName: intervals})
     return intervals_of_active_process
 
