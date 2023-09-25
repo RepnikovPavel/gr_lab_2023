@@ -114,7 +114,7 @@ class J_ch:
             # if self.last_J == 0.0:
             #     self.is_mass_dont_used_up = 0
 
-        if t < self.start_absorbtion or t > self.stop_absorbtion or self.last_J == 0.0:
+        if (t < self.start_absorbtion or t > self.stop_absorbtion) or not self.is_mass_dont_used_up:
             return
         else:
             self.last_delta_J = -velocity*self.delta_t

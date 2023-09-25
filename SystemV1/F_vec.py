@@ -22,6 +22,29 @@ J_fat_func = torch.load(
     os.path.join(problem_folder, 'ddt_TG_pl'))
 
 
+MASS_OF_HUMAN = 70.0
+BMR_day = 1500.0 # [kcal/day]
+total_consumpton_per_minute = 1500.0/1440.0 #[kcal/min]
+base_AA_cons = 0.2 #[kcal/min]
+base_Glu_cons = 0.4 #[kcal/min]
+base_KB_cons = 0.07 #[kcal/min]
+rest_cons = np.maximum(total_consumpton_per_minute - base_AA_cons- base_Glu_cons-base_KB_cons, 0.0)
+if total_consumpton_per_minute - base_AA_cons- base_Glu_cons-base_KB_cons <= 0:
+    print('bad consumption:\n total consumption less then cons per substance')
+
+def AA_cons(AA_, base_cons):
+    return base_cons
+def Glu_cons(Glu_,base_cons):
+    return base_cons
+def KB_cons(KB_,base_cons):
+    return base_cons
+def FFA_cons(FFA_,base_cons):
+    return base_cons
+
+
+
+
+
 lambda_ = 1.0
 sigma = 0.001
 
