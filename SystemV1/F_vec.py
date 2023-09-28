@@ -41,6 +41,15 @@ def KB_cons(KB_,base_cons):
 def FFA_cons(FFA_,base_cons):
     return base_cons
 
+# IF (есть лишние AA) THEN (rest_cont идет на расход AA)
+# IF (нет лишних AA AND есть Glu AND есть INS) THEN (rest_cont идет на расход Glu)
+# IF (нет инсулина INS AND нет инсулина <= 180 [мин]) THEN (rest_cont идет на расход FFA)
+# IF (нет инсулина INS AND нет инсулина > 180 [мин]) THEN (rest_cont идет на расход FFA AND rest_cont идет на расход KB )
+# IF (нет инсулина INS AND нет инсулина <= 180 [мин]) THEN (рост кетоновых тел v=BMR*(0.5/100.0) [kcal/hour])
+# IF (7*60[min] голодания) THEN (расход KB 0.07 + 0.01*7 [kcal/min] v=BMR*(7.0/100.0))
+# IF (70*60[min] голодания) THEN (расход KB 0.07 + 0.01*70 [kcal/min]v=BMR*(38.5/100.0))
+
+
 
 
 
