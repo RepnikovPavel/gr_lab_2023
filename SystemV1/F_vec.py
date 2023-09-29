@@ -22,6 +22,12 @@ J_fat_func = torch.load(
     os.path.join(problem_folder, 'ddt_TG_pl'))
 
 
+KB_kcal_per_mmol = 517.0/1000.0 # [kcal/mmol]
+Glu_kcal_per_mmol = 699.0/1000.0 # [kcal/mmol]
+AA_kcal_per_mmol = 369.5/1000.0 # [kcal/mmol]
+FFA_kcal_per_mmol = 2415.6/1000.0 # [kcal/mmol]
+
+
 MASS_OF_HUMAN = 70.0
 BMR_day = 1500.0 # [kcal/day]
 total_consumpton_per_minute = 1500.0/1440.0 #[kcal/min]
@@ -32,25 +38,53 @@ rest_cons = np.maximum(total_consumpton_per_minute - base_AA_cons- base_Glu_cons
 if total_consumpton_per_minute - base_AA_cons- base_Glu_cons-base_KB_cons <= 0:
     print('bad consumption:\n total consumption less then cons per substance')
 
-def AA_cons(AA_, base_cons):
-    return base_cons
-def Glu_cons(Glu_,base_cons):
-    return base_cons
-def KB_cons(KB_,base_cons):
-    return base_cons
-def FFA_cons(FFA_,base_cons):
-    return base_cons
+
+def get_expenditure_of_AA_Glu_FFA_KB(
+                            BMR_per_minute,
+                            total_velocity_per_minute,
+                            AA,AA_threshold,
+                            Glu, Glu_threshold, 
+                            INS, INS_threshold,
+                            time_of_end_of_insulin,
+                            time_from_end_of_food
+                            ):
+    ddt_AA = 0
+    ddt_Glu = 0
+    ddt_FFA = 0
+    ddt_KB = 0
+    if AA >= AA_threshold:
+        ddt_AA = total_velocity_per_minute
+    elif AA < AA_threshold and Glu >= Glu_threshold and INS >= INS_threshold:
+        ddt_Glu = total_velocity_per_minute
+    elif INS < INS_threshold and time_of_end_of_insulin < 3*60:
+        ddt_FFA = total_velocity_per_minute
+    elif INS < INS_threshold and time_of_end_of_insulin >= 3*60:
+        # FFA + KB расход 
+        # KB рост 
+        pass
+    elif time_from_end_of_food >= 7*60 and time_from_end_of_food < 70*60:
+        ddt_KB = (7.0/100.0)*BMR_per_minute
+    elif time_from_end_of_food >= 70*60:
+        ddt_KB = (38.5/100.0)*BMR_per_minute
+
+    return ddt_AA, ddt_Glu, ddt_FFA, ddt_KB
+
+def KB_synthesis_per_minute(time_from_last_food, E_per_day):
+    if time_from_last_food >= 3*60:
+        kcal_per_minute = (0.5/100.0)*(E_per_day/24.0)*(1.0/60.0)
+        delta_n_per_minute = kcal_per_minute / KB_kcal_per_mmol
+        return delta_n_per_minute
+    else:
+        return 0.0
+
 
 # IF (есть лишние AA) THEN (rest_cont идет на расход AA)
 # IF (нет лишних AA AND есть Glu AND есть INS) THEN (rest_cont идет на расход Glu)
 # IF (нет инсулина INS AND нет инсулина <= 180 [мин]) THEN (rest_cont идет на расход FFA)
 # IF (нет инсулина INS AND нет инсулина > 180 [мин]) THEN (rest_cont идет на расход FFA AND rest_cont идет на расход KB )
-# IF (нет инсулина INS AND нет инсулина <= 180 [мин]) THEN (рост кетоновых тел v=BMR*(0.5/100.0) [kcal/hour])
+# IF (нет инсулина INS AND нет инсулина > 180 [мин]) THEN (рост кетоновых тел v=BMR*(0.5/100.0) [kcal/hour])
 # IF (7*60[min] голодания) THEN (расход KB 0.07 + 0.01*7 [kcal/min] v=BMR*(7.0/100.0))
 # IF (70*60[min] голодания) THEN (расход KB 0.07 + 0.01*70 [kcal/min]v=BMR*(38.5/100.0))
-
-
-
 
 
 
