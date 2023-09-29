@@ -10,8 +10,8 @@ index_by_name, name_by_index, start_point = get_start_point_names_mapping(start_
 processes = {
     'time_point':[],
     'INS': [],
-    'GLU_CAM': [],
-    'GLU_INS_CAM': []
+    'GLN_CAM': [],
+    'GLN_INS_CAM': []
 }
 solutions = odeint(func=F_vec, y0=start_point, t=time_grid ,args=(processes,) ,full_output=False)
 intervals = get_intervals_of_processes(processes)
@@ -28,9 +28,9 @@ fig = init_figure(x_label=r'$t,min$',y_label=r'$\frac{mmol}{L}$')
 fig = plot_solutions(fig, solutions, time_grid, name_by_index)
 fig = plot_intervals_to_plotly_fig(fig, intervals, 
                                    {    'INS': h_max,
-                                        'GLU_CAM': h_max-step_,
-                                        'GLU_INS_CAM': h_max-2*step_},
+                                        'GLN_CAM': h_max-step_,
+                                        'GLN_INS_CAM': h_max-2*step_},
                                    {    'INS': "#FF0000",
-                                        'GLU_CAM': "#7FFF00",
-                                        'GLU_INS_CAM': "#87CEEB"})
+                                        'GLN_CAM': "#7FFF00",
+                                        'GLN_INS_CAM': "#87CEEB"})
 fig.show()

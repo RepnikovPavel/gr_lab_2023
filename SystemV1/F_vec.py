@@ -13,13 +13,22 @@ N = int((t_end-t_0)/tau_grid)+1
 time_grid = np.linspace(start=t_0, stop=t_end, num=N)
 
 # make input data
-J_prot_func = torch.load(
+J_flow_prot_func = torch.load(
     os.path.join(problem_folder, 'ddt_AA_ef'))
 
-J_carb_func = torch.load(
+J_flow_carb_func = torch.load(
     os.path.join(problem_folder, 'ddt_Glu_ef'))
-J_fat_func = torch.load(
+J_flow_fat_func = torch.load(
     os.path.join(problem_folder, 'ddt_TG_pl'))
+J_prot_func = torch.load(
+    os.path.join(problem_folder, 'J_prot'))
+
+J_fat_func = torch.load(
+    os.path.join(problem_folder, 'J_fat'))
+J_carb_func = torch.load(
+    os.path.join(problem_folder, 'J_carb'))
+
+
 
 
 KB_kcal_per_mmol = 517.0/1000.0 # [kcal/mmol]
@@ -89,7 +98,7 @@ def KB_synthesis_per_minute(time_from_last_food, E_per_day):
 
 
 lambda_ = 1.0
-sigma = 0.001
+sigma = 0.07
 
 ### INS
 
@@ -283,7 +292,7 @@ start_point_dict = {
     'G6_a':1.0,
     'G3_a':1.0,
     'Pyr_a':1.0,
-    'Ac_CoA_a':1.0,
+    'Ac_CoA_a':10.0,
     'FA_CoA_a':1.0,
     'Cit_a':1.0,
     'OAA_a':1.0,
@@ -334,9 +343,12 @@ HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
 
 def F_vec(y_vec: np.array,t: float,processes):
     # свободные функции 
+    J_carb_flow = J_flow_carb_func(t)
+    J_prot_flow = J_flow_prot_func(t)
+    J_fat_flow  = J_flow_fat_func(t)
     J_carb = J_carb_func(t)
     J_prot = J_prot_func(t)
-    J_fat  = J_fat_func(t)
+    J_fat = J_fat_func(t)
     HeartRate = HeartRate_func(t)
 
     # Y_{t} values
@@ -420,8 +432,8 @@ def F_vec(y_vec: np.array,t: float,processes):
     m_1 = is_insulin_process * m_1_base
     m_11 = is_insulin_process * m_11_base
 
-    glucagon_adrenilin_activation_coefficient = Glu_ef+CAM
-    is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-2.0)
+    glucagon_adrenilin_activation_coefficient = GLN+CAM
+    is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-160.0)
     h_23 = is_glucagon_adrenalin_process * h_23_base
     h_18 = is_glucagon_adrenalin_process * h_18_base 
     h_13 = is_glucagon_adrenalin_process * h_13_base
@@ -429,7 +441,7 @@ def F_vec(y_vec: np.array,t: float,processes):
     a_9 = is_glucagon_adrenalin_process *  a_9_base
 
     # фиолетовый
-    glucagon_adrenalin_insulin_activation_coefficient = INS/(Glu_ef+CAM)
+    glucagon_adrenalin_insulin_activation_coefficient = INS/(GLN+CAM)
     is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
     h_11 = is_glucagon_adrenalin_insulin_process * h_11_base 
     h_25 = is_glucagon_adrenalin_insulin_process * h_25_base
@@ -441,13 +453,13 @@ def F_vec(y_vec: np.array,t: float,processes):
     if len(processes['time_point']) != 0:
         if processes['time_point'][-1] < t:
             processes['time_point'].append(t)
-            processes['GLU_CAM'].append(int(is_glucagon_adrenalin_process))
-            processes['GLU_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
+            processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
+            processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
             processes['INS'].append(int(is_insulin_process))
     else:
         processes['time_point'].append(t)
-        processes['GLU_CAM'].append(int(is_glucagon_adrenalin_process))
-        processes['GLU_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
+        processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
+        processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
         processes['INS'].append(int(is_insulin_process))
 
 
@@ -639,9 +651,9 @@ def F_vec(y_vec: np.array,t: float,processes):
     # 4. Extracellular fluid
 
     # Diet-induced concentrations (нутриенты в крови):
-    right_Glu_ef = J_carb + H_2 - H_3 - M_1 - A_4 - J_1
-    right_AA_ef =  J_prot + M_6 - A_1 - H_1 - J_4 - M_5
-    right_TG_pl =  J_fat + H_9 - J_0
+    right_Glu_ef = J_carb_flow + H_2 - H_3 - M_1 - A_4 - J_1
+    right_AA_ef =  J_prot_flow + M_6 - A_1 - H_1 - J_4 - M_5
+    right_TG_pl =  J_fat_flow + H_9 - J_0
 
     # Metabolome (метаболиты в крови):
     right_Glycerol_ef=    J_0 + A_3 - H_4
@@ -660,9 +672,10 @@ def F_vec(y_vec: np.array,t: float,processes):
     gamma = gamma_base
     CL_INS = CL_INS_base
     CL_GLN = CL_GLN_base
-    CL_CAM =CL_CAM_base
+    CL_CAM = CL_CAM_base
 
-    right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
+    # right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
+    right_INS= alpha * J_carb_flow +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
     right_GLN = lambda_ * (1.0/np.maximum(Glu_ef, 0.1)) - CL_GLN * GLN
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
