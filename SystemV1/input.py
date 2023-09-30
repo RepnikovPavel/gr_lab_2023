@@ -98,22 +98,6 @@ class J_ch:
         self.last_J = self.mass_before_absorbtion
         self.is_mass_dont_used_up = 1
     def step(self, t: float, velocity: float) -> None:
-        # if t < self.start_absorbtion or t > self.stop_absorbtion:
-        #     return
-        # else:
-            # if self.last_J == 0.0:
-            #     self.last_delta_J = 0.0
-            #     return 
-
-            # self.last_delta_J = -velocity*self.delta_t
-            # if self.last_J + self.last_delta_J < 0.0:
-            #     self.last_delta_J = -self.last_J
-                
-            # self.last_J = np.maximum(self.last_J + self.last_delta_J, 0.0)
-            
-            # if self.last_J == 0.0:
-            #     self.is_mass_dont_used_up = 0
-
         if (t < self.start_absorbtion or t > self.stop_absorbtion) or not self.is_mass_dont_used_up:
             return
         else:
@@ -126,7 +110,14 @@ class J_ch:
 
     def get_J(self, t:float):
         # return self.last_J * Heviside(t - self.start_absorbtion) * Heviside(self.stop_absorbtion - t)
-        return self.last_J * int(t>=self.start_absorbtion and t <= self.stop_absorbtion)
+        if t < self.t1:
+            return 0.0
+        elif t >= self.t1 and t <= self.t2:
+            return self.rho * (t - self.t1) * self.alpha/ self.volume
+        elif t > self.t2 and t < self.start_absorbtion:
+            return self.mass_before_absorbtion
+        else:
+            return self.last_J * int(t>=self.start_absorbtion and t <= self.stop_absorbtion)
     def get_dJdt(self, t:float):
         # return self.last_delta_J/self.delta_t * Heviside(t - self.start_absorbtion) * Heviside(self.stop_absorbtion - t)
         return self.last_delta_J/self.delta_t * int(t>=self.start_absorbtion and t <= self.stop_absorbtion)

@@ -103,7 +103,10 @@ sigma = 0.07
 ### INS
 
 CL_INS_base    = 0.1
+
 alpha_base       = 2.0
+beta_base=         0.02
+
 alpha_a2_base    = 1.0
 alpha_a4_base    = 1.0
 alpha_a5_base    = 1.0
@@ -122,7 +125,6 @@ alpha_h12_base   =1.0
 alpha_h17_base   =1.0
 alpha_h29_base   =1.0
 alpha_h30_base   =1.0
-beta_base=         0.02
 beta_a2_base=        2.0
 beta_a4_base=        2.0
 beta_a5_base=        2.0
@@ -346,9 +348,6 @@ def F_vec(y_vec: np.array,t: float,processes):
     J_carb_flow = J_flow_carb_func(t)
     J_prot_flow = J_flow_prot_func(t)
     J_fat_flow  = J_flow_fat_func(t)
-    J_carb = J_carb_func(t)
-    J_prot = J_prot_func(t)
-    J_fat = J_fat_func(t)
     HeartRate = HeartRate_func(t)
 
     # Y_{t} values
@@ -674,8 +673,10 @@ def F_vec(y_vec: np.array,t: float,processes):
     CL_GLN = CL_GLN_base
     CL_CAM = CL_CAM_base
 
-    # right_INS= alpha * J_carb +beta * J_fat + gamma * J_prot - CL_INS * INS
-    right_INS= alpha * J_carb_flow +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
+    # right_INS= alpha * J_carb_flow +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
+    right_INS= 1.0 * J_carb_flow + 1.0 * Glu_ef * Heviside(Glu_ef-5.0) +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
+     
+
     right_GLN = lambda_ * (1.0/np.maximum(Glu_ef, 0.1)) - CL_GLN * GLN
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
