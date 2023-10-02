@@ -9,8 +9,8 @@ INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
 tau_grid = 0.1 # [min]
-t_0 = 500.0 # [min]
-t_end = 1440.0 # [min]
+t_0 = 0.0 # [min]
+t_end = 6000.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
 
@@ -352,8 +352,8 @@ HR_vs = HeartRate_func.values
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-# @jit(nopython = True)
-def F_vec(y_vec: np.array,t: float, 
+@jit(nopython = True)
+def F_vec(t: float, y_vec: np.array,
           INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
           last_seen_time:np.array,last_time_pos:np.array):
     buffer = np.zeros(shape=(50,))
@@ -362,11 +362,16 @@ def F_vec(y_vec: np.array,t: float,
     # J_prot_flow = J_flow_prot_func(t)
     # J_fat_flow  = J_flow_fat_func(t)
     # HeartRate = HeartRate_func(t)
+    # print(t)
     time_index_i = np.intc((t-t_0_input)/tau_grid_input)
     J_carb_flow = J_flow_carb_vs[time_index_i]
     J_prot_flow = J_flow_prot_vs[time_index_i]
     J_fat_flow  = J_flow_fat_vs[time_index_i]
-    HeartRate = HR_vs[time_index_i]
+    t_pos = np.maximum(np.intc(0), np.intc((t-t_0)/tau_grid))
+    # print(t)
+    if t_pos >= len(HR_vs):
+        print(t)
+    HeartRate = HR_vs[t_pos]
 
     # Y_{t} values
     # значения в момент времени t
@@ -456,7 +461,7 @@ def F_vec(y_vec: np.array,t: float,
     h_2 = is_glucagon_adrenalin_process *  h_2_base
     a_9 = is_glucagon_adrenalin_process *  a_9_base
 
-    # фиолетовый
+
     glucagon_adrenalin_insulin_activation_coefficient = INS/(GLN+CAM)
     is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
     h_11 = is_glucagon_adrenalin_insulin_process * h_11_base 
@@ -465,54 +470,38 @@ def F_vec(y_vec: np.array,t: float,
     a_3 = is_glucagon_adrenalin_insulin_process * a_3_base
     a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
-
-
-
-    # if BMR_process['times'][-1] < t:
-    #     BMR_process['times'].append(t)
-    #     BMR_process['INS'].append(INS)
-    #     t_vec = BMR_process['times']
-    #     i1, i2 = BMR_process['v_finder'].find_closest_pos(max(time_grid[0], t-W)),len(t_vec)-1
-    #     AUC_at_t = AUC_x_vec_y_vec(BMR_process['times'],BMR_process['INS'],i1,i2)
-    #     BMR_process['INS_AUC_w'].append(AUC_at_t)
-    #     if AUC_at_t < INS_check_coeff:
-    #         T_a_t=  BMR_process['T_a'][-1]+(t_vec[-1]-t_vec[-2])
-    #         BMR_process['T_a'].append(T_a_t)
-    #     else:
-    #         T_a_t = 0.0
-    #         BMR_process['T_a'].append(T_a_t)
-    # else:
-    #     pos_of_AUC_in_arr = BMR_process['v_finder'].find_closest_pos(max(time_grid[0], t-W))
-    #     AUC_at_t = BMR_process['INS_AUC_w'][pos_of_AUC_in_arr]
-    #     T_a_t = BMR_process['T_a'][pos_of_AUC_in_arr]
     
-    t_pos = np.maximum(np.intc(0), np.intc((t-t_0)/tau_grid))
     AUC_at_t = -1.0
     T_a_t = -1.0
 
-    if last_time_pos[0]+1 == t_pos:
+    # print(last_time_pos[0],t_pos)
+    if t_pos - last_time_pos[0] > 0:
+        diff_ = t_pos - last_time_pos[0]
         T_a_current = T_a_on_grid[last_time_pos[0]]
-        last_time_pos[0] += 1
         last_seen_time[0] = t 
         t_minus_w_pos = np.maximum(np.intc(0), np.intc((t-W-t_0)/tau_grid))
+
+        for j in range(1,diff_+1):
+            INS_on_grid[last_time_pos[0]+j] = INS
+
         AUC_at_t = AUC_at_linear_grid(tau_grid, INS_on_grid, t_minus_w_pos, t_pos)
-        if AUC_at_t < INS_check_coeff:
-            T_a_t = T_a_current + tau_grid
+
+
+        for j in range(1,diff_+1):
+            INS_AUC_w_on_grid[last_time_pos[0]+j] = AUC_at_t
+
+        if AUC_at_t < INS_check_coeff and (t-t_0) >= W:
+            for j in range(1,diff_+1):
+                T_a_on_grid[last_time_pos[0]+j] = T_a_current + tau_grid*j
         else:
-            T_a_t = 0.0
-        # print(t)
-        # if last_time_pos[0] >= len(time_grid):
-        #     print(t)
-        INS_on_grid[last_time_pos[0]] = INS
-        INS_AUC_w_on_grid[last_time_pos[0]] = AUC_at_t
-        T_a_on_grid[last_time_pos[0]] = T_a_t
+            for j in range(1,diff_+1):
+                T_a_on_grid[last_time_pos[0]+j] = 0.0
+
+        last_time_pos[0] += diff_
     else:
         # already seen time point. get AUC and T_{a}
         AUC_at_t = INS_AUC_w_on_grid[t_pos]
         T_a_t = T_a_on_grid[t_pos]
-
-    if t < W:
-        T_a_t = 0.0
 
     # is_fasting = T_a_t > 0.0
 
