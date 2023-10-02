@@ -9,8 +9,8 @@ INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
 tau_grid = 0.1 # [min]
-t_0 = 0.0 # [min]
-t_end = 6000.0 # [min]
+t_0 = 200.0 # [min]
+t_end = 2000.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
 

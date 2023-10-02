@@ -30,7 +30,7 @@ solver = ode(f=F_wrapped,jac=None)
 solver.set_initial_value(y=start_point,t=t_0)
 # solver.set_integrator('vode',method='bdf') 
 solver.set_integrator('vode') 
-solutions = np.zeros(shape=(len(time_grid),len(start_point)))
+solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
 solutions[0,:] = solver.y
 i_=  1
 while solver.successful() and solver.t < t_end-tau_grid:
