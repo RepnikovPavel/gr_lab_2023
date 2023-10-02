@@ -289,8 +289,20 @@ class ClosestValueFinder:
         return closest_pos
     
 
+@jit(nopython = True)
 def AUC_x_vec_y_vec(x,y,i1,i2):
     s = 0.0
     for j in range(i1, i2):
         s += 0.5*(y[j]+y[j+1])*(x[j+1]-x[j])
     return s
+
+@jit(nopython = True)
+def AUC_at_linear_grid(tau, y, i1,i2):
+    s = 0.0
+    for j in range(i1+1, i2):
+        s += y[j]
+    s = 2.0*s
+    s = s + y[i1] + y[i2]
+    s = s * tau* 0.5
+    return s
+

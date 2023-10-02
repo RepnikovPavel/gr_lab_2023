@@ -5,7 +5,7 @@ import torch
 from local_contributor_config import problem_folder
 
 W =  20.0 # [min] window to check AUC(INS, t-W,t)
-INS_check_coeff = 5 # [mmol*s]
+INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
 tau_grid = 0.1 # [min]
@@ -352,15 +352,17 @@ HR_vs = HeartRate_func.values
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-@jit(nopython = True)
-def F_vec(y_vec: np.array,t: float):
+# @jit(nopython = True)
+def F_vec(y_vec: np.array,t: float, 
+          INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
+          last_seen_time:np.array,last_time_pos:np.array):
     buffer = np.zeros(shape=(50,))
     # свободные функции 
     # J_carb_flow = J_flow_carb_func(t)
     # J_prot_flow = J_flow_prot_func(t)
     # J_fat_flow  = J_flow_fat_func(t)
     # HeartRate = HeartRate_func(t)
-    time_index_i = int(np.rint((t-t_0_input)/tau_grid_input))
+    time_index_i = np.intc((t-t_0_input)/tau_grid_input)
     J_carb_flow = J_flow_carb_vs[time_index_i]
     J_prot_flow = J_flow_prot_vs[time_index_i]
     J_fat_flow  = J_flow_fat_vs[time_index_i]
@@ -464,8 +466,8 @@ def F_vec(y_vec: np.array,t: float):
     a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
 
-    AUC_at_t = -1.0
-    T_a_t = -1.0
+
+
     # if BMR_process['times'][-1] < t:
     #     BMR_process['times'].append(t)
     #     BMR_process['INS'].append(INS)
@@ -483,7 +485,36 @@ def F_vec(y_vec: np.array,t: float):
     #     pos_of_AUC_in_arr = BMR_process['v_finder'].find_closest_pos(max(time_grid[0], t-W))
     #     AUC_at_t = BMR_process['INS_AUC_w'][pos_of_AUC_in_arr]
     #     T_a_t = BMR_process['T_a'][pos_of_AUC_in_arr]
-    is_fasting = T_a_t > 0.0
+    
+    t_pos = np.maximum(np.intc(0), np.intc((t-t_0)/tau_grid))
+    AUC_at_t = -1.0
+    T_a_t = -1.0
+
+    if last_time_pos[0]+1 == t_pos:
+        T_a_current = T_a_on_grid[last_time_pos[0]]
+        last_time_pos[0] += 1
+        last_seen_time[0] = t 
+        t_minus_w_pos = np.maximum(np.intc(0), np.intc((t-W-t_0)/tau_grid))
+        AUC_at_t = AUC_at_linear_grid(tau_grid, INS_on_grid, t_minus_w_pos, t_pos)
+        if AUC_at_t < INS_check_coeff:
+            T_a_t = T_a_current + tau_grid
+        else:
+            T_a_t = 0.0
+        # print(t)
+        # if last_time_pos[0] >= len(time_grid):
+        #     print(t)
+        INS_on_grid[last_time_pos[0]] = INS
+        INS_AUC_w_on_grid[last_time_pos[0]] = AUC_at_t
+        T_a_on_grid[last_time_pos[0]] = T_a_t
+    else:
+        # already seen time point. get AUC and T_{a}
+        AUC_at_t = INS_AUC_w_on_grid[t_pos]
+        T_a_t = T_a_on_grid[t_pos]
+
+    if t < W:
+        T_a_t = 0.0
+
+    # is_fasting = T_a_t > 0.0
 
 
     # if len(processes['time_point']) != 0:
