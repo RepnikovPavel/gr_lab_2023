@@ -4,10 +4,15 @@ from input import *
 import torch
 from local_contributor_config import problem_folder
 
+W =  20.0 # [min] window to check AUC(INS, t-W,t)
+INS_check_coeff = 5 # [mmol*s]
+
 # take grid on from FPC.ipynb file 
 tau_grid = 0.1 # [min]
 t_0 = 500.0 # [min]
 t_end = 1440.0 # [min]
+t_0_input= 0.0
+tau_grid_input = 0.1
 
 N = int((t_end-t_0)/tau_grid)+1
 time_grid = np.linspace(start=t_0, stop=t_end, num=N)
@@ -337,18 +342,29 @@ start_point_dict = {
 
 
 
-buffer = np.zeros(shape=(50,))
 
 HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
+  
+J_flow_carb_vs = J_flow_carb_func.values
+J_flow_prot_vs = J_flow_prot_func.values
+J_flow_fat_vs  = J_flow_fat_func.values 
+HR_vs = HeartRate_func.values
 
+# def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-
-def F_vec(y_vec: np.array,t: float,processes):
+@jit(nopython = True)
+def F_vec(y_vec: np.array,t: float):
+    buffer = np.zeros(shape=(50,))
     # свободные функции 
-    J_carb_flow = J_flow_carb_func(t)
-    J_prot_flow = J_flow_prot_func(t)
-    J_fat_flow  = J_flow_fat_func(t)
-    HeartRate = HeartRate_func(t)
+    # J_carb_flow = J_flow_carb_func(t)
+    # J_prot_flow = J_flow_prot_func(t)
+    # J_fat_flow  = J_flow_fat_func(t)
+    # HeartRate = HeartRate_func(t)
+    time_index_i = int(np.rint((t-t_0_input)/tau_grid_input))
+    J_carb_flow = J_flow_carb_vs[time_index_i]
+    J_prot_flow = J_flow_prot_vs[time_index_i]
+    J_fat_flow  = J_flow_fat_vs[time_index_i]
+    HeartRate = HR_vs[time_index_i]
 
     # Y_{t} values
     # значения в момент времени t
@@ -404,7 +420,6 @@ def F_vec(y_vec: np.array,t: float,processes):
     Urea_ef = y_vec[49]                 
 
 
-    # голубой
     insulin_activation_coefficient =  17.0
     is_insulin_process = Heviside(INS-insulin_activation_coefficient)
     h_10 = is_insulin_process * h_10_base 
@@ -449,30 +464,42 @@ def F_vec(y_vec: np.array,t: float,processes):
     a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
 
-    if len(processes['time_point']) != 0:
-        if processes['time_point'][-1] < t:
-            processes['time_point'].append(t)
-            processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
-            processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
-            processes['INS'].append(int(is_insulin_process))
-    else:
-        processes['time_point'].append(t)
-        processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
-        processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
-        processes['INS'].append(int(is_insulin_process))
+    AUC_at_t = -1.0
+    T_a_t = -1.0
+    # if BMR_process['times'][-1] < t:
+    #     BMR_process['times'].append(t)
+    #     BMR_process['INS'].append(INS)
+    #     t_vec = BMR_process['times']
+    #     i1, i2 = BMR_process['v_finder'].find_closest_pos(max(time_grid[0], t-W)),len(t_vec)-1
+    #     AUC_at_t = AUC_x_vec_y_vec(BMR_process['times'],BMR_process['INS'],i1,i2)
+    #     BMR_process['INS_AUC_w'].append(AUC_at_t)
+    #     if AUC_at_t < INS_check_coeff:
+    #         T_a_t=  BMR_process['T_a'][-1]+(t_vec[-1]-t_vec[-2])
+    #         BMR_process['T_a'].append(T_a_t)
+    #     else:
+    #         T_a_t = 0.0
+    #         BMR_process['T_a'].append(T_a_t)
+    # else:
+    #     pos_of_AUC_in_arr = BMR_process['v_finder'].find_closest_pos(max(time_grid[0], t-W))
+    #     AUC_at_t = BMR_process['INS_AUC_w'][pos_of_AUC_in_arr]
+    #     T_a_t = BMR_process['T_a'][pos_of_AUC_in_arr]
+    is_fasting = T_a_t > 0.0
 
 
-
-    # два - выходы мочевины и холестерола.
-
-      #   Экскреция мочевины = UUN (Urine urea nitrogen) - мочевина в суточной моче, в среднем 570 ммоль/сут
-      #   'EXCR_{Urea}': 570 (10**(-3))
-
-      #    Холестерин: синтезируется 0,8 г/сут, приходит с пищей 0,4 г/сут, экскреция 1,2 г/сут
-
-      #   'J_{cholesterol}': 0,4 г/сут
-      #   'EXCR_{Cholesterol}': 1,2 г/сут
-
+    # if len(processes['time_point']) != 0:
+    #     # print(t)
+    #     if processes['time_point'][-1] < t:
+    #         processes['time_point'].append(t)
+    #         processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
+    #         processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
+    #         processes['INS'].append(int(is_insulin_process))
+    #         processes['fasting'].append(int(is_fasting))
+    # else:
+    #     processes['time_point'].append(t)
+    #     processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
+    #     processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
+    #     processes['INS'].append(int(is_insulin_process))
+    #     processes['fasting'].append(int(is_fasting))
 
     m_2 = m_2_base 
     m_3 = m_3_base 

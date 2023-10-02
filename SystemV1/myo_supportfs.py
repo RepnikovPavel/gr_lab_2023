@@ -215,41 +215,45 @@ def get_start_point_names_mapping(dict_of_start_points):
         i_+=1
     return index_by_name, name_by_index, start_point
 
-def get_intervals_of_processes(processes):
+@jit(nopython=True)
+def Heviside(x:float) -> float:
+    if x < 0.0:
+        return 0.0
+    return 1.0
+
+def get_intervals_of_processes(solutions, time_grid, index_by_name):
+    processes = {
+        'time_point':time_grid,
+        'INS': np.zeros(shape=(len(time_grid),),dtype=np.intc),
+        'GLN_CAM': np.zeros(shape=(len(time_grid),),dtype=np.intc),
+        'GLN_INS_CAM': np.zeros(shape=(len(time_grid),),dtype=np.intc),
+        'fasting':[]
+    }
+    for i in range(len(time_grid)):
+        t_i = time_grid[i]
+        INS = solutions[i, index_by_name['INS']]
+        GLN = solutions[i, index_by_name['GLN']] 
+        CAM = solutions[i, index_by_name['CAM']] 
+        insulin_activation_coefficient =  17.0
+        is_insulin_process = Heviside(INS-insulin_activation_coefficient)
+        glucagon_adrenilin_activation_coefficient = GLN+CAM
+        is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-160.0)
+        glucagon_adrenalin_insulin_activation_coefficient = INS/(GLN+CAM)
+        is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
+
+        processes['GLN_CAM'][i]=int(is_glucagon_adrenalin_process)
+        processes['GLN_INS_CAM'][i]=int(is_glucagon_adrenalin_insulin_process)
+        processes['INS'][i]=int(is_insulin_process)
+        # processes['fasting'][int(is_fasting)]
+        
+
     time_vec = processes['time_point']
-    # print('start get interval func')
-    # # filter data
-    # pr_copy = deepcopy(processes)
-    # time_vec = pr_copy['time_point']
-    # # упорядочить по времени
-    # time_argsort = np.argsort(time_vec)
-    # sorted_time = np.sort(time_vec)
-    # new_pr = {}
-    # for ProcessName, Values in processes.items():
-    #     if ProcessName == 'time_point':
-    #         continue
-    #     new_v = [Values[pos] for pos in time_argsort]
-    #     new_pr.update({ProcessName:new_v})
-    # # удалить дупликаты по времени
-    # uniq_time = np.sort(np.unique(sorted_time))
-    # positions_of_unique_time_points = []
-    # for i in range(len(uniq_time)):
-    #     t_i = uniq_time[i]
-    #     where_t_i = np.argwhere(sorted_time == t_i).flatten()[0]
-    #     positions_of_unique_time_points.append(where_t_i)
-    
-    # new_pr_ = {}
-    # for ProcessName, Values in processes.items():
-    #     if ProcessName == 'time_point':
-    #         continue
-    #     new_v=  [Values[el] for el in positions_of_unique_time_points]
-    #     new_pr_.update({ProcessName:new_v})
-
-    # print('start main cycle')
-
     intervals_of_active_process = {}
     for ProcessName, Values in processes.items():
         if ProcessName == 'time_point':
+            continue
+        if len(Values) ==0 :
+            intervals_of_active_process.update({ProcessName: []})
             continue
         intervals = []
         current_value = 0

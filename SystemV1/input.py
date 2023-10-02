@@ -235,3 +235,62 @@ def HeartRate_gen(tau, time_grid,hlow=60,hhigh=120):
     y_ *= (d_-c_)
     y_ += c_
     return func_on_linear_grid(tau,time_grid[0],time_grid[-1],y_) 
+
+class ClosestValueFinder:
+    array = None
+    # [deviation in minutes]
+    def __init__(self, array,tau, max_deviation=2):
+        self.tau = tau
+        self.array = array
+        self.prev_index = None
+        self.max_deviation = max_deviation  # Максимальное отклонение для использования окрестности
+
+    def find_closest_pos(self, t):
+        if self.prev_index is not None:
+            left = max(0, self.prev_index - int(self.max_deviation/self.tau))
+            right = min(len(self.array) - 1, self.prev_index + int(self.max_deviation/self.tau))
+        else:
+            left = 0
+            right = len(self.array) - 1
+
+        # closest = None
+        closest_pos = None
+        min_diff = float('inf')
+
+        # print(left,right)
+        for i in range(left, right + 1):
+            diff = abs(self.array[i] - t)
+            if diff < min_diff:
+                # closest = self.array[i]
+                closest_pos = i
+                min_diff = diff
+                self.prev_index = i
+
+        if min_diff > self.max_deviation:
+            print('bad find')
+            # Если отклонение слишком большое, выполнить полный бинарный поиск
+            left = 0
+            right = len(self.array) - 1
+            while left <= right:
+                mid = left + (right - left) // 2
+                if self.array[mid] == t:
+                    return t
+                elif self.array[mid] < t:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+
+            # Найдено ближайшее значение с помощью полного бинарного поиска
+            if abs(self.array[left] - t) < abs(self.array[right] - t):
+                closest_pos = left 
+            else:
+                closest_pos = right
+            # return self.array[left] if abs(self.array[left] - t) < abs(self.array[right] - t) else self.array[right]
+        return closest_pos
+    
+
+def AUC_x_vec_y_vec(x,y,i1,i2):
+    s = 0.0
+    for j in range(i1, i2):
+        s += 0.5*(y[j]+y[j+1])*(x[j+1]-x[j])
+    return s
