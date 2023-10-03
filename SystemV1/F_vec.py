@@ -8,9 +8,9 @@ W =  20.0 # [min] window to check AUC(INS, t-W,t)
 INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
-tau_grid = 0.1 # [min]
+tau_grid = 0.001 # [min]
 t_0 = 300.0 # [min]
-t_end = 6000.0 # [min]
+t_end = 2500.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
 
@@ -241,9 +241,6 @@ j_2_base = 1.0
 j_3_base = 1.0
 j_4_base = 1.0
 
-# J_carb_func =  
-# J_jat_func = 
-# J_prot_func = 
 
 start_point_dict = {
     'Glu_ef':10.0,
@@ -301,12 +298,12 @@ start_point_dict = {
 
 
 
-HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
+# HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
   
 J_flow_carb_vs = J_flow_carb_func.values
 J_flow_prot_vs = J_flow_prot_func.values
 J_flow_fat_vs  = J_flow_fat_func.values 
-HR_vs = HeartRate_func.values
+# HR_vs = HeartRate_func.values
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
@@ -457,24 +454,6 @@ def F_vec(t: float, y_vec: np.array,
         # already seen time point. get AUC and T_{a}
         AUC_at_t = INS_AUC_w_on_grid[t_pos]
         T_a_t = T_a_on_grid[t_pos]
-
-    # is_fasting = T_a_t > 0.0
-
-
-    # if len(processes['time_point']) != 0:
-    #     # print(t)
-    #     if processes['time_point'][-1] < t:
-    #         processes['time_point'].append(t)
-    #         processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
-    #         processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
-    #         processes['INS'].append(int(is_insulin_process))
-    #         processes['fasting'].append(int(is_fasting))
-    # else:
-    #     processes['time_point'].append(t)
-    #     processes['GLN_CAM'].append(int(is_glucagon_adrenalin_process))
-    #     processes['GLN_INS_CAM'].append(int(is_glucagon_adrenalin_insulin_process))
-    #     processes['INS'].append(int(is_insulin_process))
-    #     processes['fasting'].append(int(is_fasting))
 
     m_2 = m_2_base 
     m_3 = m_3_base 
@@ -706,15 +685,15 @@ def F_vec(t: float, y_vec: np.array,
     # 4. Extracellular fluid
 
     # Diet-induced concentrations (нутриенты в крови):
-    right_Glu_ef = J_carb_flow + H_2 - H_3 - M_1 - A_4  - J_Glu_minus
-    right_AA_ef =  J_prot_flow + M_6 - A_1 - H_1 - M_5 - J_AA_minus
-    right_TG_pl =  J_fat_flow + H_9 - J_0
+    right_Glu_ef = J_carb_flow + H_2 - H_3 - M_1 - A_4  - J_Glu_minus - J_1
+    right_AA_ef =  J_prot_flow + M_6 - A_1 - H_1 - M_5 - J_AA_minus - J_4
+    right_TG_pl =  J_fat_flow + H_9 - J_0 
 
     # Metabolome (метаболиты в крови):
     right_Glycerol_ef=    J_0 + A_3 - H_4
-    right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4  - J_FFA_minus
+    right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4  - J_FFA_minus - J_3
     right_Lac_m=  M_2 - H_5
-    right_KB_ef=  H_6 - M_3  - J_KB_minus + J_KB_plus
+    right_KB_ef=  H_6 - M_3  - J_KB_minus + J_KB_plus - J_2
 
     # Excreted substances (мочевина, холестерин):
     right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
