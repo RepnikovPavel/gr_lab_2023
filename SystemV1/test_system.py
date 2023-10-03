@@ -29,7 +29,10 @@ solver = ode(f=F_wrapped,jac=None)
 # solver.set_f_params(INS_on_grid,INS_AUC_w_on_grid,T_a_on_grid,last_seen_time,last_time_pos)
 solver.set_initial_value(y=start_point,t=t_0)
 # solver.set_integrator('vode',method='bdf') 
-solver.set_integrator('vode') 
+# method = 'lsoda'
+# method = 'dopri5'
+method = 'vode'
+solver.set_integrator(method) 
 solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
 solutions[0,:] = solver.y
 i_=  1
@@ -63,8 +66,8 @@ print(np.min(solutions),np.max(solutions))
 # print(intervals['GLN_CAM'])
 # print(intervals['GLN_INS_CAM'])
 
-h_max = np.max(solutions)
-h_min = np.min(solutions)
+h_max = 120
+h_min = 100
 step_ = (h_max-h_min)/10
 
 fig = init_figure(x_label=r'$t,min$',y_label=r'$\frac{mmol}{L}$')
@@ -85,10 +88,10 @@ add_line_to_fig(fig, time_grid, INS_AUC_w_on_grid, r'AUC_{w}(INS)')
 
 
 fig = plot_intervals_to_plotly_fig(fig, intervals, 
-                                   {    'INS': h_max,
-                                        'GLN_CAM': h_max-step_,
-                                        'GLN_INS_CAM': h_max-2*step_,
-                                        'fasting':h_max-3*step_},
+                                   {    'INS': h_min+step_,
+                                        'GLN_CAM': h_min+step_*2,
+                                        'GLN_INS_CAM': h_min+step_*3,
+                                        'fasting':h_min+step_*4},
                                    {    'INS': "#FF0000",
                                         'GLN_CAM': "#7FFF00",
                                         'GLN_INS_CAM': "#87CEEB",

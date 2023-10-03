@@ -9,8 +9,8 @@ INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
 tau_grid = 0.1 # [min]
-t_0 = 200.0 # [min]
-t_end = 2000.0 # [min]
+t_0 = 500.0 # [min]
+t_end = 6000.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
 
@@ -36,60 +36,17 @@ J_carb_func = torch.load(
 
 
 
-KB_kcal_per_mmol = 517.0/1000.0 # [kcal/mmol]
-Glu_kcal_per_mmol = 699.0/1000.0 # [kcal/mmol]
-AA_kcal_per_mmol = 369.5/1000.0 # [kcal/mmol]
-FFA_kcal_per_mmol = 2415.6/1000.0 # [kcal/mmol]
+inv_beta_KB = 1.0/(517.0/1000.0) # [kcal/mmol]
+inv_beta_Glu = 1.0/(699.0/1000.0) # [kcal/mmol]
+inv_beta_AA = 1.0/(369.5/1000.0) # [kcal/mmol]
+inv_beta_FFA = 1.0/(2415.6/1000.0) # [kcal/mmol]
 
 
 MASS_OF_HUMAN = 70.0
-BMR_day = 1500.0 # [kcal/day]
-total_consumpton_per_minute = 1500.0/1440.0 #[kcal/min]
-base_AA_cons = 0.2 #[kcal/min]
-base_Glu_cons = 0.4 #[kcal/min]
-base_KB_cons = 0.07 #[kcal/min]
-rest_cons = np.maximum(total_consumpton_per_minute - base_AA_cons- base_Glu_cons-base_KB_cons, 0.0)
-if total_consumpton_per_minute - base_AA_cons- base_Glu_cons-base_KB_cons <= 0:
-    print('bad consumption:\n total consumption less then cons per substance')
+E_day = 1500.0 # [kcal/day]
+e_sigma = E_day/(24.0*60.0) #[kcal/min]
 
-
-def get_expenditure_of_AA_Glu_FFA_KB(
-                            BMR_per_minute,
-                            total_velocity_per_minute,
-                            AA,AA_threshold,
-                            Glu, Glu_threshold, 
-                            INS, INS_threshold,
-                            time_of_end_of_insulin,
-                            time_from_end_of_food
-                            ):
-    ddt_AA = 0
-    ddt_Glu = 0
-    ddt_FFA = 0
-    ddt_KB = 0
-    if AA >= AA_threshold:
-        ddt_AA = total_velocity_per_minute
-    elif AA < AA_threshold and Glu >= Glu_threshold and INS >= INS_threshold:
-        ddt_Glu = total_velocity_per_minute
-    elif INS < INS_threshold and time_of_end_of_insulin < 3*60:
-        ddt_FFA = total_velocity_per_minute
-    elif INS < INS_threshold and time_of_end_of_insulin >= 3*60:
-        # FFA + KB расход 
-        # KB рост 
-        pass
-    elif time_from_end_of_food >= 7*60 and time_from_end_of_food < 70*60:
-        ddt_KB = (7.0/100.0)*BMR_per_minute
-    elif time_from_end_of_food >= 70*60:
-        ddt_KB = (38.5/100.0)*BMR_per_minute
-
-    return ddt_AA, ddt_Glu, ddt_FFA, ddt_KB
-
-def KB_synthesis_per_minute(time_from_last_food, E_per_day):
-    if time_from_last_food >= 3*60:
-        kcal_per_minute = (0.5/100.0)*(E_per_day/24.0)*(1.0/60.0)
-        delta_n_per_minute = kcal_per_minute / KB_kcal_per_mmol
-        return delta_n_per_minute
-    else:
-        return 0.0
+power_of_coeff = -1
 
 
 # IF (есть лишние AA) THEN (rest_cont идет на расход AA)
@@ -206,75 +163,76 @@ a_carb_base=         1.0
 a_fat_base=          1.0
 a_prot_base  =       1.0
     # номера коэффициентов
-a_1_base=            10.0**(-1)
-a_2_base=            10.0**(-1)
-a_3_base=            10.0**(-1)
-a_4_base=            10.0**(-1)
-a_5_base=            10.0**(-1)
-a_6_base=            10.0**(-1)
-a_7_base=            10.0**(-1)
-a_8_base=            10.0**(-1)
-a_9_base=            10.0**(-1)
-a_10_base=            10.0**(-1)
-a_11_base=            10.0**(-1)
-a_12_base=            10.0**(-1)
-a_13_base=            10.0**(-1)
-a_14_base=            10.0**(-1)
-a_15_base=            10.0**(-1)
-a_16_base=            10.0**(-1)
-a_17_base=            10.0**(-1)
-a_18_base=            10.0**(-1)
-a_19_base=            10.0**(-1)
-m_1_base=            10.0**(-1)
-m_2_base=            10.0**(-1)
-m_3_base=            10.0**(-1)
-m_4_base=            10.0**(-1)
-m_5_base=            10.0**(-1)
-m_6_base=            10.0**(-1)
-m_7_base=            10.0**(-1)
-m_8_base=            10.0**(-1)
-m_9_base=            10.0**(-1)
-m_10_base=           10.0**(-1)
-m_11_base=           10.0**(-1)
-m_12_base=           10.0**(-1)  # *[Carnitin]
-m_13_base=           10.0**(-1)
-m_14_base=           10.0**(-1)
-m_15_base=           10.0**(-1)
-m_16_base=           10.0**(-1) # *[Creatin]
-m_17_base=           10.0**(-1)
-m_18_base=           10.0**(-1)
-m_19_base=           10.0**(-1)
-m_20_base=           10.0**(-1)
-m_21_base=           10.0**(-1)
-h_1_base=            10.0**(-1)
-h_2_base=            10.0**(-1)
-h_3_base=            10.0**(-1)
-h_4_base=            10.0**(-1)
-h_5_base=            10.0**(-1)
-h_6_base=            10.0**(-1)
-h_7_base=            10.0**(-1)
-h_8_base=            10.0**(-1)
-h_9_base=            10.0**(-1)
-h_10_base=            10.0**(-1)
-h_11_base=            10.0**(-1)
-h_12_base=            10.0**(-1)
-h_13_base=            10.0**(-1)
-h_14_base=            10.0**(-1)
-h_15_base=            10.0**(-1)
-h_16_base=            10.0**(-1)
-h_17_base=            10.0**(-1)
-h_18_base=            10.0**(-1)
-h_19_base=            10.0**(-1)
-h_20_base=            10.0**(-1)
-h_21_base=            10.0**(-1)
-h_22_base=            10.0**(-1)
-h_23_base=            10.0**(-1)
-h_24_base=            10.0**(-1)
-h_25_base=            10.0**(-1)
-h_26_base=            10.0**(-1)
-h_27_base=            10.0**(-1)
-h_28_base=            10.0**(-1)
-h_29_base=            10.0**(-1)
+
+a_1_base=            10.0**(power_of_coeff)
+a_2_base=            10.0**(power_of_coeff)
+a_3_base=            10.0**(power_of_coeff)
+a_4_base=            10.0**(power_of_coeff)
+a_5_base=            10.0**(power_of_coeff)
+a_6_base=            10.0**(power_of_coeff)
+a_7_base=            10.0**(power_of_coeff)
+a_8_base=            10.0**(power_of_coeff)
+a_9_base=            10.0**(power_of_coeff)
+a_10_base=            10.0**(power_of_coeff)
+a_11_base=            10.0**(power_of_coeff)
+a_12_base=            10.0**(power_of_coeff)
+a_13_base=            10.0**(power_of_coeff)
+a_14_base=            10.0**(power_of_coeff)
+a_15_base=            10.0**(power_of_coeff)
+a_16_base=            10.0**(power_of_coeff)
+a_17_base=            10.0**(power_of_coeff)
+a_18_base=            10.0**(power_of_coeff)
+a_19_base=            10.0**(power_of_coeff)
+m_1_base=            10.0**(power_of_coeff)
+m_2_base=            10.0**(power_of_coeff)
+m_3_base=            10.0**(power_of_coeff)
+m_4_base=            10.0**(power_of_coeff)
+m_5_base=            10.0**(power_of_coeff)
+m_6_base=            10.0**(power_of_coeff)
+m_7_base=            10.0**(power_of_coeff)
+m_8_base=            10.0**(power_of_coeff)
+m_9_base=            10.0**(power_of_coeff)
+m_10_base=           10.0**(power_of_coeff)
+m_11_base=           10.0**(power_of_coeff)
+m_12_base=           10.0**(power_of_coeff)  # *[Carnitin]
+m_13_base=           10.0**(power_of_coeff)
+m_14_base=           10.0**(power_of_coeff)
+m_15_base=           10.0**(power_of_coeff)
+m_16_base=           10.0**(power_of_coeff) # *[Creatin]
+m_17_base=           10.0**(power_of_coeff)
+m_18_base=           10.0**(power_of_coeff)
+m_19_base=           10.0**(power_of_coeff)
+m_20_base=           10.0**(power_of_coeff)
+m_21_base=           10.0**(power_of_coeff)
+h_1_base=            10.0**(power_of_coeff)
+h_2_base=            10.0**(power_of_coeff)
+h_3_base=            10.0**(power_of_coeff)
+h_4_base=            10.0**(power_of_coeff)
+h_5_base=            10.0**(power_of_coeff)
+h_6_base=            10.0**(power_of_coeff)
+h_7_base=            10.0**(power_of_coeff)
+h_8_base=            10.0**(power_of_coeff)
+h_9_base=            10.0**(power_of_coeff)
+h_10_base=            10.0**(power_of_coeff)
+h_11_base=            10.0**(power_of_coeff)
+h_12_base=            10.0**(power_of_coeff)
+h_13_base=            10.0**(power_of_coeff)
+h_14_base=            10.0**(power_of_coeff)
+h_15_base=            10.0**(power_of_coeff)
+h_16_base=            10.0**(power_of_coeff)
+h_17_base=            10.0**(power_of_coeff)
+h_18_base=            10.0**(power_of_coeff)
+h_19_base=            10.0**(power_of_coeff)
+h_20_base=            10.0**(power_of_coeff)
+h_21_base=            10.0**(power_of_coeff)
+h_22_base=            10.0**(power_of_coeff)
+h_23_base=            10.0**(power_of_coeff)
+h_24_base=            10.0**(power_of_coeff)
+h_25_base=            10.0**(power_of_coeff)
+h_26_base=            10.0**(power_of_coeff)
+h_27_base=            10.0**(power_of_coeff)
+h_28_base=            10.0**(power_of_coeff)
+h_29_base=            10.0**(power_of_coeff)
 
 
 j_0_base = 1.0
@@ -299,7 +257,7 @@ start_point_dict = {
     'G6_a':1.0,
     'G3_a':1.0,
     'Pyr_a':1.0,
-    'Ac_CoA_a':10.0,
+    'Ac_CoA_a':1.0,
     'FA_CoA_a':1.0,
     'Cit_a':1.0,
     'OAA_a':1.0,
@@ -368,10 +326,8 @@ def F_vec(t: float, y_vec: np.array,
     J_prot_flow = J_flow_prot_vs[time_index_i]
     J_fat_flow  = J_flow_fat_vs[time_index_i]
     t_pos = np.maximum(np.intc(0), np.intc((t-t_0)/tau_grid))
-    # print(t)
-    if t_pos >= len(HR_vs):
-        print(t)
-    HeartRate = HR_vs[t_pos]
+    # HeartRate = HR_vs[t_pos]
+    HeartRate = 80.0
 
     # Y_{t} values
     # значения в момент времени t
@@ -486,7 +442,6 @@ def F_vec(t: float, y_vec: np.array,
 
         AUC_at_t = AUC_at_linear_grid(tau_grid, INS_on_grid, t_minus_w_pos, t_pos)
 
-
         for j in range(1,diff_+1):
             INS_AUC_w_on_grid[last_time_pos[0]+j] = AUC_at_t
 
@@ -496,7 +451,7 @@ def F_vec(t: float, y_vec: np.array,
         else:
             for j in range(1,diff_+1):
                 T_a_on_grid[last_time_pos[0]+j] = 0.0
-
+        T_a_t = T_a_current + tau_grid*diff_
         last_time_pos[0] += diff_
     else:
         # already seen time point. get AUC and T_{a}
@@ -647,13 +602,67 @@ def F_vec(t: float, y_vec: np.array,
     J_3 = j_3 * FFA_ef
     J_4 = j_4 * AA_ef
 
+    
+    # BMR
+    e_AA_min = 0.1*e_sigma
+    e_Glu_min = 0.2*e_sigma
+    e_FFA_min = 0.035*e_sigma
+    e_KB_min = 0.0
+
+    e_AA_minus = 0.0
+    e_Glu_minus = 0.0
+    e_FFA_minus = 0.0
+    e_KB_minus = 0.0
+
+    if AA_ef >= 20.0:
+        e_AA_minus = e_sigma - (e_Glu_min+e_KB_min+e_FFA_min)
+        e_Glu_minus = e_Glu_min
+        e_FFA_minus = e_FFA_min
+        e_KB_minus = e_KB_min
+    elif (AA_ef < 20.0) and (Glu_ef>=20.0) and (T_a_t==0.0):
+        e_AA_minus = e_AA_min
+        e_Glu_minus = e_sigma - (e_AA_min+e_KB_min+e_FFA_min)
+        e_FFA_minus = e_FFA_min
+        e_KB_minus = e_KB_min
+    elif (T_a_t>0.0) and (T_a_t< 3*60.0):
+        e_AA_minus = e_AA_min
+        e_Glu_minus = e_Glu_min
+        e_FFA_minus = e_sigma - (e_AA_min+e_Glu_min+e_KB_min)
+        e_KB_minus = e_KB_min 
+    elif T_a_t >= 3*60.0: 
+        e_AA_minus = e_AA_min
+        e_Glu_minus = e_Glu_min
+        rest_coeff = e_sigma - (e_AA_min+e_Glu_min+e_FFA_min+e_KB_min)
+        coeff1 = rest_coeff*0.5
+        coeff2 = rest_coeff*0.5
+        e_FFA_minus = e_FFA_min+coeff1
+        e_KB_minus = e_KB_min+coeff2
+
+
+
+    # e_KB_plus = 0.005*e_sigma
+    # J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
+    # J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-tau_grid*e_AA_minus*inv_beta_AA)
+    # J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-tau_grid*e_Glu_minus*inv_beta_Glu)
+    # J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-tau_grid*e_FFA_minus*inv_beta_FFA)
+    # J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-tau_grid*e_KB_minus*inv_beta_KB)
+
+    
+    J_AA_minus  = 0.0
+    J_Glu_minus  = 0.0
+    J_FFA_minus  = 0.0
+    J_KB_minus  =  0.0
+    J_KB_plus = 0.0
+    
+
+
 
     # непостредственно вычисление вектора F(t) в точке t
 
     #                                 Метаболиты
     # 1. Adipocyte
     right_TG_a=A_7 - A_3
-    right_AA_a=A_1 - A_17 - A_18 - A_19
+    right_AA_a=A_1 - A_17 - A_18 - A_19 
     right_G6_a=A_4 - A_5 - A_6
     right_G3_a=2*A_5 + A_6 + A_9 - A_7 - A_8
     right_Pyr_a=A_8 + A_12 + A_19 - A_10 - A_11
@@ -697,15 +706,15 @@ def F_vec(t: float, y_vec: np.array,
     # 4. Extracellular fluid
 
     # Diet-induced concentrations (нутриенты в крови):
-    right_Glu_ef = J_carb_flow + H_2 - H_3 - M_1 - A_4 - J_1
-    right_AA_ef =  J_prot_flow + M_6 - A_1 - H_1 - J_4 - M_5
+    right_Glu_ef = J_carb_flow + H_2 - H_3 - M_1 - A_4  - J_Glu_minus
+    right_AA_ef =  J_prot_flow + M_6 - A_1 - H_1 - M_5 - J_AA_minus
     right_TG_pl =  J_fat_flow + H_9 - J_0
 
     # Metabolome (метаболиты в крови):
     right_Glycerol_ef=    J_0 + A_3 - H_4
-    right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4 - J_3
+    right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4  - J_FFA_minus
     right_Lac_m=  M_2 - H_5
-    right_KB_ef=  H_6 - M_3 - J_2
+    right_KB_ef=  H_6 - M_3  - J_KB_minus + J_KB_plus
 
     # Excreted substances (мочевина, холестерин):
     right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
