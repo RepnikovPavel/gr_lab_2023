@@ -33,13 +33,15 @@ J_fat_func = torch.load(
 J_carb_func = torch.load(
     os.path.join(problem_folder, 'J_carb'))
 
+beta_KB = 517.0/1000.0 # [kcal/mmol]
+beta_Glu = 699.0/1000.0 # [kcal/mmol]
+beta_AA = 369.5/1000.0 # [kcal/mmol]
+beta_FFA = 2415.6/1000.0 # [kcal/mmol]
 
-
-
-inv_beta_KB = 1.0/(517.0/1000.0) # [kcal/mmol]
-inv_beta_Glu = 1.0/(699.0/1000.0) # [kcal/mmol]
-inv_beta_AA = 1.0/(369.5/1000.0) # [kcal/mmol]
-inv_beta_FFA = 1.0/(2415.6/1000.0) # [kcal/mmol]
+inv_beta_KB = 1.0/(517.0/1000.0) # 1/[kcal/mmol]
+inv_beta_Glu = 1.0/(699.0/1000.0) # 1/[kcal/mmol]
+inv_beta_AA = 1.0/(369.5/1000.0) # 1/[kcal/mmol]
+inv_beta_FFA = 1.0/(2415.6/1000.0) # 1/[kcal/mmol]
 
 
 MASS_OF_HUMAN = 70.0
@@ -241,14 +243,18 @@ j_2_base = 1.0
 j_3_base = 1.0
 j_4_base = 1.0
 
+Glu_ef_start= E_day/beta_Glu/4
+AA_ef_start = E_day/beta_AA/4
+FFA_ef_start = E_day/beta_FFA/4
+KB_ef_start = E_day/beta_KB/4
 
 start_point_dict = {
-    'Glu_ef':10.0,
-    'AA_ef':10.0,
+    'Glu_ef':Glu_ef_start,
+    'AA_ef':AA_ef_start,
     'Glycerol_ef':10.0,
-    'FFA_ef':10.0,
+    'FFA_ef':FFA_ef_start,
     'Lac_m':10.0,
-    'KB_ef':10.0,
+    'KB_ef':KB_ef_start,
     'Cholesterol_pl':10.0,
     'TG_pl':10.0,
     'G6_a':10.0,
@@ -382,6 +388,7 @@ def F_vec(t: float, y_vec: np.array,
 
     insulin_activation_coefficient =  17.0
     is_insulin_process = Heviside(INS-insulin_activation_coefficient)
+    # is_insulin_process = Sigmoid(INS-insulin_activation_coefficient)
     h_10 = is_insulin_process * h_10_base 
     h_12 = is_insulin_process * h_12_base
     h_24 = is_insulin_process * h_24_base
@@ -406,24 +413,34 @@ def F_vec(t: float, y_vec: np.array,
     m_1 = is_insulin_process * m_1_base
     m_11 = is_insulin_process * m_11_base
 
-    glucagon_adrenilin_activation_coefficient = GLN+CAM
-    is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-160.0)
-    h_23 = is_glucagon_adrenalin_process * h_23_base
-    h_18 = is_glucagon_adrenalin_process * h_18_base 
-    h_13 = is_glucagon_adrenalin_process * h_13_base
-    h_2 = is_glucagon_adrenalin_process *  h_2_base
-    a_9 = is_glucagon_adrenalin_process *  a_9_base
+    # glucagon_adrenilin_activation_coefficient = GLN+CAM
+    # is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-160.0)
+    # is_glucagon_adrenalin_process = Sigmoid(glucagon_adrenilin_activation_coefficient-160.0)
+    # h_23 = is_glucagon_adrenalin_process * h_23_base
+    # h_18 = is_glucagon_adrenalin_process * h_18_base 
+    # h_13 = is_glucagon_adrenalin_process * h_13_base
+    # h_2 = is_glucagon_adrenalin_process *  h_2_base
+    # a_9 = is_glucagon_adrenalin_process *  a_9_base
 
 
     glucagon_adrenalin_insulin_activation_coefficient = INS/(GLN+CAM)
     is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
+    # is_glucagon_adrenalin_insulin_process = Sigmoid(glucagon_adrenalin_insulin_activation_coefficient-1.0)
     h_11 = is_glucagon_adrenalin_insulin_process * h_11_base 
     h_25 = is_glucagon_adrenalin_insulin_process * h_25_base
     h_6 = is_glucagon_adrenalin_insulin_process * h_6_base
     a_3 = is_glucagon_adrenalin_insulin_process * a_3_base
     a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
-    
+
+    if not int(is_glucagon_adrenalin_insulin_process):
+        is_glucagon_adrenalin_process = 1.0
+        h_23 = is_glucagon_adrenalin_process * h_23_base
+        h_18 = is_glucagon_adrenalin_process * h_18_base 
+        h_13 = is_glucagon_adrenalin_process * h_13_base
+        h_2 = is_glucagon_adrenalin_process *  h_2_base
+        a_9 = is_glucagon_adrenalin_process *  a_9_base
+
     AUC_at_t = -1.0
     T_a_t = -1.0
 
@@ -646,7 +663,7 @@ def F_vec(t: float, y_vec: np.array,
     right_G3_a=2*A_5 + A_6 + A_9 - A_7 - A_8
     right_Pyr_a=A_8 + A_12 + A_19 - A_10 - A_11
     right_Ac_CoA_a=A_10 + A_14 + A_18 - 8*A_13 - A_16
-    right_FA_CoA_a=A_2 + A_13 - 3*A_7
+    right_FA_CoA_a=A_2 + A_13 - 3*A_7 # 8*A_13
     right_Cit_a=A_16 - A_14 - A_15
     right_OAA_a=A_11 + A_14 + A_15 + A_17 - A_9 - A_12 - A_16 
     right_NADPH_a=A_6 + A_12 - 14*A_13
@@ -679,27 +696,20 @@ def F_vec(t: float, y_vec: np.array,
     right_H2O_m=    M_16
     right_ATP_cyt_m=    M_10 # Anaerob
     right_ATP_mit_m=    2*M_16 # Aerob
-     #   '[O2]_{m}': r'
-     #   'ANAEROB': r'
-     #   'AEROB': r'
-    # 4. Extracellular fluid
 
-    # Diet-induced concentrations (нутриенты в крови):
-    right_Glu_ef = J_carb_flow + H_2 - H_3 - M_1 - A_4  - J_Glu_minus - J_1
-    right_AA_ef =  J_prot_flow + M_6 - A_1 - H_1 - M_5 - J_AA_minus - J_4
+
+    right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - H_3 - M_1 - A_4 - J_1
+    right_AA_ef =  J_prot_flow + M_6  - J_AA_minus - A_1 - H_1 - M_5 - J_4 
+    right_FFA_ef= 3*J_0 + 3*A_3  - J_FFA_minus - J_3 - A_2 - H_8 - M_4
+    right_KB_ef=  H_6  - J_KB_minus + J_KB_plus - J_2 - M_3
+
     right_TG_pl =  J_fat_flow + H_9 - J_0 
 
-    # Metabolome (метаболиты в крови):
-    right_Glycerol_ef=    J_0 + A_3 - H_4
-    right_FFA_ef= 3*J_0 + 3*A_3 - A_2 - H_8 - M_4  - J_FFA_minus - J_3
+    right_Glycerol_ef =    J_0 + A_3 - H_4
     right_Lac_m=  M_2 - H_5
-    right_KB_ef=  H_6 - M_3  - J_KB_minus + J_KB_plus - J_2
 
-    # Excreted substances (мочевина, холестерин):
     right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
     right_Cholesterol_pl= H_7
-
-    # Гормоны:
 
     alpha = alpha_base
     beta = beta_base
@@ -709,16 +719,72 @@ def F_vec(t: float, y_vec: np.array,
     CL_CAM = CL_CAM_base
 
     # right_INS= alpha * J_carb_flow +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
-    right_INS= 1.0 * J_carb_flow + 1.0 * Glu_ef * Heviside(Glu_ef-5.0) +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
-     
+    # V_extr_fl = 14.0 [L]
+    # Glu_ef/V_extracerular_fluid [mmol/L]
+    # INS [mmol]
 
-    right_GLN = lambda_ * (1.0/np.maximum(Glu_ef, 0.1)) - CL_GLN * GLN
+
+    right_INS= 1.0 * J_carb_flow + 1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
+     
+    # Glu_ef/V_extracerular_fluid [mmol/L]
+    # GLN [mmol]
+    right_GLN = lambda_ * (1.0/np.maximum(Glu_ef/14.0, 0.1)) - CL_GLN * GLN
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
 
 
 
     # output buffer
+    # buffer[0] = right_Glu_ef
+    # buffer[1] = right_AA_ef
+    # buffer[2] = np.maximum(right_Glycerol_ef ,0.0)
+    # buffer[3] = right_FFA_ef
+    # buffer[4] = np.maximum(right_Lac_m ,0.0)
+    # buffer[5] = right_KB_ef
+    # buffer[6] = np.maximum(right_Cholesterol_pl ,0.0)
+    # buffer[7] = np.maximum(right_TG_pl ,0.0)
+    # buffer[8] = np.maximum(right_G6_a ,0.0)
+    # buffer[9] = np.maximum(right_G3_a ,0.0)
+    # buffer[10] = np.maximum(right_Pyr_a ,0.0)
+    # buffer[11] = np.maximum(right_Ac_CoA_a ,0.0)
+    # buffer[12] = np.maximum(right_FA_CoA_a ,0.0)
+    # buffer[13] = np.maximum(right_Cit_a ,0.0)
+    # buffer[14] = np.maximum(right_OAA_a ,0.0)
+    # buffer[15] = np.maximum(right_AA_a ,0.0)
+    # buffer[16] = np.maximum(right_NADPH_a ,0.0)
+    # buffer[17] = np.maximum(right_TG_a ,0.0)
+    # buffer[18] = np.maximum(right_GG_m ,0.0)
+    # buffer[19] = np.maximum(right_G6_m ,0.0)
+    # buffer[20] = np.maximum(right_G3_m ,0.0)
+    # buffer[21] = np.maximum(right_Pyr_m ,0.0)
+    # buffer[22] = np.maximum(right_Ac_CoA_m ,0.0)
+    # buffer[23] = np.maximum(right_FA_CoA_m ,0.0)
+    # buffer[24] = np.maximum(right_Cit_m ,0.0)
+    # buffer[25] = np.maximum(right_OAA_m ,0.0)
+    # buffer[26] = np.maximum(right_H_cyt_m ,0.0)
+    # buffer[27] = np.maximum(right_H_mit_m ,0.0)
+    # buffer[28] = np.maximum(right_AA_m ,0.0)
+    # buffer[29] = np.maximum(right_Muscle_m ,0.0)
+    # buffer[30] = np.maximum(right_CO2_m ,0.0)
+    # buffer[31] = np.maximum(right_H2O_m ,0.0)
+    # buffer[32] = np.maximum(right_ATP_cyt_m ,0.0)
+    # buffer[33] = np.maximum(right_ATP_mit_m ,0.0)
+    # buffer[34] = np.maximum(right_GG_h ,0.0)
+    # buffer[35] = np.maximum(right_G6_h ,0.0)
+    # buffer[36] = np.maximum(right_G3_h ,0.0)
+    # buffer[37] = np.maximum(right_Pyr_h ,0.0)
+    # buffer[38] = np.maximum(right_Ac_CoA_h ,0.0)
+    # buffer[39] = np.maximum(right_FA_CoA_h ,0.0)
+    # buffer[40] = np.maximum(right_MVA_h ,0.0)
+    # buffer[41] = np.maximum(right_Cit_h ,0.0)
+    # buffer[42] = np.maximum(right_OAA_h ,0.0)
+    # buffer[43] = np.maximum(right_NADPH_h ,0.0)
+    # buffer[44] = np.maximum(right_AA_h ,0.0)
+    # buffer[45] = np.maximum(right_TG_h ,0.0)
+    # buffer[46] = np.maximum(right_INS ,0.0)
+    # buffer[47] = np.maximum(right_CAM ,0.0)
+    # buffer[48] = np.maximum(right_GLN ,0.0)
+    # buffer[49] = np.maximum(right_Urea_ef ,0.0)
     buffer[0] = right_Glu_ef
     buffer[1] = right_AA_ef
     buffer[2] = right_Glycerol_ef

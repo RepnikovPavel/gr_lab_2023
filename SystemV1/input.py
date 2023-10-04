@@ -53,6 +53,11 @@ def Heviside(x:float) -> float:
     if x < 0.0:
         return 0.0
     return 1.0
+
+@jit(nopython=True)
+def Sigmoid(x:float,x_0:float=0.0,slope:float=1.0):
+    return 1.0/(1.0+np.exp((-x+x_0)*slope))
+
 @jit(nopython=True)
 def LeftHeviside(x:float) -> float:
     if x <= 0.0:
@@ -121,7 +126,8 @@ class J_ch:
     def get_dJdt(self, t:float):
         # return self.last_delta_J/self.delta_t * Heviside(t - self.start_absorbtion) * Heviside(self.stop_absorbtion - t)
         return self.last_delta_J/self.delta_t * int(t>=self.start_absorbtion and t <= self.stop_absorbtion)
-    
+
+
 class J_sum:
     J_arr: List[J_ch]
     V_total: float
@@ -161,6 +167,32 @@ class J_sum:
         V = self.get_velocity(t)
         for i in range(len(self.J_arr)):
             self.J_arr[i].step(t, velocity=V)
+
+class J_sum_with_infinit_v:
+    J_arr: List[J_ch]
+    def __init__(self) -> None:
+        self.J_arr = []
+
+    def add_J_ch(self, t1:float, t2:float, delta_t:float, tau:float, T:float,rho:float,alpha:float, volume:float):
+        J_ = J_ch(t1,t2,delta_t,tau,T,rho,alpha,volume)
+        self.J_arr.append(J_)
+    def get_dJdt(self,t:float)->float:
+        s_ = 0.0
+        for i in range(len(self.J_arr)):
+            s_ += self.J_arr[i].get_dJdt(t)
+        return s_
+    
+    def get_J(self,t:float)->float:
+        s_ = 0.0
+        for i in range(len(self.J_arr)):
+            s_ += self.J_arr[i].get_J(t)
+        return s_
+        
+    def step(self,t:float):
+        for i in range(len(self.J_arr)):
+            J_i = self.J_arr[i]
+            V_i = J_i.mass_before_absorbtion/J_i.T
+            self.J_arr[i].step(t, velocity=V_i)
 
 
 def itegrate_func(func, time_grid):
@@ -306,3 +338,14 @@ def AUC_at_linear_grid(tau, y, i1,i2):
     s = s * tau* 0.5
     return s
 
+
+def CurrentEnergy(AA,FFA,KB,Glu,
+                  beta_AA,beta_FFA,beta_KB,beta_Glu):
+    return AA*beta_AA+FFA*beta_FFA+KB*beta_KB+Glu*beta_Glu
+
+def EnergyOnGrid(AA,FFA,KB,Glu,
+                  beta_AA,beta_FFA,beta_KB,beta_Glu):
+    o_ = np.zeros(shape=(len(AA),),dtype=np.float32)
+    for i in range(len(AA)):
+        o_[i] = CurrentEnergy(AA[i],FFA[i],KB[i],Glu[i],beta_AA,beta_FFA,beta_KB,beta_Glu)
+    return o_

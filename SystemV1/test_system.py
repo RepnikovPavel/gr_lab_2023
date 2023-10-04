@@ -25,25 +25,25 @@ last_time_pos[0] = 0
 def F_wrapped(t, y):
     return F_vec(t,y,INS_on_grid,INS_AUC_w_on_grid,T_a_on_grid,last_seen_time,last_time_pos)
 
-# solver = ode(f=F_wrapped,jac=None)
-# solver.set_initial_value(y=start_point,t=t_0)
-# # solver_type = 'lsoda'
-# # solver_type = 'dopri5'
-# solver_type = 'vode'
-# solver.set_integrator(solver_type) 
-# solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
-# solutions[0,:] = solver.y
-# i_=  1
-# while solver.successful() and solver.t < t_end-tau_grid:
-#     solutions[i_,:] = solver.integrate(solver.t+tau_grid)
-#     i_ += 1 
-# print('last solver time step {} target last step {}'.format(i_, len(time_grid)))
-# time_sol = time_grid
-
-output = odeint(tfirst=True,func=F_wrapped, y0=start_point, t=time_grid,full_output=1)
-solutions = output[0]
+solver = ode(f=F_wrapped,jac=None)
+solver.set_initial_value(y=start_point,t=t_0)
+# solver_type = 'lsoda'
+# solver_type = 'dopri5'
+solver_type = 'vode'
+solver.set_integrator(solver_type) 
+solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
+solutions[0,:] = solver.y
+i_=  1
+while solver.successful() and solver.t < t_end-tau_grid:
+    solutions[i_,:] = solver.integrate(solver.t+tau_grid)
+    i_ += 1 
+print('last solver time step {} target last step {}'.format(i_, len(time_grid)-1))
 time_sol = time_grid
-solver_o = output[1]
+
+# output = odeint(tfirst=True,func=F_wrapped, y0=start_point, t=time_grid,full_output=1)
+# solutions = output[0]
+# time_sol = time_grid
+# solver_o = output[1]
 
 # solutions = euler_solver(func=F_wrapped, y0=start_point, t=time_grid)
 # time_sol = time_grid
@@ -55,13 +55,15 @@ solver_o = output[1]
 
 
 print(solutions.shape)
-print(time_sol.shape)
+print(time_sol.shape)    
 
 intervals = get_intervals_of_processes(solutions, time_sol, index_by_name)
-print(np.min(solutions),np.max(solutions))
 
-h_max = 120
-h_min = 100
+
+h_max = np.max(solutions)
+h_min = np.min(solutions)
+print(h_min,h_max)
+
 step_ = (h_max-h_min)/10
 
 fig = init_figure(x_label=r'$t,min$',y_label=r'$\frac{mmol}{L}$')
@@ -78,17 +80,22 @@ add_line_to_fig(fig, time_grid, np.array([J_flow_carb_func(t) for t in time_grid
 add_line_to_fig(fig, time_grid, T_a_on_grid, r'T_{a}')
 add_line_to_fig(fig, time_grid, INS_AUC_w_on_grid, r'AUC_{w}(INS)')
 
+add_line_to_fig(fig,time_sol, EnergyOnGrid(AA=solutions[:,index_by_name['AA_ef']],
+                                           FFA=solutions[:,index_by_name['FFA_ef']],
+                                           KB=solutions[:,index_by_name['KB_ef']],
+                                           Glu=solutions[:,index_by_name['Glu_ef']],
+                                           beta_AA=beta_AA,beta_FFA=beta_FFA,beta_KB=beta_KB,beta_Glu=beta_Glu),
+                r'E_{system}[kkal]')
 
 
 fig = plot_intervals_to_plotly_fig(fig, intervals, 
-                                   {    'INS': h_min+step_,
-                                        'GLN_CAM': h_min+step_*2,
-                                        'GLN_INS_CAM': h_min+step_*3,
-                                        'fasting':h_min+step_*4},
+                                   {    'INS': h_max-step_,
+                                        'GLN_CAM': h_max-step_*2,
+                                        'GLN_INS_CAM': h_max-step_*3,
+                                        'fasting':h_max-step_*4},
                                    {    'INS': "#FF0000",
                                         'GLN_CAM': "#7FFF00",
                                         'GLN_INS_CAM': "#87CEEB",
                                         'fasting':"#04e022"})
-
 
 fig.show()

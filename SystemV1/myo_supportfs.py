@@ -236,10 +236,11 @@ def get_intervals_of_processes(solutions, time_grid, index_by_name):
         CAM = solutions[i, index_by_name['CAM']] 
         insulin_activation_coefficient =  17.0
         is_insulin_process = Heviside(INS-insulin_activation_coefficient)
-        glucagon_adrenilin_activation_coefficient = GLN+CAM
-        is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-160.0)
         glucagon_adrenalin_insulin_activation_coefficient = INS/(GLN+CAM)
         is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
+        is_glucagon_adrenalin_process = 1-int(is_glucagon_adrenalin_insulin_process)
+
+
 
         processes['GLN_CAM'][i]=int(is_glucagon_adrenalin_process)
         processes['GLN_INS_CAM'][i]=int(is_glucagon_adrenalin_insulin_process)
