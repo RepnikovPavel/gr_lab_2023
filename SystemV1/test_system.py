@@ -10,6 +10,10 @@ from euler import euler_solver
 index_by_name, name_by_index, start_point = get_start_point_names_mapping(start_point_dict)
 # start_point = 0.1+ 10*np.random.rand(len(start_point))
 
+J_flow_carb_vs = J_flow_carb_func.values
+J_flow_prot_vs = J_flow_prot_func.values
+J_flow_fat_vs  = J_flow_fat_func.values 
+
 
 INS_on_grid = np.zeros(shape=(len(time_grid), ),dtype=np.float32)
 INS_AUC_w_on_grid = np.zeros(shape=(len(time_grid), ),dtype=np.float32)
@@ -23,7 +27,10 @@ last_time_pos = np.zeros(shape=(1,),dtype=np.intc)
 last_time_pos[0] = 0
 
 def F_wrapped(t, y):
-    return F_vec(t,y,INS_on_grid,INS_AUC_w_on_grid,T_a_on_grid,last_seen_time,last_time_pos)
+    return F_vec(t,y,INS_on_grid,INS_AUC_w_on_grid,T_a_on_grid,last_seen_time,last_time_pos,
+                 J_flow_carb_vs,
+                    J_flow_prot_vs,
+                    J_flow_fat_vs)
 
 solver = ode(f=F_wrapped,jac=None)
 solver.set_initial_value(y=start_point,t=t_0)

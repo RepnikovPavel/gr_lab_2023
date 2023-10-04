@@ -9,7 +9,7 @@ INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
 tau_grid = 0.001 # [min]
-t_0 = 300.0 # [min]
+t_0 = 400.0 # [min]
 t_end = 2500.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
@@ -306,9 +306,7 @@ start_point_dict = {
 
 # HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
   
-J_flow_carb_vs = J_flow_carb_func.values
-J_flow_prot_vs = J_flow_prot_func.values
-J_flow_fat_vs  = J_flow_fat_func.values 
+
 # HR_vs = HeartRate_func.values
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
@@ -316,7 +314,10 @@ J_flow_fat_vs  = J_flow_fat_func.values
 @jit(nopython = True)
 def F_vec(t: float, y_vec: np.array,
           INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
-          last_seen_time:np.array,last_time_pos:np.array):
+          last_seen_time:np.array,last_time_pos:np.array,
+            J_flow_carb_vs:np.array,
+            J_flow_prot_vs:np.array,
+            J_flow_fat_vs:np.array):
     buffer = np.zeros(shape=(50,))
     # свободные функции 
     # J_carb_flow = J_flow_carb_func(t)
