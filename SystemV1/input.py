@@ -6,6 +6,7 @@ from myo_supportfs import *
 import os
 import scipy.integrate as integrate
 from numba import jit
+from scipy.optimize import minimize
 # from numba.experimental import jitclass
 # from numba import int32, float32
 # from typing import List
@@ -102,16 +103,16 @@ class J_ch:
         self.last_delta_J = 0.0
         self.last_J = self.mass_before_absorbtion
         self.is_mass_dont_used_up = 1
+
     def step(self, t: float, velocity: float) -> None:
         if (t < self.start_absorbtion or t > self.stop_absorbtion) or not self.is_mass_dont_used_up:
             return
         else:
-            self.last_delta_J = -velocity*self.delta_t
-            self.last_J = np.maximum(self.last_J + self.last_delta_J, 0.0)
-            if self.last_J == 0.0:
-                self.last_delta_J = 0.0
+            do_delta = Heviside(self.last_J-velocity*self.delta_t)
+            self.last_delta_J = -velocity*self.delta_t*do_delta 
+            self.last_J = self.last_J + self.last_delta_J
+            if do_delta == 0.0:
                 self.is_mass_dont_used_up = 0
-
 
     def get_J(self, t:float):
         # return self.last_J * Heviside(t - self.start_absorbtion) * Heviside(self.stop_absorbtion - t)
@@ -131,8 +132,10 @@ class J_ch:
 class J_sum:
     J_arr: List[J_ch]
     V_total: float
-    def __init__(self, V_total) -> None:
+    tau: float
+    def __init__(self, V_total,tau) -> None:
         self.V_total = V_total
+        self.tau = tau
         self.J_arr = []
     def add_J_ch(self, t1:float, t2:float, delta_t:float, tau:float, T:float,rho:float,alpha:float, volume:float):
         J_ = J_ch(t1,t2,delta_t,tau,T,rho,alpha,volume)
@@ -164,9 +167,52 @@ class J_sum:
             return self.V_total/num_
         
     def step(self,t:float):
-        V = self.get_velocity(t)
+        current_capacities = [self.J_arr[i].get_J(t) for i in range(len(self.J_arr))]
+        active_chunks  = []
+        active_capacities =  []
         for i in range(len(self.J_arr)):
-            self.J_arr[i].step(t, velocity=V)
+            J_= self.J_arr[i]
+            if (t>=J_.start_absorbtion and t <= J_.stop_absorbtion) and J_.is_mass_dont_used_up:
+                active_chunks.append(i)
+                value_ = J_.get_J(t)
+                active_capacities.append(value_)
+        # target_velocities = []
+        # d= len(active_chunks)
+        # bounds = np.zeros(shape=(d,2))
+        # for j in range(d):
+        #     ch_i = active_chunks[i]
+        #     J_ = self.J_arr[ch_i]
+        #     bounds[j][0] = 0.0
+        #     bounds[j][1] = J_.get_J()/self.tau
+        
+        # cons = [{"type": "eq", "fun": lambda x: np.sum(x) - (1.0/self.tau)*np.sum(active_capacities)-self.V_total}]
+        # options = {
+        #     'verbose':2
+        # }
+        # b = (1.0/self.tau)*np.sum(active_capacities)-self.V_total
+        # obj_func = lambda  
+        # results = minimize(fun=obj_func, x0=alpha_0,method='trust-constr', bounds=bounds,constraints=cons,options=options)
+
+        # for i in range(len(active_chunks)):
+        #     ch_i = active_chunks[i]
+        #     self.J_arr[ch_i].step(t, velocity=target_velocities[i])
+        V_ = self.get_velocity(t)
+        # for i in range(len(active_capacities)):
+        #     cap_i = active_capacities[i]
+        #     if cap_i < self.V_total*self.tau/len(active_capacities):
+        #         V_= 0.0
+        #         break
+        # if np.sum(active_capacities)-self.V_total*self.tau < 0.0:
+            # print(active_chunks)
+            # print('t = {} не хватает массы Jsum = {} targetJ = {}'.format(t, np.sum(active_capacities), self.V_total*self.tau))
+            # print('')
+            # V_ = 0.0
+        for i in range(len(active_chunks)):
+            ch_i = active_chunks[i]
+            J_ = self.J_arr[ch_i]
+            J_.step(t,V_)
+
+
 
 class J_sum_with_infinit_v:
     J_arr: List[J_ch]
