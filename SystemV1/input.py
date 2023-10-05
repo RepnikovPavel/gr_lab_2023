@@ -176,6 +176,7 @@ class J_sum:
                 active_chunks.append(i)
                 value_ = J_.get_J(t)
                 active_capacities.append(value_)
+                
         # target_velocities = []
         # d= len(active_chunks)
         # bounds = np.zeros(shape=(d,2))

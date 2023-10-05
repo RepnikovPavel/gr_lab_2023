@@ -64,184 +64,90 @@ power_of_coeff = -1
 lambda_ = 1.0
 sigma = 0.07
 
-### INS
-
-CL_INS_base    = 0.1
-
 alpha_base       = 2.0
 beta_base=         0.02
-
-alpha_a2_base    = 1.0
-alpha_a4_base    = 1.0
-alpha_a5_base    = 1.0
-alpha_a7_base    = 1.0
-alpha_a10_base   =1.0
-alpha_m1_base    = 1.0
-alpha_m3_base    = 1.0
-alpha_m6_base    = 1.0
-alpha_m8_base    = 1.0
-alpha_m10_base   =1.0
-alpha_h3_base    = 1.0
-alpha_h6_base    = 1.0
-alpha_h8_base    = 1.0
-alpha_h10_base   =1.0
-alpha_h12_base   =1.0
-alpha_h17_base   =1.0
-alpha_h29_base   =1.0
-alpha_h30_base   =1.0
-beta_a2_base=        2.0
-beta_a4_base=        2.0
-beta_a5_base=        2.0
-beta_a7_base=        2.0
-beta_a10_base=       2.0
-beta_m1_base=        2.0
-beta_m3_base=        2.0
-beta_m6_base=        2.0
-beta_m8_base=        2.0
-beta_m10_base=       2.0
-beta_h3_base=        2.0
-beta_h6_base=        2.0
-beta_h8_base=        2.0
-beta_h10_base=       2.0
-beta_h12_base=       2.0
-beta_h17_base=       2.0
-beta_h29_base=       2.0
-beta_h30_base=       2.0
-delta_a2_base=       2.0
-delta_a4_base=       2.0
-delta_a5_base=       2.0
-delta_a7_base=       2.0
-delta_a10_base=      2.0
-delta_m1_base=       2.0
-delta_m3_base=       2.0
-delta_m6_base=       2.0
-delta_m8_base=       2.0
-delta_m10_base=      2.0
-delta_h3_base=       2.0
-delta_h6_base=       2.0
-delta_h8_base=       2.0
-delta_h10_base=      2.0
-delta_h12_base=      2.0
-delta_h17_base=      2.0
-delta_h29_base=      2.0
-delta_h30_base=      2.0
 gamma_base =        1.0
-gamma_a4_base=       1.0
-gamma_a5_base=       1.0
-gamma_a7_base=       1.0
-gamma_a10_base=      1.0
-gamma_m1_base=       1.0
-gamma_m3_base=       1.0
-gamma_m6_base=       1.0
-gamma_m8_base=       1.0
-gamma_m10_base=      1.0
-gamma_h3_base=       1.0
-gamma_h6_base=       1.0
-gamma_h8_base=       1.0
-gamma_h10_base=      1.0
-gamma_h12_base=      1.0
-gamma_h17_base=      1.0
-gamma_h29_base=      1.0
-gamma_h30_base=      1.0
-### GLN
-CL_GLN_base=           0.1
-lambda_a3_base=      1.0
-lambda_a9_base=      1.0
-lambda_a11_base=     1.0
-lambda_m7_base=      1.0
-lambda_h2_base=      1.0
-lambda_h11_base=     1.0
-lambda_h15_base=     1.0
-lambda_h25_base=     1.0
-### CAM
-CL_CAM_base=           0.1
-sigma_a3_base=       1.0
-sigma_m7_base=       1.0
-sigma_h11_base=      1.0
-tau_carb_base=     60.0     # [min]
-tau_fat_base=      110.0    # [min]
-tau_prot_base=     90.0     # [min}
-a_carb_base=         1.0
-a_fat_base=          1.0
-a_prot_base  =       1.0
-    # номера коэффициентов
 
-a_1_base=            10.0**(power_of_coeff)
-a_2_base=            10.0**(power_of_coeff)
-a_3_base=            10.0**(power_of_coeff)
-a_4_base=            10.0**(power_of_coeff)
-a_5_base=            10.0**(power_of_coeff)
-a_6_base=            10.0**(power_of_coeff)
-a_7_base=            10.0**(power_of_coeff)
-a_8_base=            10.0**(power_of_coeff)
-a_9_base=            10.0**(power_of_coeff)
-a_10_base=            10.0**(power_of_coeff)
-a_11_base=            10.0**(power_of_coeff)
-a_12_base=            10.0**(power_of_coeff)
-a_13_base=            10.0**(power_of_coeff)
-a_14_base=            10.0**(power_of_coeff)
-a_15_base=            10.0**(power_of_coeff)
-a_16_base=            10.0**(power_of_coeff)
-a_17_base=            10.0**(power_of_coeff)
-a_18_base=            10.0**(power_of_coeff)
-a_19_base=            10.0**(power_of_coeff)
-m_1_base=            10.0**(power_of_coeff)
-m_2_base=            10.0**(power_of_coeff)
-m_3_base=            10.0**(power_of_coeff)
-m_4_base=            10.0**(power_of_coeff)
-m_5_base=            10.0**(power_of_coeff)
-m_6_base=            10.0**(power_of_coeff)
-m_7_base=            10.0**(power_of_coeff)
-m_8_base=            10.0**(power_of_coeff)
-m_9_base=            10.0**(power_of_coeff)
-m_10_base=           10.0**(power_of_coeff)
-m_11_base=           10.0**(power_of_coeff)
-m_12_base=           10.0**(power_of_coeff)  # *[Carnitin]
-m_13_base=           10.0**(power_of_coeff)
-m_14_base=           10.0**(power_of_coeff)
-m_15_base=           10.0**(power_of_coeff)
-m_16_base=           10.0**(power_of_coeff) # *[Creatin]
-m_17_base=           10.0**(power_of_coeff)
-m_18_base=           10.0**(power_of_coeff)
-m_19_base=           10.0**(power_of_coeff)
-m_20_base=           10.0**(power_of_coeff)
-m_21_base=           10.0**(power_of_coeff)
-h_1_base=            10.0**(power_of_coeff)
-h_2_base=            10.0**(power_of_coeff)
-h_3_base=            10.0**(power_of_coeff)
-h_4_base=            10.0**(power_of_coeff)
-h_5_base=            10.0**(power_of_coeff)
-h_6_base=            10.0**(power_of_coeff)
-h_7_base=            10.0**(power_of_coeff)
-h_8_base=            10.0**(power_of_coeff)
-h_9_base=            10.0**(power_of_coeff)
-h_10_base=            10.0**(power_of_coeff)
-h_11_base=            10.0**(power_of_coeff)
-h_12_base=            10.0**(power_of_coeff)
-h_13_base=            10.0**(power_of_coeff)
-h_14_base=            10.0**(power_of_coeff)
-h_15_base=            10.0**(power_of_coeff)
-h_16_base=            10.0**(power_of_coeff)
-h_17_base=            10.0**(power_of_coeff)
-h_18_base=            10.0**(power_of_coeff)
-h_19_base=            10.0**(power_of_coeff)
-h_20_base=            10.0**(power_of_coeff)
-h_21_base=            10.0**(power_of_coeff)
-h_22_base=            10.0**(power_of_coeff)
-h_23_base=            10.0**(power_of_coeff)
-h_24_base=            10.0**(power_of_coeff)
-h_25_base=            10.0**(power_of_coeff)
-h_26_base=            10.0**(power_of_coeff)
-h_27_base=            10.0**(power_of_coeff)
-h_28_base=            10.0**(power_of_coeff)
-h_29_base=            10.0**(power_of_coeff)
+CL_GLN_base=1.0/10.0
+CL_CAM_base=1.0/10.0
+CL_INS_base=1.0/10.0
 
+# номера коэффициентов
+a_1_base=            1.0/10.0#10.0**(power_of_coeff)
+a_2_base=            1.0/10.0#10.0**(power_of_coeff)
+a_3_base=            1.0/10.0#10.0**(power_of_coeff)
+a_4_base=            1.0/10.0#10.0**(power_of_coeff)
+a_5_base=            1.0/10.0#10.0**(power_of_coeff)
+a_6_base=            1.0/10.0#10.0**(power_of_coeff)
+a_7_base=            1.0/10.0#10.0**(power_of_coeff)
+a_8_base=            1.0/10.0#10.0**(power_of_coeff)
+a_9_base=            1.0/10.0#10.0**(power_of_coeff)
+a_10_base=            1.0/10.0#10.0**(power_of_coeff)
+a_11_base=            1.0/10.0#10.0**(power_of_coeff)
+a_12_base=            1.0/10.0#10.0**(power_of_coeff)
+a_13_base=            1.0/10.0#10.0**(power_of_coeff)
+a_14_base=            1.0/10.0#10.0**(power_of_coeff)
+a_15_base=            1.0/10.0#10.0**(power_of_coeff)
+a_16_base=            1.0/10.0#10.0**(power_of_coeff)
+a_17_base=            1.0/10.0#10.0**(power_of_coeff)
+a_18_base=            1.0/10.0#10.0**(power_of_coeff)
+a_19_base=            1.0/10.0#10.0**(power_of_coeff)
+m_1_base=            1.0/10.0#10.0**(power_of_coeff)
+m_2_base=            1.0/10.0#10.0**(power_of_coeff)
+m_3_base=            1.0/10.0#10.0**(power_of_coeff)
+m_4_base=            1.0/10.0#10.0**(power_of_coeff)
+m_5_base=            1.0/10.0#10.0**(power_of_coeff)
+m_6_base=            1.0/10.0#10.0**(power_of_coeff)
+m_7_base=            1.0/10.0#10.0**(power_of_coeff)
+m_8_base=            1.0/10.0#10.0**(power_of_coeff)
+m_9_base=            1.0/10.0#10.0**(power_of_coeff)
+m_10_base=           1.0/10.0#10.0**(power_of_coeff)
+m_11_base=           1.0/10.0#10.0**(power_of_coeff)
+m_12_base=           1.0/10.0#10.0**(power_of_coeff)  # *[Carnitin]
+m_13_base=           1.0/10.0#10.0**(power_of_coeff)
+m_14_base=           1.0/10.0#10.0**(power_of_coeff)
+m_15_base=           1.0/10.0#10.0**(power_of_coeff)
+m_16_base=           1.0/10.0#10.0**(power_of_coeff) # *[Creatin]
+m_17_base=           1.0/10.0#10.0**(power_of_coeff)
+m_18_base=           1.0/10.0#10.0**(power_of_coeff)
+m_19_base=           1.0/10.0#10.0**(power_of_coeff)
+m_20_base=           1.0/10.0#10.0**(power_of_coeff)
+m_21_base=           1.0/10.0#10.0**(power_of_coeff)
+h_1_base=            1.0/10.0#10.0**(power_of_coeff)
+h_2_base=            1.0/10.0#10.0**(power_of_coeff)
+h_3_base=            1.0/10.0#10.0**(power_of_coeff)
+h_4_base=            1.0/10.0#10.0**(power_of_coeff)
+h_5_base=            1.0/10.0#10.0**(power_of_coeff)
+h_6_base=            1.0/10.0#10.0**(power_of_coeff)
+h_7_base=            1.0/10.0#10.0**(power_of_coeff)
+h_8_base=            1.0/10.0#10.0**(power_of_coeff)
+h_9_base=            1.0/10.0#10.0**(power_of_coeff)
+h_10_base=            1.0/10.0#10.0**(power_of_coeff)
+h_11_base=            1.0/10.0#10.0**(power_of_coeff)
+h_12_base=            1.0/10.0#10.0**(power_of_coeff)
+h_13_base=            1.0/10.0#10.0**(power_of_coeff)
+h_14_base=            1.0/10.0#10.0**(power_of_coeff)
+h_15_base=            1.0/10.0#10.0**(power_of_coeff)
+h_16_base=            1.0/10.0#10.0**(power_of_coeff)
+h_17_base=            1.0/10.0#10.0**(power_of_coeff)
+h_18_base=            1.0/10.0#10.0**(power_of_coeff)
+h_19_base=            1.0/10.0#10.0**(power_of_coeff)
+h_20_base=            1.0/10.0#10.0**(power_of_coeff)
+h_21_base=            1.0/10.0#10.0**(power_of_coeff)
+h_22_base=            1.0/10.0#10.0**(power_of_coeff)
+h_23_base=            1.0/10.0#10.0**(power_of_coeff)
+h_24_base=            1.0/10.0#10.0**(power_of_coeff)
+h_25_base=            1.0/10.0#10.0**(power_of_coeff)
+h_26_base=            1.0/10.0#10.0**(power_of_coeff)
+h_27_base=            1.0/10.0#10.0**(power_of_coeff)
+h_28_base=            1.0/10.0#10.0**(power_of_coeff)
+h_29_base=            1.0/10.0#10.0**(power_of_coeff)
 
-j_0_base = 1.0
-j_1_base = 1.0
-j_2_base = 1.0
-j_3_base = 1.0
-j_4_base = 1.0
+j_0_base = 0.0
+j_1_base = 0.0
+j_2_base = 0.0
+j_3_base = 0.0
+j_4_base = 0.0
 
 Glu_ef_start= E_day/beta_Glu/4
 AA_ef_start = E_day/beta_AA/4
@@ -311,7 +217,7 @@ start_point_dict = {
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-@jit(nopython = True)
+# @jit(nopython = True)
 def F_vec(t: float, y_vec: np.array,
           INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
           last_seen_time:np.array,last_time_pos:np.array,
@@ -434,13 +340,15 @@ def F_vec(t: float, y_vec: np.array,
     a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
 
-    if not int(is_glucagon_adrenalin_insulin_process):
-        is_glucagon_adrenalin_process = 1.0
-        h_23 = is_glucagon_adrenalin_process * h_23_base
-        h_18 = is_glucagon_adrenalin_process * h_18_base 
-        h_13 = is_glucagon_adrenalin_process * h_13_base
-        h_2 = is_glucagon_adrenalin_process *  h_2_base
-        a_9 = is_glucagon_adrenalin_process *  a_9_base
+    is_glucagon_adrenalin_process = 1.0 - is_glucagon_adrenalin_insulin_process
+    h_23 = is_glucagon_adrenalin_process * h_23_base
+    h_18 = is_glucagon_adrenalin_process * h_18_base 
+    h_13 = is_glucagon_adrenalin_process * h_13_base
+    h_2 = is_glucagon_adrenalin_process *  h_2_base
+    a_9 = is_glucagon_adrenalin_process *  a_9_base
+
+    # if not int(is_glucagon_adrenalin_insulin_process):
+
 
     AUC_at_t = -1.0
     T_a_t = -1.0
@@ -637,19 +545,19 @@ def F_vec(t: float, y_vec: np.array,
 
 
 
-    # e_KB_plus = 0.005*e_sigma
-    # J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
-    # J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-tau_grid*e_AA_minus*inv_beta_AA)
-    # J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-tau_grid*e_Glu_minus*inv_beta_Glu)
-    # J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-tau_grid*e_FFA_minus*inv_beta_FFA)
-    # J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-tau_grid*e_KB_minus*inv_beta_KB)
+    e_KB_plus = 0.005*e_sigma
+    J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
+    J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-tau_grid*e_AA_minus*inv_beta_AA)
+    J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-tau_grid*e_Glu_minus*inv_beta_Glu)
+    J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-tau_grid*e_FFA_minus*inv_beta_FFA)
+    J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-tau_grid*e_KB_minus*inv_beta_KB)
 
     
-    J_AA_minus  = 0.0
-    J_Glu_minus  = 0.0
-    J_FFA_minus  = 0.0
-    J_KB_minus  =  0.0
-    J_KB_plus = 0.0
+    # J_AA_minus  = 0.0
+    # J_Glu_minus  = 0.0
+    # J_FFA_minus  = 0.0
+    # J_KB_minus  =  0.0
+    # J_KB_plus = 0.0
     
 
 
@@ -725,7 +633,7 @@ def F_vec(t: float, y_vec: np.array,
     # INS [mmol]
 
 
-    right_INS= 1.0 * J_carb_flow + 1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
+    right_INS= 1.0 * J_carb_flow + 1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) +1.0 * J_fat_flow + 1.0 * J_prot_flow - INS * CL_INS
      
     # Glu_ef/V_extracerular_fluid [mmol/L]
     # GLN [mmol]
@@ -836,4 +744,10 @@ def F_vec(t: float, y_vec: np.array,
     buffer[47] = right_CAM
     buffer[48] = right_GLN
     buffer[49] = right_Urea_ef
+    if len(np.argwhere(np.abs(buffer) > 10**5)) !=0:
+        where_bad = np.argwhere(np.abs(buffer) > 10**5)
+        print(t)
+
+    # if len(np.argwhere(np.isnan(buffer))) !=0 :
+    #     print(t)
     return buffer
