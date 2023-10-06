@@ -53,7 +53,7 @@ def F_wrapped(t, y):
 # time_sol = time_grid
 # solver_o = output[1]
 
-solutions = euler_solver(func=F_wrapped, y0=start_point, t=time_grid)
+solutions = euler_solver(func=F_wrapped, y0=start_point, t=time_grid,name_by_index=name_by_index)
 time_sol = time_grid
 
 # sol = solve_ivp(fun=F_wrapped,t_span=(t_0,t_end),y0=start_point,t_eval=time_grid,method='Radau')
@@ -69,8 +69,8 @@ print(time_sol.shape)
 #      where_nan_i = np.argwhere(np.isnan(solutions[:,i]))
 #      if len(where_nan_i) != 0 :
 #           print(name_by_index[i])
-# raise SystemExit
-intervals = get_intervals_of_processes(solutions, time_sol, index_by_name)
+# intervals = get_intervals_of_processes(solutions, time_sol, index_by_name)
+intervals = {}
 
 
 h_max = np.max(solutions)
