@@ -432,7 +432,7 @@ def F_vec(t: float, y_vec: np.array,
 
     # 2. Myocyte
     M_1 = m_1 * Glu_ef
-    M_2 = m_2 * Pyr_m
+    M_2 = m_2 * Pyr_m * H_cyt_m
     M_3 = m_3 * KB_ef
     M_4 = m_4 * FFA_ef
     M_5 = m_5 * AA_ef
@@ -468,7 +468,7 @@ def F_vec(t: float, y_vec: np.array,
     A_13=a_13 * Ac_CoA_a * NADPH_a
     A_14=a_14 * Cit_a
     A_15=a_15 * Cit_a
-    A_16=a_16 * OAA_a * Cit_a
+    A_16=a_16 * OAA_a * Ac_CoA_a
     A_17=a_17 * AA_a
     A_18=a_18 * AA_a
     A_19=a_19 * AA_a
@@ -498,7 +498,7 @@ def F_vec(t: float, y_vec: np.array,
     H_23=h_23 * OAA_h
     H_24=h_24 * OAA_h
     H_25=h_25 * Pyr_h
-    H_26=h_26 * AA_h
+    H_26=h_26 * Cit_h
     H_27=h_27 * AA_h
     H_28=h_28 * AA_h
     H_29=h_29 * AA_h
@@ -561,10 +561,7 @@ def F_vec(t: float, y_vec: np.array,
     J_KB_minus  =  0.0
     J_KB_plus = 0.0
     
-
-
-
-    # непостредственно вычисление вектора F(t) в точке t
+    # вычисление вектора F(t) в точке t
 
     #                                 Метаболиты
     # 1. Adipocyte
@@ -573,7 +570,7 @@ def F_vec(t: float, y_vec: np.array,
     right_G6_a=A_4 - A_5 - A_6
     right_G3_a=A_5 + A_6 + A_9 - A_7 - A_8
     right_Pyr_a=A_8 + A_12 + A_19 - A_10 - A_11
-    right_Ac_CoA_a=A_10 + A_14 + A_18 - A_13 #- A_16 # не верно
+    right_Ac_CoA_a=A_10 + A_14 + A_18 - A_13 - A_16
     right_FA_CoA_a=A_2 + A_13 - A_7
     right_Cit_a=A_16 - A_14 - A_15
     right_OAA_a=A_11 + A_14 + A_15 + A_17 - A_9 - A_12 - A_16 
@@ -588,7 +585,7 @@ def F_vec(t: float, y_vec: np.array,
     right_TG_h= H_20 - H_9
     right_MVA_h=    H_17 - H_7
     right_OAA_h=    H_22 + H_25 + H_26  + H_28 - H_21 - H_23 - H_24
-    right_Cit_h=    H_21 - H_22 # - H_26 # не верно
+    right_Cit_h=    H_21 - H_22 - H_26 
     right_AA_h= H_1 - H_27 - H_28 - H_29
     right_NADPH_h=  H_14 + H_24 - H_19
     # 3. Myocyte
@@ -601,12 +598,12 @@ def F_vec(t: float, y_vec: np.array,
     right_AA_m= M_5 + M_21 - M_6 - M_17 - M_18 - M_19 - M_20
     right_Cit_m=    M_13 - M_14
     right_OAA_m=    M_14 + M_19 - M_13
-    right_H_cyt_m=  M_10  - M_15 # - M_2# не верно
+    right_H_cyt_m=  M_10  - M_15 - M_2
     right_H_mit_m=  M_3 + M_12 + M_15 - M_16
     right_CO2_m=    M_11 + M_14
     right_H2O_m=    M_16
-    right_ATP_cyt_m=    M_10 # Anaerob
-    right_ATP_mit_m=    M_16 # Aerob
+    right_ATP_cyt_m=    M_10 
+    right_ATP_mit_m=    M_16 
 
 
     right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - M_1 - A_4 - H_3   - J_1
@@ -635,11 +632,11 @@ def F_vec(t: float, y_vec: np.array,
     # INS [mmol]
 
 
-    right_INS= 1.0 * J_carb_flow + 1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) +1.0 * J_fat_flow + 1.0 * J_prot_flow - INS * CL_INS
-     
+    right_INS = 1.0 * J_carb_flow  +1.0 * J_fat_flow + 1.0 * J_prot_flow - INS * CL_INS # + 1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0)
+    
     # Glu_ef/V_extracerular_fluid [mmol/L]
     # GLN [mmol]
-    right_GLN = - CL_GLN * GLN  + lambda_ * (1.0/np.maximum(Glu_ef/14.0, 0.1))# не верно
+    right_GLN = - CL_GLN * GLN  + lambda_ * (1.0/np.maximum(Glu_ef/14.0, 0.1)) # не химическая кинетика
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
     

@@ -10,9 +10,9 @@ from euler import euler_solver
 index_by_name, name_by_index, start_point = get_start_point_names_mapping(start_point_dict)
 # start_point = 0.1+ 10*np.random.rand(len(start_point))
 
-J_flow_carb_vs = J_flow_carb_func.values
-J_flow_prot_vs = J_flow_prot_func.values
-J_flow_fat_vs  = J_flow_fat_func.values 
+J_flow_carb_vs = np.zeros(shape=(len(J_flow_carb_func.values)),dtype=np.float32)
+J_flow_prot_vs = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
+J_flow_fat_vs  = np.zeros(shape=(len(J_flow_fat_func.values)),dtype=np.float32) 
 
 
 INS_on_grid = np.zeros(shape=(len(time_grid), ),dtype=np.float32)
@@ -41,7 +41,7 @@ solver.set_integrator(solver_type)
 solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
 solutions[0,:] = solver.y
 i_=  1
-while solver.successful() and solver.t < t_end-tau_grid:
+while solver.successful() and solver.t < t_end:
 # while solver.t < t_end-tau_grid:
     solutions[i_,:] = solver.integrate(solver.t+tau_grid)
     i_ += 1 
