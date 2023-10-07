@@ -217,7 +217,7 @@ start_point_dict = {
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-# @jit(nopython = True)
+@jit(nopython = True)
 def F_vec(t: float, y_vec: np.array,
           INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
           last_seen_time:np.array,last_time_pos:np.array,
@@ -567,58 +567,54 @@ def F_vec(t: float, y_vec: np.array,
     # непостредственно вычисление вектора F(t) в точке t
 
     #                                 Метаболиты
-    # A_16 = 0
-    # A_12 = 0
-    # A_14 = 0
-    # A_15 =0
     # 1. Adipocyte
     right_TG_a=A_7 - A_3
     right_AA_a=A_1 - A_17 - A_18 - A_19 
     right_G6_a=A_4 - A_5 - A_6
-    right_G3_a=2*A_5 + A_6 + A_9 - A_7 - A_8
+    right_G3_a=A_5 + A_6 + A_9 - A_7 - A_8
     right_Pyr_a=A_8 + A_12 + A_19 - A_10 - A_11
-    right_Ac_CoA_a=A_10 + A_14 + A_18 - 8*A_13 - A_16
-    right_FA_CoA_a=A_2 + A_13 - 3*A_7
+    right_Ac_CoA_a=A_10 + A_14 + A_18 - A_13 #- A_16 # не верно
+    right_FA_CoA_a=A_2 + A_13 - A_7
     right_Cit_a=A_16 - A_14 - A_15
     right_OAA_a=A_11 + A_14 + A_15 + A_17 - A_9 - A_12 - A_16 
-    right_NADPH_a=A_6 + A_12 - 14*A_13
+    right_NADPH_a=A_6 + A_12 - A_13
     # 2. Hepatocyte
     right_GG_h= H_10 - H_11
     right_G6_h= H_3 + H_11 + H_13 - H_2 - H_10 - H_12 - H_14
-    right_G3_h= H_4 + 2*H_12 + H_14 + H_23 - 2*H_13 - H_15 - H_20
+    right_G3_h= H_4 + H_12 + H_14 + H_23 - H_13 - H_15 - H_20
     right_Pyr_h=    H_5 + H_15 + H_24 + H_29 - H_16 - H_25
-    right_Ac_CoA_h= H_16 + 8*H_18 + H_26 + H_27 - 3*H_17 - 8*H_19
-    right_FA_CoA_h= H_8 + H_19 - H_18 - 3*H_20
+    right_Ac_CoA_h= H_16 + H_18 + H_26 + H_27 - H_17 - H_19
+    right_FA_CoA_h= H_8 + H_19 - H_18 - H_20
     right_TG_h= H_20 - H_9
     right_MVA_h=    H_17 - H_7
     right_OAA_h=    H_22 + H_25 + H_26  + H_28 - H_21 - H_23 - H_24
-    right_Cit_h=    H_21 - H_22 - H_26
+    right_Cit_h=    H_21 - H_22 # - H_26 # не верно
     right_AA_h= H_1 - H_27 - H_28 - H_29
-    right_NADPH_h=  6*H_14 + H_24 - 14*H_19
+    right_NADPH_h=  H_14 + H_24 - H_19
     # 3. Myocyte
     right_GG_m= M_7 - M_8
     right_G6_m= M_1 + M_8 - M_7 - M_9
-    right_G3_m= 2*M_9 - M_10
+    right_G3_m= M_9 - M_10
     right_Pyr_m=    M_10 + M_17 - M_11 - M_2
-    right_Ac_CoA_m= 2*M_3 + M_11 + 8*M_12 + M_18 - M_13
+    right_Ac_CoA_m= M_3 + M_11 + M_12 + M_18 - M_13
     right_FA_CoA_m= M_4 - M_12
     right_AA_m= M_5 + M_21 - M_6 - M_17 - M_18 - M_19 - M_20
     right_Cit_m=    M_13 - M_14
     right_OAA_m=    M_14 + M_19 - M_13
-    right_H_cyt_m=  2*M_10 - M_2 - M_15
-    right_H_mit_m=  M_3 + 14*M_12 + M_15 - M_16
-    right_CO2_m=    M_11 + 2*M_14
+    right_H_cyt_m=  M_10  - M_15 # - M_2# не верно
+    right_H_mit_m=  M_3 + M_12 + M_15 - M_16
+    right_CO2_m=    M_11 + M_14
     right_H2O_m=    M_16
     right_ATP_cyt_m=    M_10 # Anaerob
-    right_ATP_mit_m=    2*M_16 # Aerob
+    right_ATP_mit_m=    M_16 # Aerob
 
 
-    right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - H_3 - M_1 - A_4 - J_1
-    right_AA_ef =  J_prot_flow + M_6  - J_AA_minus - A_1 - H_1 - M_5 - J_4 
-    right_FFA_ef= 3*J_0 + 3*A_3  - J_FFA_minus - J_3 - A_2 - H_8 - M_4
-    right_KB_ef=  H_6  - J_KB_minus + J_KB_plus - J_2 - M_3
+    right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - M_1 - A_4 - H_3   - J_1
+    right_AA_ef =  J_prot_flow + M_6  - J_AA_minus - M_5 - A_1 - H_1  - J_4 
+    right_FFA_ef= J_0 + A_3  - J_FFA_minus - M_4 - A_2 - H_8 - J_3  
+    right_KB_ef=  H_6  - J_KB_minus + J_KB_plus - M_3 - J_2 
 
-    right_TG_pl =  J_fat_flow + H_9 - J_0 
+    right_TG_pl =  J_fat_flow + H_9 - J_0
 
     right_Glycerol_ef =    J_0 + A_3 - H_4
     right_Lac_m=  M_2 - H_5
@@ -643,10 +639,10 @@ def F_vec(t: float, y_vec: np.array,
      
     # Glu_ef/V_extracerular_fluid [mmol/L]
     # GLN [mmol]
-    right_GLN = lambda_ * (1.0/np.maximum(Glu_ef/14.0, 0.1)) - CL_GLN * GLN
+    right_GLN = - CL_GLN * GLN  + lambda_ * (1.0/np.maximum(Glu_ef/14.0, 0.1))# не верно
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
-
+    
     buffer[0] = right_Glu_ef
     buffer[1] = right_AA_ef
     buffer[2] = right_Glycerol_ef
@@ -697,11 +693,65 @@ def F_vec(t: float, y_vec: np.array,
     buffer[47] = right_CAM
     buffer[48] = right_GLN
     buffer[49] = right_Urea_ef
-    if len(np.argwhere(np.abs(buffer) > 10**5)) !=0:
-        # where_bad = np.argwhere(np.abs(buffer) > 10**5)
-        # print(t)
-        return np.zeros(shape=(50, ),dtype=np.float32)
+
+    # if len(np.argwhere(np.abs(buffer) > 10**5)) !=0:
+    #     where_bad = np.argwhere(np.abs(buffer) > 10**5).flatten()
+    #     return np.zeros(shape=(50, ),dtype=np.float32)
 
     # if len(np.argwhere(np.isnan(buffer))) !=0 :
     #     print(t)
     return buffer
+
+
+
+
+    # buffer[0] = np.maximum(right_Glu_ef,0.0)
+    # buffer[1] = np.maximum(right_AA_ef,0.0)
+    # buffer[2] = np.maximum(right_Glycerol_ef,0.0)
+    # buffer[3] = np.maximum(right_FFA_ef,0.0)
+    # buffer[4] = np.maximum(right_Lac_m,0.0)
+    # buffer[5] = np.maximum(right_KB_ef,0.0)
+    # buffer[6] = np.maximum(right_Cholesterol_pl,0.0)
+    # buffer[7] = np.maximum(right_TG_pl,0.0)
+    # buffer[8] = np.maximum(right_G6_a,0.0)
+    # buffer[9] = np.maximum(right_G3_a,0.0)
+    # buffer[10] = np.maximum(right_Pyr_a,0.0)
+    # buffer[11] = np.maximum(right_Ac_CoA_a,0.0)
+    # buffer[12] = np.maximum(right_FA_CoA_a,0.0)
+    # buffer[13] = np.maximum(right_Cit_a,0.0)
+    # buffer[14] = np.maximum(right_OAA_a,0.0)
+    # buffer[15] = np.maximum(right_AA_a,0.0)
+    # buffer[16] = np.maximum(right_NADPH_a,0.0)
+    # buffer[17] = np.maximum(right_TG_a,0.0)
+    # buffer[18] = np.maximum(right_GG_m,0.0)
+    # buffer[19] = np.maximum(right_G6_m,0.0)
+    # buffer[20] = np.maximum(right_G3_m,0.0)
+    # buffer[21] = np.maximum(right_Pyr_m,0.0)
+    # buffer[22] = np.maximum(right_Ac_CoA_m,0.0)
+    # buffer[23] = np.maximum(right_FA_CoA_m,0.0)
+    # buffer[24] = np.maximum(right_Cit_m,0.0)
+    # buffer[25] = np.maximum(right_OAA_m,0.0)
+    # buffer[26] = np.maximum(right_H_cyt_m,0.0)
+    # buffer[27] = np.maximum(right_H_mit_m,0.0)
+    # buffer[28] = np.maximum(right_AA_m,0.0)
+    # buffer[29] = np.maximum(right_Muscle_m,0.0)
+    # buffer[30] = np.maximum(right_CO2_m,0.0)
+    # buffer[31] = np.maximum(right_H2O_m,0.0)
+    # buffer[32] = np.maximum(right_ATP_cyt_m,0.0)
+    # buffer[33] = np.maximum(right_ATP_mit_m,0.0)
+    # buffer[34] = np.maximum(right_GG_h,0.0)
+    # buffer[35] = np.maximum(right_G6_h,0.0)
+    # buffer[36] = np.maximum(right_G3_h,0.0)
+    # buffer[37] = np.maximum(right_Pyr_h,0.0)
+    # buffer[38] = np.maximum(right_Ac_CoA_h,0.0)
+    # buffer[39] = np.maximum(right_FA_CoA_h,0.0)
+    # buffer[40] = np.maximum(right_MVA_h,0.0)
+    # buffer[41] = np.maximum(right_Cit_h,0.0)
+    # buffer[42] = np.maximum(right_OAA_h,0.0)
+    # buffer[43] = np.maximum(right_NADPH_h,0.0)
+    # buffer[44] = np.maximum(right_AA_h,0.0)
+    # buffer[45] = np.maximum(right_TG_h,0.0)
+    # buffer[46] = np.maximum(right_INS,0.0)
+    # buffer[47] = np.maximum(right_CAM,0.0)
+    # buffer[48] = np.maximum(right_GLN,0.0)
+    # buffer[49] = np.maximum(right_Urea_ef,0.0)

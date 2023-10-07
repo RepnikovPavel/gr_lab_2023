@@ -32,29 +32,29 @@ def F_wrapped(t, y):
                     J_flow_prot_vs,
                     J_flow_fat_vs)
 
-# solver = ode(f=F_wrapped,jac=None)
-# solver.set_initial_value(y=start_point,t=t_0)
-# # solver_type = 'lsoda'
-# # solver_type = 'dopri5'
-# solver_type = 'vode'
-# solver.set_integrator(solver_type) 
-# solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
-# solutions[0,:] = solver.y
-# i_=  1
-# while solver.successful() and solver.t < t_end-tau_grid:
-# # while solver.t < t_end-tau_grid:
-#     solutions[i_,:] = solver.integrate(solver.t+tau_grid)
-#     i_ += 1 
-# print('last solver time step {} target last step {}'.format(i_, len(time_grid)-1))
-# time_sol = time_grid
+solver = ode(f=F_wrapped,jac=None)
+solver.set_initial_value(y=start_point,t=t_0)
+# solver_type = 'lsoda'
+# solver_type = 'dopri5'
+solver_type = 'vode'
+solver.set_integrator(solver_type) 
+solutions = np.zeros(shape=(len(time_grid),len(start_point)),dtype=np.float32)
+solutions[0,:] = solver.y
+i_=  1
+while solver.successful() and solver.t < t_end-tau_grid:
+# while solver.t < t_end-tau_grid:
+    solutions[i_,:] = solver.integrate(solver.t+tau_grid)
+    i_ += 1 
+print('last solver time step {} target last step {}'.format(i_, len(time_grid)-1))
+time_sol = time_grid
 
 # output = odeint(tfirst=True,func=F_wrapped, y0=start_point, t=time_grid,full_output=1)
 # solutions = output[0]
 # time_sol = time_grid
 # solver_o = output[1]
 
-solutions = euler_solver(func=F_wrapped, y0=start_point, t=time_grid,name_by_index=name_by_index)
-time_sol = time_grid
+# solutions = euler_solver(func=F_wrapped, y0=start_point, t=time_grid,name_by_index=name_by_index,debug=False)
+# time_sol = time_grid
 
 # sol = solve_ivp(fun=F_wrapped,t_span=(t_0,t_end),y0=start_point,t_eval=time_grid,method='Radau')
 # solutions = sol.y.T
