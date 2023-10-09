@@ -10,7 +10,7 @@ INS_check_coeff = 400 # [mmol*s]
 # take grid on from FPC.ipynb file 
 tau_grid = 0.01 # [min]
 t_0 = 400.0 # [min]
-t_end = 2500.0 # [min]
+t_end = 3000.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
 
@@ -565,58 +565,58 @@ def F_vec(t: float, y_vec: np.array,
 
     #                                 Метаболиты
     # 1. Adipocyte
-    right_TG_a=A_7 - A_3
+    right_TG_a=2.0*A_7 - A_3
     right_AA_a=A_1 - A_17 - A_18 - A_19 
     right_G6_a=A_4 - A_5 - A_6
-    right_G3_a=A_5 + A_6 + A_9 - A_7 - A_8
-    right_Pyr_a=A_8 + A_12 + A_19 - A_10 - A_11
-    right_Ac_CoA_a=A_10 + A_14 + A_18 - A_13 - A_16
-    right_FA_CoA_a=A_2 + A_13 - A_7
-    right_Cit_a=A_16 - A_14 - A_15
-    right_OAA_a=A_11 + A_14 + A_15 + A_17 - A_9 - A_12 - A_16 
-    right_NADPH_a=A_6 + A_12 - A_13
+    right_G3_a=A_5 + (1.0/2.0)*A_6 + A_9 - A_7 - A_8
+    right_Pyr_a=A_8 + (1.0/2.0)*A_12 + (1.0/2.0)*A_19 - A_10 - A_11
+    right_Ac_CoA_a=A_10 + (1.0/2.0)*A_14 + (1.0/2.0)*A_18 - A_13 - A_16
+    right_FA_CoA_a=A_2 + 2.0*A_13 - A_7
+    right_Cit_a=2.0*A_16 - A_14 - A_15
+    right_OAA_a=A_11 + (1.0/2.0)*A_14 + A_15 +(1.0/2.0)*A_17 - A_9 - A_12 - A_16 
+    right_NADPH_a=(1.0/2.0)*A_6 + (1.0/2.0)*A_12 - A_13
     # 2. Hepatocyte
     right_GG_h= H_10 - H_11
     right_G6_h= H_3 + H_11 + H_13 - H_2 - H_10 - H_12 - H_14
-    right_G3_h= H_4 + H_12 + H_14 + H_23 - H_13 - H_15 - H_20
-    right_Pyr_h=    H_5 + H_15 + H_24 + H_29 - H_16 - H_25
-    right_Ac_CoA_h= H_16 + H_18 + H_26 + H_27 - H_17 - H_19
-    right_FA_CoA_h= H_8 + H_19 - H_18 - H_20
-    right_TG_h= H_20 - H_9
+    right_G3_h= H_4 + H_12 + (1.0/2.0)*H_14 + H_23 - H_13 - H_15 - H_20
+    right_Pyr_h=    H_5 + H_15 + (1.0/2.0)*H_24 + (1.0/2.0)*H_29 - H_16 - H_25
+    right_Ac_CoA_h= H_16 + H_18 + H_26 + (1.0/2.0)*H_27 - H_17 - H_19 - H_6
+    right_FA_CoA_h= H_8 + 2.0*H_19 - H_18 - H_20
+    right_TG_h= 2.0*H_20 - H_9
     right_MVA_h=    H_17 - H_7
-    right_OAA_h=    H_22 + H_25 + H_26  + H_28 - H_21 - H_23 - H_24
+    right_OAA_h=    H_22 + H_25 + H_26  + (1.0/2.0)*H_28 - H_21 - H_23 - H_24
     right_Cit_h=    H_21 - H_22 - H_26 
     right_AA_h= H_1 - H_27 - H_28 - H_29
-    right_NADPH_h=  H_14 + H_24 - H_19
+    right_NADPH_h=  (1.0/2.0)*H_14 + (1.0/2.0)*H_24 - H_19
     # 3. Myocyte
     right_GG_m= M_7 - M_8
     right_G6_m= M_1 + M_8 - M_7 - M_9
     right_G3_m= M_9 - M_10
-    right_Pyr_m=    M_10 + M_17 - M_11 - M_2
-    right_Ac_CoA_m= M_3 + M_11 + M_12 + M_18 - M_13
+    right_Pyr_m=    (1.0/3.0)*M_10 + (1.0/2.0)*M_17 - M_11 - M_2
+    right_Ac_CoA_m= (1.0/2.0)*M_3 + (1.0/2.0)*M_11 + (1.0/2.0)*M_12 + (1.0/2.0)*M_18 - M_13
     right_FA_CoA_m= M_4 - M_12
     right_AA_m= M_5 + M_21 - M_6 - M_17 - M_18 - M_19 - M_20
-    right_Cit_m=    M_13 - M_14
-    right_OAA_m=    M_14 + M_19 - M_13
-    right_H_cyt_m=  M_10  - M_15 - M_2
-    right_H_mit_m=  M_3 + M_12 + M_15 - M_16
-    right_CO2_m=    M_11 + M_14
-    right_H2O_m=    M_16
-    right_ATP_cyt_m=    M_10 
-    right_ATP_mit_m=    M_16 
+    right_Cit_m=    2.0*M_13 - M_14
+    right_OAA_m=    (1.0/2.0)*M_14 + (1.0/2.0)*M_19 - M_13
+    right_H_cyt_m=  (1.0/3.0)*M_10  - M_15 - M_2
+    right_H_mit_m=  (1.0/2.0)*M_3 + (1.0/2.0)*M_12 + M_15 - M_16
+    right_CO2_m=    (1.0/2.0)*M_11 + (1.0/2.0)*M_14
+    right_H2O_m=    (1.0/2.0)*M_16
+    right_ATP_cyt_m=    (1.0/3.0)*M_10 
+    right_ATP_mit_m=    (1.0/2.0)*M_16 
 
 
     right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - M_1 - A_4 - H_3   - J_1
     right_AA_ef =  J_prot_flow + M_6  - J_AA_minus - M_5 - A_1 - H_1  - J_4 
-    right_FFA_ef= J_0 + A_3  - J_FFA_minus - M_4 - A_2 - H_8 - J_3  
-    right_KB_ef=  H_6  - J_KB_minus + J_KB_plus - M_3 - J_2 
+    right_FFA_ef= J_0 + (1.0/2.0)*A_3  - J_FFA_minus - M_4 - A_2 - H_8 - J_3  
+    right_KB_ef=  - J_KB_minus + J_KB_plus - M_3 - J_2 + H_6  #  коеффициент H_6 не уравнян
 
     right_TG_pl =  J_fat_flow + H_9 - J_0
 
-    right_Glycerol_ef =    J_0 + A_3 - H_4
-    right_Lac_m=  M_2 - H_5
+    right_Glycerol_ef =    J_0 + (1.0/2.0)*A_3 - H_4
+    right_Lac_m=  2.0*M_2 - H_5
 
-    right_Urea_ef=    J_4 + A_17 + A_18 + A_19 + M_17 + M_18 + M_19 + H_27 + H_28 + H_29
+    right_Urea_ef=    J_4 + (1.0/2.0)*A_17 + (1.0/2.0)*A_18 + (1.0/2.0)*A_19 + (1.0/2.0)*M_17 + (1.0/2.0)*M_18 + (1.0/2.0)*M_19 + (1.0/2.0)*H_27 + (1.0/2.0)*H_28 + (1.0/2.0)*H_29
     right_Cholesterol_pl= H_7
 
     alpha = alpha_base
@@ -697,6 +697,10 @@ def F_vec(t: float, y_vec: np.array,
 
     # if len(np.argwhere(np.isnan(buffer))) !=0 :
     #     print(t)
+    # print(t)
+    # if t > 600.0:
+    #     where_bad = np.argwhere(np.abs(buffer) > 10**(-3)).flatten()
+    #     print(1)
     return buffer
 
 
