@@ -300,33 +300,33 @@ def F_vec(t: float, y_vec: np.array,
     GLN = y_vec[48]            
     Urea_ef = y_vec[49]                 
 
-
-    insulin_activation_coefficient =  17.0
+    insulin_activation_coefficient =  15.0
     is_insulin_process = Heviside(INS-insulin_activation_coefficient)
     # is_insulin_process = Sigmoid(INS-insulin_activation_coefficient)
-    h_10 = is_insulin_process * h_10_base 
-    h_12 = is_insulin_process * h_12_base
-    h_24 = is_insulin_process * h_24_base
-    h_20 = is_insulin_process * h_20_base
-    h_17 = is_insulin_process * h_17_base
-    h_16 = is_insulin_process * h_16_base
-    h_26 = is_insulin_process * h_26_base
-    h_19 = is_insulin_process * h_19_base
-    h_7 = is_insulin_process * h_7_base
-    h_3 = is_insulin_process * h_3_base
-    j_0 = is_insulin_process * j_0_base
-    a_4 = is_insulin_process * a_4_base
     a_2 = is_insulin_process * a_2_base
-    a_5 = is_insulin_process * a_5_base
+    a_4 = is_insulin_process * a_4_base
     a_7 = is_insulin_process * a_7_base
-    a_13 = is_insulin_process * a_13_base
-    a_14 = is_insulin_process * a_14_base
-    a_10 = is_insulin_process * a_10_base
-    a_12 = is_insulin_process * a_12_base
-    m_7 = is_insulin_process * m_7_base
-    m_9 = is_insulin_process * m_9_base
     m_1 = is_insulin_process * m_1_base
-    m_11 = is_insulin_process * m_11_base
+    m_7 = is_insulin_process * m_7_base
+    h_3 = is_insulin_process * h_3_base
+    h_10 = is_insulin_process * h_10_base
+    h_19 = is_insulin_process * h_19_base
+    h_20 = is_insulin_process * h_20_base
+
+    h_12 = h_12_base
+    h_24 = h_24_base
+    h_17 = h_17_base
+    h_16 = h_16_base
+    h_26 = h_26_base
+    h_7 = h_7_base
+    j_0 = j_0_base
+    a_5 = a_5_base
+    a_13 = a_13_base
+    a_14 = a_14_base
+    a_10 = a_10_base
+    a_12 = a_12_base
+    m_9 = m_9_base
+    m_11 = m_11_base
 
     # glucagon_adrenilin_activation_coefficient = GLN+CAM
     # is_glucagon_adrenalin_process = Heviside(glucagon_adrenilin_activation_coefficient-160.0)
@@ -338,7 +338,6 @@ def F_vec(t: float, y_vec: np.array,
     # a_9 = is_glucagon_adrenalin_process *  a_9_base
 
 
-    glucagon_adrenalin_insulin_activation_coefficient = INS/(GLN+CAM)
     # is_glucagon_adrenalin_insulin_process = Heviside(glucagon_adrenalin_insulin_activation_coefficient-1.0)
     is_glucagon_adrenalin_insulin_process = 1.0
     # is_glucagon_adrenalin_insulin_process = Sigmoid(glucagon_adrenalin_insulin_activation_coefficient-1.0)
@@ -348,18 +347,22 @@ def F_vec(t: float, y_vec: np.array,
     a_3 = is_glucagon_adrenalin_insulin_process * a_3_base
     a_11 = is_glucagon_adrenalin_insulin_process * a_11_base
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
+    
 
-    # is_glucagon_adrenalin_process = 1.0 - is_glucagon_adrenalin_insulin_process
-    is_glucagon_adrenalin_process = 1.0
+
+    glucagon_adrenalin_activation_coefficient = (GLN+CAM)
+    is_glucagon_adrenalin_process = Heviside(GLN+CAM - 156.0)
     h_23 = is_glucagon_adrenalin_process * h_23_base
     h_18 = is_glucagon_adrenalin_process * h_18_base 
     h_13 = is_glucagon_adrenalin_process * h_13_base
     h_2 = is_glucagon_adrenalin_process *  h_2_base
     a_9 = is_glucagon_adrenalin_process *  a_9_base
 
-    # if not int(is_glucagon_adrenalin_insulin_process):
-
-
+    a_3 = is_glucagon_adrenalin_process * a_3_base
+    m_8 = is_glucagon_adrenalin_process * m_8_base 
+    h_12 = is_glucagon_adrenalin_process * h_2_base
+    h_11 = is_glucagon_adrenalin_process * h_11_base
+    h_13 = is_glucagon_adrenalin_process * h_13_base
 
     # AUC 
 
