@@ -72,6 +72,13 @@ CL_GLN_base=1.0/10.0
 CL_CAM_base=1.0/10.0
 CL_INS_base=1.0/10.0
 
+# коэффициенты, отвечающие за перекачку энергии из Glu,FFA,KB,AA из крови
+m_1_base=            1.0
+m_3_base=            1.0
+m_4_base=            1.0
+m_5_base=            1.0
+
+
 # номера коэффициентов
 a_1_base=            10.0**(power_of_coeff)
 a_2_base=            10.0**(power_of_coeff)
@@ -92,11 +99,7 @@ a_16_base=            10.0**(power_of_coeff)
 a_17_base=            10.0**(power_of_coeff)
 a_18_base=            10.0**(power_of_coeff)
 a_19_base=            10.0**(power_of_coeff)
-m_1_base=            10.0**(power_of_coeff)
 m_2_base=            10.0**(power_of_coeff)
-m_3_base=            10.0**(power_of_coeff)
-m_4_base=            10.0**(power_of_coeff)
-m_5_base=            10.0**(power_of_coeff)
 m_6_base=            10.0**(power_of_coeff)
 m_7_base=            10.0**(power_of_coeff)
 m_8_base=            10.0**(power_of_coeff)
@@ -217,7 +220,7 @@ start_point_dict = {
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-# @jit(nopython = True)
+@jit(nopython = True)
 def F_vec(t: float, y_vec: np.array,
           INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
           last_seen_time:np.array,last_time_pos:np.array,
@@ -426,25 +429,25 @@ def F_vec(t: float, y_vec: np.array,
         e_FFA_minus = e_FFA_min+coeff1
         e_KB_minus = e_KB_min+coeff2
 
-    e_KB_plus = 0.005*e_sigma
-    J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
-    J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-tau_grid*e_AA_minus*inv_beta_AA)
-    J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-tau_grid*e_Glu_minus*inv_beta_Glu)
-    J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-tau_grid*e_FFA_minus*inv_beta_FFA)
-    J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-tau_grid*e_KB_minus*inv_beta_KB)
+    # e_KB_plus = 0.005*e_sigma
+    # J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
+    # J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-100.0*e_AA_minus*inv_beta_AA)
+    # J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-100.0*e_Glu_minus*inv_beta_Glu)
+    # J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-100.0*e_FFA_minus*inv_beta_FFA)
+    # J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-100.0*e_KB_minus*inv_beta_KB)
 
-    J_KB_plus_arr[t_pos] = J_KB_plus
-    J_AA_minus_arr[t_pos] = J_AA_minus
-    J_Glu_minus_arr[t_pos] = J_Glu_minus
-    J_FFA_minus_arr[t_pos] = J_FFA_minus
-    J_KB_minus_arr[t_pos] = J_KB_minus
+    # J_KB_plus_arr[t_pos] = J_KB_plus
+    # J_AA_minus_arr[t_pos] = J_AA_minus
+    # J_Glu_minus_arr[t_pos] = J_Glu_minus
+    # J_FFA_minus_arr[t_pos] = J_FFA_minus
+    # J_KB_minus_arr[t_pos] = J_KB_minus
 
     
-    # J_AA_minus  = 0.0
-    # J_Glu_minus  = 0.0
-    # J_FFA_minus  = 0.0
-    # J_KB_minus  =  0.0
-    # J_KB_plus = 0.0
+    J_AA_minus  = 0.0
+    J_Glu_minus  = 0.0
+    J_FFA_minus  = 0.0
+    J_KB_minus  =  0.0
+    J_KB_plus = 0.0
 
     m_2 = m_2_base 
     m_3 = m_3_base 
