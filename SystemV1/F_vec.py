@@ -217,13 +217,18 @@ start_point_dict = {
 
 # def F_vec(y_vec: np.array,t: float,processes, BMR_process):
 
-@jit(nopython = True)
+# @jit(nopython = True)
 def F_vec(t: float, y_vec: np.array,
           INS_on_grid:np.array, INS_AUC_w_on_grid:np.array,T_a_on_grid:np.array,
           last_seen_time:np.array,last_time_pos:np.array,
             J_flow_carb_vs:np.array,
             J_flow_prot_vs:np.array,
-            J_flow_fat_vs:np.array):
+            J_flow_fat_vs:np.array,                    
+            J_KB_plus_arr:np.array,
+            J_AA_minus_arr:np.array,
+            J_Glu_minus_arr:np.array,
+            J_FFA_minus_arr:np.array,
+            J_KB_minus_arr:np.array):
     buffer = np.zeros(shape=(50, ),dtype=np.float32)
     # свободные функции 
     # J_carb_flow = J_flow_carb_func(t)
@@ -352,6 +357,9 @@ def F_vec(t: float, y_vec: np.array,
     # if not int(is_glucagon_adrenalin_insulin_process):
 
 
+
+    # AUC 
+
     AUC_at_t = -1.0
     T_a_t = -1.0
 
@@ -382,6 +390,61 @@ def F_vec(t: float, y_vec: np.array,
         # already seen time point. get AUC and T_{a}
         AUC_at_t = INS_AUC_w_on_grid[t_pos]
         T_a_t = T_a_on_grid[t_pos]
+
+    # BMR
+    e_AA_min = 0.1*e_sigma
+    e_Glu_min = 0.2*e_sigma
+    e_FFA_min = 0.035*e_sigma
+    e_KB_min = 0.0
+
+    e_AA_minus = 0.0
+    e_Glu_minus = 0.0
+    e_FFA_minus = 0.0
+    e_KB_minus = 0.0
+
+    if AA_ef >= 20.0:
+        e_AA_minus = e_sigma - (e_Glu_min+e_KB_min+e_FFA_min)
+        e_Glu_minus = e_Glu_min
+        e_FFA_minus = e_FFA_min
+        e_KB_minus = e_KB_min
+    elif (AA_ef < 20.0) and (Glu_ef>=20.0) and (T_a_t==0.0):
+        e_AA_minus = e_AA_min
+        e_Glu_minus = e_sigma - (e_AA_min+e_KB_min+e_FFA_min)
+        e_FFA_minus = e_FFA_min
+        e_KB_minus = e_KB_min
+    elif (T_a_t>0.0) and (T_a_t< 3*60.0):
+        e_AA_minus = e_AA_min
+        e_Glu_minus = e_Glu_min
+        e_FFA_minus = e_sigma - (e_AA_min+e_Glu_min+e_KB_min)
+        e_KB_minus = e_KB_min 
+    elif T_a_t >= 3*60.0: 
+        e_AA_minus = e_AA_min
+        e_Glu_minus = e_Glu_min
+        rest_coeff = e_sigma - (e_AA_min+e_Glu_min+e_FFA_min+e_KB_min)
+        coeff1 = rest_coeff*0.5
+        coeff2 = rest_coeff*0.5
+        e_FFA_minus = e_FFA_min+coeff1
+        e_KB_minus = e_KB_min+coeff2
+
+    e_KB_plus = 0.005*e_sigma
+    J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
+    J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-tau_grid*e_AA_minus*inv_beta_AA)
+    J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-tau_grid*e_Glu_minus*inv_beta_Glu)
+    J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-tau_grid*e_FFA_minus*inv_beta_FFA)
+    J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-tau_grid*e_KB_minus*inv_beta_KB)
+
+    J_KB_plus_arr[t_pos] = J_KB_plus
+    J_AA_minus_arr[t_pos] = J_AA_minus
+    J_Glu_minus_arr[t_pos] = J_Glu_minus
+    J_FFA_minus_arr[t_pos] = J_FFA_minus
+    J_KB_minus_arr[t_pos] = J_KB_minus
+
+    
+    # J_AA_minus  = 0.0
+    # J_Glu_minus  = 0.0
+    # J_FFA_minus  = 0.0
+    # J_KB_minus  =  0.0
+    # J_KB_plus = 0.0
 
     m_2 = m_2_base 
     m_3 = m_3_base 
@@ -508,58 +571,8 @@ def F_vec(t: float, y_vec: np.array,
     J_2 = j_2 * KB_ef
     J_3 = j_3 * FFA_ef
     J_4 = j_4 * AA_ef
-
     
-    # BMR
-    e_AA_min = 0.1*e_sigma
-    e_Glu_min = 0.2*e_sigma
-    e_FFA_min = 0.035*e_sigma
-    e_KB_min = 0.0
 
-    e_AA_minus = 0.0
-    e_Glu_minus = 0.0
-    e_FFA_minus = 0.0
-    e_KB_minus = 0.0
-
-    if AA_ef >= 20.0:
-        e_AA_minus = e_sigma - (e_Glu_min+e_KB_min+e_FFA_min)
-        e_Glu_minus = e_Glu_min
-        e_FFA_minus = e_FFA_min
-        e_KB_minus = e_KB_min
-    elif (AA_ef < 20.0) and (Glu_ef>=20.0) and (T_a_t==0.0):
-        e_AA_minus = e_AA_min
-        e_Glu_minus = e_sigma - (e_AA_min+e_KB_min+e_FFA_min)
-        e_FFA_minus = e_FFA_min
-        e_KB_minus = e_KB_min
-    elif (T_a_t>0.0) and (T_a_t< 3*60.0):
-        e_AA_minus = e_AA_min
-        e_Glu_minus = e_Glu_min
-        e_FFA_minus = e_sigma - (e_AA_min+e_Glu_min+e_KB_min)
-        e_KB_minus = e_KB_min 
-    elif T_a_t >= 3*60.0: 
-        e_AA_minus = e_AA_min
-        e_Glu_minus = e_Glu_min
-        rest_coeff = e_sigma - (e_AA_min+e_Glu_min+e_FFA_min+e_KB_min)
-        coeff1 = rest_coeff*0.5
-        coeff2 = rest_coeff*0.5
-        e_FFA_minus = e_FFA_min+coeff1
-        e_KB_minus = e_KB_min+coeff2
-
-
-
-    # e_KB_plus = 0.005*e_sigma
-    # J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
-    # J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-tau_grid*e_AA_minus*inv_beta_AA)
-    # J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-tau_grid*e_Glu_minus*inv_beta_Glu)
-    # J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-tau_grid*e_FFA_minus*inv_beta_FFA)
-    # J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-tau_grid*e_KB_minus*inv_beta_KB)
-
-    
-    J_AA_minus  = 0.0
-    J_Glu_minus  = 0.0
-    J_FFA_minus  = 0.0
-    J_KB_minus  =  0.0
-    J_KB_plus = 0.0
     
     # вычисление вектора F(t) в точке t
 

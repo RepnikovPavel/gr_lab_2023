@@ -10,11 +10,15 @@ from euler import euler_solver
 index_by_name, name_by_index, start_point = get_start_point_names_mapping(start_point_dict)
 # start_point = 0.1+ 10*np.random.rand(len(start_point))
 
-J_flow_carb_vs = np.zeros(shape=(len(J_flow_carb_func.values)),dtype=np.float32)
-J_flow_prot_vs = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
-J_flow_fat_vs  = np.zeros(shape=(len(J_flow_fat_func.values)),dtype=np.float32) 
+# J_flow_carb_vs = np.zeros(shape=(len(J_flow_carb_func.values)),dtype=np.float32)
+# J_flow_prot_vs = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
+# J_flow_fat_vs  = np.zeros(shape=(len(J_flow_fat_func.values)),dtype=np.float32) 
 
+J_flow_carb_vs = J_flow_carb_func.values
+J_flow_prot_vs = J_flow_prot_func.values
+J_flow_fat_vs  = J_flow_fat_func.values 
 
+# AUC auxiliary arrays
 INS_on_grid = np.zeros(shape=(len(time_grid), ),dtype=np.float32)
 INS_AUC_w_on_grid = np.zeros(shape=(len(time_grid), ),dtype=np.float32)
 INS_on_grid[0] = start_point[index_by_name['INS']]
@@ -26,11 +30,25 @@ last_seen_time[0] = t_0
 last_time_pos = np.zeros(shape=(1,),dtype=np.intc)
 last_time_pos[0] = 0
 
+# BMR auxiliary arrays
+J_KB_plus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+J_AA_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+J_Glu_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+J_FFA_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+J_KB_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+
+
+
 def F_wrapped(t, y):
     return F_vec(t,y,INS_on_grid,INS_AUC_w_on_grid,T_a_on_grid,last_seen_time,last_time_pos,
                  J_flow_carb_vs,
                     J_flow_prot_vs,
-                    J_flow_fat_vs)
+                    J_flow_fat_vs,
+                    J_KB_plus,
+                    J_AA_minus,
+                    J_Glu_minus,
+                    J_FFA_minus,
+                    J_KB_minus)
 
 solver = ode(f=F_wrapped,jac=None)
 solver.set_initial_value(y=start_point,t=t_0)
@@ -92,6 +110,12 @@ add_line_to_fig(fig, time_grid, np.array([J_flow_carb_func(t) for t in time_grid
 
 add_line_to_fig(fig, time_grid, T_a_on_grid, r'T_{a}')
 add_line_to_fig(fig, time_grid, INS_AUC_w_on_grid, r'AUC_{w}(INS)')
+
+add_line_to_fig(fig, time_grid, J_KB_minus, r'J^{-}_{KB}')
+add_line_to_fig(fig, time_grid, J_KB_plus, r'J^{+}_{KB}')
+add_line_to_fig(fig, time_grid, J_AA_minus, r'J^{-}_{AA}')
+add_line_to_fig(fig, time_grid, J_FFA_minus, r'J^{-}_{FFA}')
+add_line_to_fig(fig, time_grid, J_Glu_minus, r'J^{-}_{Glu}')
 
 add_line_to_fig(fig,time_sol, EnergyOnGrid(AA=solutions[:,index_by_name['AA_ef']],
                                            FFA=solutions[:,index_by_name['FFA_ef']],
