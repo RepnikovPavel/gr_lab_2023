@@ -11,6 +11,7 @@ INS_check_coeff = 400 # [mmol*s]
 tau_grid = 0.01 # [min]
 t_0 = 400.0 # [min]
 t_end = 3000.0 # [min]
+# t_end = 500.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
 
@@ -651,7 +652,7 @@ def F_vec(t: float, y_vec: np.array,
     # INS [mmol]
 
 
-    right_INS = 1.0 * J_carb_flow  +1.0 * J_fat_flow + 1.0 * J_prot_flow - INS * CL_INS # + 1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0)
+    right_INS =  - INS * CL_INS +1.0 * J_carb_flow  +1.0 * J_fat_flow + 1.0 * J_prot_flow # +1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) 
     
     # Glu_ef/V_extracerular_fluid [mmol/L]
     # GLN [mmol]

@@ -12,6 +12,7 @@ from scipy.integrate import ode,solve_ivp
 from euler import euler_solver
 from copy import deepcopy
 
+
 path_to_plots = r'C:/gr_latex/diploma/pictures'
 
 ############################################## INS carb input #########################################
@@ -19,11 +20,11 @@ index_by_name, name_by_index, start_point = get_start_point_names_mapping(start_
 start_point[index_by_name['AA_ef']] = 0.0
 start_point[index_by_name['FFA_ef']] = 0.0
 start_point[index_by_name['KB_ef']] = 0.0
-start_point[index_by_name['Glu_ef']] = 0.0
+start_point[index_by_name['Glu_ef']] = 100.0
 start_point[index_by_name['INS']] = 0.0
 
 J_flow_carb_vs1 = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
-J_flow_prot_vs1 = J_flow_prot_func.values
+J_flow_prot_vs1 = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
 J_flow_fat_vs1  = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
 
 
@@ -79,15 +80,15 @@ Fat_flow =  np.array([J_flow_fat_func(t) for t in  time_sol])
 Prot_flow = np.array([J_flow_prot_func(t) for t in time_sol])
 Carb_flow = np.array([J_flow_carb_func(t) for t in time_sol])
 INS_vec = solutions[:,index_by_name['INS']]
-t_vec = time_sol
+t_vec = time_sol-t_0
 fig,ax = plt.subplots()
 fig.set_size_inches(4,3)
 
 ax.plot(t_vec,INS_vec,label = r'$[INS]_{ef}$',c='k',linewidth= 3)
 
-x_ticks = np.arange(np.min(t_vec),np.max(t_vec), 300)
+x_ticks = np.arange(np.min(t_vec),30, 5)
 x_labels = [latex_float(tick,0) for tick in x_ticks]
-y_ticks = np.arange(np.min(INS_vec),np.max(INS_vec)+3, 3)
+y_ticks = np.arange(np.min(INS_vec),np.max(INS_vec)+10, 10)
 y_labels = [latex_float(tick,0) for tick in y_ticks]
 ax.set_xlim(x_ticks[0],x_ticks[-1])
 ax.set_ylim(y_ticks[0],y_ticks[-1])
@@ -95,20 +96,23 @@ ax.set_xticks(x_ticks)
 ax.set_yticks(y_ticks)
 ax.set_xticklabels(x_labels)
 ax.set_yticklabels(y_labels)
+
 ax.set_xlabel(r'$t,мин$',fontsize = 15)
 ax.set_ylabel(r'$[INS]_{ef}, ммоль$',fontsize = 15)
+ax.set_xlim(0,30)
 ax2 = ax.twinx()
-y2 =Prot_flow
-y2[np.argwhere(y2==0.0)]=0.0
+y2 = solutions[:, index_by_name['Glu_ef']]
+# y2[np.argwhere(y2==0.0)]=0.0
 
-ax2.plot(time_sol,y2,c='r',linestyle='dashed',linewidth= 3)
-ax2.set_ylabel(r'$J_{prot}^{+},ммоль \cdot мин^{-1}$',color='r',fontsize = 15)
-y2_ticks = np.arange(np.min(y2),np.max(y2)+0.3, 0.3)
-y2_labels = [latex_float(tick,1) for tick in y2_ticks]
+ax2.plot(t_vec,y2,c='r',linestyle='dashed',linewidth= 3)
+ax2.set_ylabel(r'$[Glu]_{ef},ммоль$',color='r',fontsize = 15)
+y2_ticks = np.arange(np.min(y2),np.max(y2)+10, 10)
+y2_labels = [latex_float(tick,0) for tick in y2_ticks]
 ax2.set_yticks(y2_ticks)
 ax2.set_yticklabels(y2_labels,color='r')
 ax.tick_params(axis='both', which='major', labelsize=10)
 ax2.tick_params(axis='both', which='major', labelsize=10)
 ax2.set_ylim(y2_ticks[0],y2_ticks[-1])
-fig.savefig(os.path.join(path_to_plots,'INS_prot.png'),bbox_inches = 'tight',dpi=1000)
+
+fig.savefig(os.path.join(path_to_plots,'INS_glu_from_blood.png'),bbox_inches = 'tight')
 plt.show()
