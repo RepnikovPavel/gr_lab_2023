@@ -4,7 +4,7 @@ from input import *
 import torch
 from local_contributor_config import problem_folder
 
-W =  20.0 # [min] window to check AUC(INS, t-W,t)
+W =  50.0 # [min] window to check AUC(INS, t-W,t)
 INS_check_coeff = 400 # [mmol*s]
 
 # take grid on from FPC.ipynb file 
@@ -350,7 +350,6 @@ def F_vec(t: float, y_vec: np.array,
     m_8 = is_glucagon_adrenalin_insulin_process * m_8_base
     
 
-
     glucagon_adrenalin_activation_coefficient = (GLN+CAM)
     is_glucagon_adrenalin_process = Heviside(GLN+CAM - 156.0)
     h_23 = is_glucagon_adrenalin_process * h_23_base
@@ -629,7 +628,7 @@ def F_vec(t: float, y_vec: np.array,
     right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - M_1 - A_4 - H_3   - J_1
     right_AA_ef =  J_prot_flow + M_6  - J_AA_minus - M_5 - A_1 - H_1  - J_4 
     right_FFA_ef= J_0 + (1.0/2.0)*A_3  - J_FFA_minus - M_4 - A_2 - H_8 - J_3  
-    right_KB_ef=  - J_KB_minus + J_KB_plus - M_3 - J_2 + H_6  #  коеффициент H_6 не уравнян
+    right_KB_ef=  - J_KB_minus + J_KB_plus - M_3 - J_2 + H_6
 
     right_TG_pl =  J_fat_flow + H_9 - J_0
 
@@ -652,7 +651,7 @@ def F_vec(t: float, y_vec: np.array,
     # INS [mmol]
 
 
-    right_INS =  - INS * CL_INS +1.0 * J_carb_flow  +1.0 * J_fat_flow + 1.0 * J_prot_flow # +1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) 
+    right_INS =  - INS * CL_INS  +1.0 * J_carb_flow  +1.0 * J_fat_flow + 1.0 * J_prot_flow  # +1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) #
     
     # Glu_ef/V_extracerular_fluid [mmol/L]
     # GLN [mmol]

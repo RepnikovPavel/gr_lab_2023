@@ -87,7 +87,7 @@ ax.plot(t_vec,INS_vec,label = r'$[INS]_{ef}$',c='k',linewidth= 3)
 
 x_ticks = np.arange(np.min(t_vec),np.max(t_vec), 300)
 x_labels = [latex_float(tick,0) for tick in x_ticks]
-y_ticks = np.arange(np.min(INS_vec),np.max(INS_vec)+3, 3)
+y_ticks = np.arange(np.min(INS_vec),np.max(INS_vec)+2, 2)
 y_labels = [latex_float(tick,0) for tick in y_ticks]
 ax.set_xlim(x_ticks[0],x_ticks[-1])
 ax.set_ylim(y_ticks[0],y_ticks[-1])
@@ -103,7 +103,7 @@ y2[np.argwhere(y2==0.0)]=0.0
 
 ax2.plot(time_sol,y2,c='r',linestyle='dashed',linewidth= 3)
 ax2.set_ylabel(r'$J_{prot}^{+},ммоль \cdot мин^{-1}$',color='r',fontsize = 15)
-y2_ticks = np.arange(np.min(y2),np.max(y2)+0.3, 0.3)
+y2_ticks = np.arange(np.min(y2),np.max(y2)+0.4, 0.4)
 y2_labels = [latex_float(tick,1) for tick in y2_ticks]
 ax2.set_yticks(y2_ticks)
 ax2.set_yticklabels(y2_labels,color='r')
