@@ -31,11 +31,21 @@ last_time_pos = np.zeros(shape=(1,),dtype=np.intc)
 last_time_pos[0] = 0
 
 # BMR auxiliary arrays
-J_KB_plus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
-J_AA_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
-J_Glu_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
-J_FFA_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
-J_KB_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+# J_KB_plus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+# J_AA_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+# J_Glu_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+# J_FFA_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+# J_KB_minus = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+
+e_KB_plus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_AA_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_Glu_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_FFA_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_KB_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_TG_a_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_GG_h_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_GG_m_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
+e_Muscle_m_minus_arr = np.zeros(shape=(len(time_grid),),dtype=np.float32)
 
 
 
@@ -44,11 +54,15 @@ def F_wrapped(t, y):
                  J_flow_carb_vs,
                     J_flow_prot_vs,
                     J_flow_fat_vs,
-                    J_KB_plus,
-                    J_AA_minus,
-                    J_Glu_minus,
-                    J_FFA_minus,
-                    J_KB_minus)
+                    e_KB_plus_arr,
+                    e_AA_minus_arr,
+                    e_Glu_minus_arr,
+                    e_FFA_minus_arr,
+                    e_KB_minus_arr,
+                    e_TG_a_minus_arr,
+                    e_GG_h_minus_arr,
+                    e_GG_m_minus_arr,
+                    e_Muscle_m_minus_arr)
 
 solver = ode(f=F_wrapped,jac=None)
 solver.set_initial_value(y=start_point,t=t_0)
@@ -97,6 +111,24 @@ print(h_min,h_max)
 
 step_ = (h_max-h_min)/10
 
+fig2 = init_figure(r'$t,min$',y_label=r'$$')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['Glu_ef']], r'Glu_ef')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['AA_ef']], r'AA_ef')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['FFA_ef']], r'FFA_ef')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['KB_ef']], r'KB_ef')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['TG_a']], r'TG_a')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['AA_a']], r'AA_a')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['G6_a']], r'G6_a')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['G3_a']], r'G3_a')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['GG_h']], r'GG_h')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['G6_h']], r'G6_h')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['G3_h']], r'G3_h')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['TG_h']], r'TG_h')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['GG_m']], r'GG_m')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['G3_m']], r'G3_m')
+add_line_to_fig(fig2, time_sol, solutions[:,index_by_name['TG_pl']], r'TG_pl')
+fig2.show()
+
 fig = init_figure(x_label=r'$t,min$',y_label=r'$\frac{mmol}{L}$')
 fig = plot_solutions(fig, solutions, time_sol, name_by_index)
 
@@ -111,18 +143,14 @@ add_line_to_fig(fig, time_grid, np.array([J_flow_carb_func(t) for t in time_grid
 add_line_to_fig(fig, time_grid, T_a_on_grid, r'T_{a}')
 add_line_to_fig(fig, time_grid, INS_AUC_w_on_grid, r'AUC_{w}(INS)')
 
-add_line_to_fig(fig, time_grid, J_KB_minus, r'J^{-}_{KB}')
-add_line_to_fig(fig, time_grid, J_KB_plus, r'J^{+}_{KB}')
-add_line_to_fig(fig, time_grid, J_AA_minus, r'J^{-}_{AA}')
-add_line_to_fig(fig, time_grid, J_FFA_minus, r'J^{-}_{FFA}')
-add_line_to_fig(fig, time_grid, J_Glu_minus, r'J^{-}_{Glu}')
+
 
 add_line_to_fig(fig,time_sol, EnergyOnGrid(AA=solutions[:,index_by_name['AA_ef']],
                                            FFA=solutions[:,index_by_name['FFA_ef']],
                                            KB=solutions[:,index_by_name['KB_ef']],
                                            Glu=solutions[:,index_by_name['Glu_ef']],
-                                           beta_AA=beta_AA,beta_FFA=beta_FFA,beta_KB=beta_KB,beta_Glu=beta_Glu),
-                r'E_{system}[kkal]')
+                                           beta_AA=beta_AA_ef,beta_FFA=beta_FFA_ef,beta_KB=beta_KB_ef,beta_Glu=beta_Glu_ef),
+                r'E_{system}[kkal]')    
 
 
 fig = plot_intervals_to_plotly_fig(fig, intervals, 

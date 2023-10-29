@@ -34,22 +34,37 @@ J_fat_func = torch.load(
 J_carb_func = torch.load(
     os.path.join(problem_folder, 'J_carb'))
 
-beta_KB = 517.0/1000.0 # [kcal/mmol]
-beta_Glu = 699.0/1000.0 # [kcal/mmol]
-beta_AA = 369.5/1000.0 # [kcal/mmol]
-beta_FFA = 2415.6/1000.0 # [kcal/mmol]
+beta_KB_ef = 517.0/1000.0 # [kcal/mmol]
+beta_Glu_ef = 699.0/1000.0 # [kcal/mmol]
+beta_AA_ef = 369.5/1000.0 # [kcal/mmol]
+beta_FFA_ef = 2415.6/1000.0 # [kcal/mmol]
+beta_Muscle = 369.5/1000.0  # [kcal/mmol]
+beta_GG_m = 699.0/1000.0 # [kcal/mmol]
+beta_TG_a = 7246.8/1000.0 # [kcal/mmol]
+beta_GG_h = 699.0/1000.0 # [kcal/mmol]
+# TG_h = ?
+# TG_plasma = ?
 
-inv_beta_KB = 1.0/(517.0/1000.0) # 1/[kcal/mmol]
-inv_beta_Glu = 1.0/(699.0/1000.0) # 1/[kcal/mmol]
-inv_beta_AA = 1.0/(369.5/1000.0) # 1/[kcal/mmol]
-inv_beta_FFA = 1.0/(2415.6/1000.0) # 1/[kcal/mmol]
-
+inv_beta_KB_ef = 1.0/(517.0/1000.0)
+inv_beta_Glu_ef = 1.0/(699.0/1000.0)
+inv_beta_AA_ef = 1.0/(369.5/1000.0)
+inv_beta_FFA_ef = 1.0/(2415.6/1000.0)
+inv_beta_Muscle = 1.0/(369.5/1000.0)
+inv_beta_GG_m = 1.0/(699.0/1000.0)
+inv_beta_TG_a = 1.0/(7246.8/1000.0)
+inv_beta_GG_h = 1.0/(699.0/1000.0)
 
 MASS_OF_HUMAN = 70.0
 E_day = 1500.0 # [kcal/day]
 e_sigma = E_day/(24.0*60.0) #[kcal/min]
 
-power_of_coeff = -1
+power_of_coeff = -5
+
+k_BMR_Glu_ef = 10**(-2)
+k_BMR_AA_ef = 10**(-2)
+K_BMR_FFF_ef = 10**(-2)
+K_BMR_KB_ef = 10**(-2)
+
 
 
 # IF (есть лишние AA) THEN (rest_cont идет на расход AA)
@@ -59,7 +74,6 @@ power_of_coeff = -1
 # IF (нет инсулина INS AND нет инсулина > 180 [мин]) THEN (рост кетоновых тел v=BMR*(0.5/100.0) [kcal/hour])
 # IF (7*60[min] голодания) THEN (расход KB 0.07 + 0.01*7 [kcal/min] v=BMR*(7.0/100.0))
 # IF (70*60[min] голодания) THEN (расход KB 0.07 + 0.01*70 [kcal/min]v=BMR*(38.5/100.0))
-
 
 
 lambda_ = 1.0
@@ -79,16 +93,34 @@ m_3_base=            1.0
 m_4_base=            1.0
 m_5_base=            1.0
 
+velocity_depot_power = power_of_coeff + 2
+# расход из депо
+# a_7 под вопросом
+# h_20 под вопросом
+a_3_base=            10.0**(velocity_depot_power)
+a_17_base=            10.0**(velocity_depot_power)
+a_18_base=            10.0**(velocity_depot_power)
+a_19_base=            10.0**(velocity_depot_power)
+a_5_base=            10.0**(velocity_depot_power)
+a_6_base=            10.0**(velocity_depot_power)
+a_8_base=            10.0**(velocity_depot_power)
+h_2_base=            10.0**(velocity_depot_power)
+h_10_base=            10.0**(velocity_depot_power)
+h_12_base=            10.0**(velocity_depot_power)
+h_14_base=            10.0**(velocity_depot_power)
+h_13_base=            10.0**(velocity_depot_power)
+h_15_base=            10.0**(velocity_depot_power)
+h_9_base=            10.0**(velocity_depot_power)
+m_7_base=            10.0**(velocity_depot_power)
+m_8_base=            10.0**(velocity_depot_power)
+m_9_base=            10.0**(velocity_depot_power)
+m_10_base=           10.0**(velocity_depot_power)
 
 # номера коэффициентов
 a_1_base=            10.0**(power_of_coeff)
 a_2_base=            10.0**(power_of_coeff)
-a_3_base=            10.0**(power_of_coeff)
 a_4_base=            10.0**(power_of_coeff)
-a_5_base=            10.0**(power_of_coeff)
-a_6_base=            10.0**(power_of_coeff)
 a_7_base=            10.0**(power_of_coeff)
-a_8_base=            10.0**(power_of_coeff)
 a_9_base=            10.0**(power_of_coeff)
 a_10_base=            10.0**(power_of_coeff)
 a_11_base=            10.0**(power_of_coeff)
@@ -97,41 +129,27 @@ a_13_base=            10.0**(power_of_coeff)
 a_14_base=            10.0**(power_of_coeff)
 a_15_base=            10.0**(power_of_coeff)
 a_16_base=            10.0**(power_of_coeff)
-a_17_base=            10.0**(power_of_coeff)
-a_18_base=            10.0**(power_of_coeff)
-a_19_base=            10.0**(power_of_coeff)
 m_2_base=            10.0**(power_of_coeff)
 m_6_base=            10.0**(power_of_coeff)
-m_7_base=            10.0**(power_of_coeff)
-m_8_base=            10.0**(power_of_coeff)
-m_9_base=            10.0**(power_of_coeff)
-m_10_base=           10.0**(power_of_coeff)
 m_11_base=           10.0**(power_of_coeff)
-m_12_base=           10.0**(power_of_coeff)  # *[Carnitin]
+m_12_base=           10.0**(power_of_coeff)
 m_13_base=           10.0**(power_of_coeff)
 m_14_base=           10.0**(power_of_coeff)
 m_15_base=           10.0**(power_of_coeff)
-m_16_base=           10.0**(power_of_coeff) # *[Creatin]
+m_16_base=           10.0**(power_of_coeff) 
 m_17_base=           10.0**(power_of_coeff)
 m_18_base=           10.0**(power_of_coeff)
 m_19_base=           10.0**(power_of_coeff)
 m_20_base=           10.0**(power_of_coeff)
-m_21_base=           10.0**(power_of_coeff)
+m_21_base=           10.0**(-2)
 h_1_base=            10.0**(power_of_coeff)
-h_2_base=            10.0**(power_of_coeff)
 h_3_base=            10.0**(power_of_coeff)
 h_4_base=            10.0**(power_of_coeff)
 h_5_base=            10.0**(power_of_coeff)
 h_6_base=            10.0**(power_of_coeff)
 h_7_base=            10.0**(power_of_coeff)
 h_8_base=            10.0**(power_of_coeff)
-h_9_base=            10.0**(power_of_coeff)
-h_10_base=            10.0**(power_of_coeff)
 h_11_base=            10.0**(power_of_coeff)
-h_12_base=            10.0**(power_of_coeff)
-h_13_base=            10.0**(power_of_coeff)
-h_14_base=            10.0**(power_of_coeff)
-h_15_base=            10.0**(power_of_coeff)
 h_16_base=            10.0**(power_of_coeff)
 h_17_base=            10.0**(power_of_coeff)
 h_18_base=            10.0**(power_of_coeff)
@@ -153,10 +171,10 @@ j_2_base = 0.0
 j_3_base = 0.0
 j_4_base = 0.0
 
-Glu_ef_start= E_day/beta_Glu/4
-AA_ef_start = E_day/beta_AA/4
-FFA_ef_start = E_day/beta_FFA/4
-KB_ef_start = E_day/beta_KB/4
+Glu_ef_start= E_day/beta_Glu_ef/4
+AA_ef_start = E_day/beta_AA_ef/4
+FFA_ef_start = E_day/beta_FFA_ef/4
+KB_ef_start = E_day/beta_KB_ef/4
 
 start_point_dict = {
     'Glu_ef':Glu_ef_start,
@@ -211,11 +229,7 @@ start_point_dict = {
     'Urea_ef':10.0,
 }
 
-
-
-
 # HeartRate_func = HeartRate_gen(tau_grid,time_grid,60,180)
-  
 
 # HR_vs = HeartRate_func.values
 
@@ -228,11 +242,15 @@ def F_vec(t: float, y_vec: np.array,
             J_flow_carb_vs:np.array,
             J_flow_prot_vs:np.array,
             J_flow_fat_vs:np.array,                    
-            J_KB_plus_arr:np.array,
-            J_AA_minus_arr:np.array,
-            J_Glu_minus_arr:np.array,
-            J_FFA_minus_arr:np.array,
-            J_KB_minus_arr:np.array):
+            e_KB_plus_arr:np.array,
+            e_AA_minus_arr:np.array,
+            e_Glu_minus_arr:np.array,
+            e_FFA_minus_arr:np.array,
+            e_KB_minus_arr:np.array,
+            e_TG_a_minus_arr:np.array,
+            e_GG_h_minus_arr:np.array,
+            e_GG_m_minus_arr:np.array,
+            e_Muscle_m_minus_arr:np.array):
     buffer = np.zeros(shape=(50, ),dtype=np.float32)
     # свободные функции 
     # J_carb_flow = J_flow_carb_func(t)
@@ -407,37 +425,98 @@ def F_vec(t: float, y_vec: np.array,
     e_Glu_minus = 0.0
     e_FFA_minus = 0.0
     e_KB_minus = 0.0
+    e_TG_a_minus=0.0
+    e_GG_h_minus=0.0
+    e_GG_m_minus=0.0
+    e_Muscle_m_minus = 0.0
 
-    if AA_ef >= 20.0:
-        e_AA_minus = e_sigma - (e_Glu_min+e_KB_min+e_FFA_min)
-        e_Glu_minus = e_Glu_min
-        e_FFA_minus = e_FFA_min
-        e_KB_minus = e_KB_min
-    elif (AA_ef < 20.0) and (Glu_ef>=20.0) and (T_a_t==0.0):
-        e_AA_minus = e_AA_min
-        e_Glu_minus = e_sigma - (e_AA_min+e_KB_min+e_FFA_min)
-        e_FFA_minus = e_FFA_min
-        e_KB_minus = e_KB_min
-    elif (T_a_t>0.0) and (T_a_t< 3*60.0):
-        e_AA_minus = e_AA_min
-        e_Glu_minus = e_Glu_min
-        e_FFA_minus = e_sigma - (e_AA_min+e_Glu_min+e_KB_min)
-        e_KB_minus = e_KB_min 
-    elif T_a_t >= 3*60.0: 
-        e_AA_minus = e_AA_min
-        e_Glu_minus = e_Glu_min
-        rest_coeff = e_sigma - (e_AA_min+e_Glu_min+e_FFA_min+e_KB_min)
-        coeff1 = rest_coeff*0.5
-        coeff2 = rest_coeff*0.5
-        e_FFA_minus = e_FFA_min+coeff1
-        e_KB_minus = e_KB_min+coeff2
+    # inv_beta_KB_ef = 1.0/(517.0/1000.0)
+    # inv_beta_Glu_ef = 1.0/(699.0/1000.0)
+    # inv_beta_AA_ef = 1.0/(369.5/1000.0)
+    # inv_beta_FFA_ef = 1.0/(2415.6/1000.0)
+    # inv_beta_Muscle = 1.0/(369.5/1000.0)
+    # inv_beta_GG_m = 1.0/(699.0/1000.0)
+    # inv_beta_TG_a = 1.0/(7246.8/1000.0)
+    # inv_beta_GG_h = 1.0/(699.0/1000.0)
 
-    # e_KB_plus = 0.005*e_sigma
-    # J_KB_plus = e_KB_plus*inv_beta_KB*Heviside(T_a_t-180.0)
-    # J_AA_minus  = e_AA_minus*inv_beta_AA*Heviside(AA_ef-100.0*e_AA_minus*inv_beta_AA)
-    # J_Glu_minus  = e_Glu_minus*inv_beta_Glu*Heviside(Glu_ef-100.0*e_Glu_minus*inv_beta_Glu)
-    # J_FFA_minus  = e_FFA_minus*inv_beta_AA*Heviside(FFA_ef-100.0*e_FFA_minus*inv_beta_FFA)
-    # J_KB_minus  =  e_KB_minus*inv_beta_KB*Heviside(KB_ef-100.0*e_KB_minus*inv_beta_KB)
+    # полный список для BMR
+    # AA_ef -> AA_a,AA_h,AA_m 
+    # AA_m -> Muscle_m
+    # Glu_ef -> G6_m , G6_h,G6_a 
+    # G6_a -> G3_a -> TG_a
+    # G6_m -> GG_m, G3_m
+    # G6_h -> GG_h , G3_h 
+    # AA_m -> Muscle_m 
+    # FA_CoA_h + G3_h -> TG_h 
+    # FFA_ef -> FA_CoA_h, FA_CoA_a,FA_CoA_m
+    #     FA_CoA_h -> TG_h 
+    #     FA_CoA_a -> TG_a
+    #     FA_CoA_m -> TG_m 
+
+
+    # if AA_ef >= 20.0:
+    #     # тратятся аминокислоты
+    #     e_rest = e_sigma - (e_Glu_min+e_KB_min+e_FFA_min+e_AA_min)
+    #     e_AA_minus = e_AA_min + e_rest/2.0
+    #     e_Muscle_m_minus = e_rest/2.0
+    #     e_Glu_minus = e_Glu_min
+    #     e_FFA_minus = e_FFA_min
+    #     e_KB_minus = e_KB_min
+    # elif (AA_ef < 20.0) and (Glu_ef>=20.0) and (T_a_t==0.0):
+    #     # тратится глюкоза и TG_a, GG_h, GG_m 
+    #     e_AA_minus = e_AA_min
+    #     e_FFA_minus = e_FFA_min
+    #     e_KB_minus = e_KB_min
+    #     # минимум для всего, кроме глюкозы, остаток на глюкозу
+    #     # e_Glu_minus = e_sigma - (e_AA_min+e_KB_min+e_FFA_min)
+    #     e_rest = np.maximum(e_sigma - (e_AA_min+e_KB_min+e_FFA_min+e_Glu_min),0.0)
+    #     # BMR-минимальный расход, остальное делится поровну 
+    #     e_TG_a_minus = 0.25*e_rest 
+    #     e_GG_h_minus = 0.25*e_rest 
+    #     e_GG_m_minus = 0.25*e_rest 
+    #     e_Glu_minus = e_Glu_min+0.25*e_rest
+    # elif (T_a_t>0.0) and (T_a_t< 3*60.0):
+    #     # тратятся свободные жирные кислоты TG_a 
+    #     e_AA_minus = e_AA_min
+    #     e_Glu_minus = e_Glu_min
+    #     e_KB_minus = e_KB_min 
+    #     # то, что было
+    #     # e_FFA_minus = e_sigma - (e_AA_min+e_Glu_min+e_KB_min)
+    #     # новое
+    #     e_rest = np.maximum(e_sigma - (e_AA_min+e_Glu_min+e_KB_min+e_FFA_min),0.0)
+    #     e_TG_a_minus = 0.5*e_rest
+    #     e_FFA_minus = e_FFA_min + 0.5*e_rest
+    # elif T_a_t >= 3*60.0: 
+    #     # тартятся кетоновые тела и свободные жирные кислоты и TG_a
+    #     # и TG_a 
+    #     e_AA_minus = e_AA_min
+    #     e_Glu_minus = e_Glu_min
+    #     e_rest = np.maximum(e_sigma - (e_AA_min+e_Glu_min+e_FFA_min+e_KB_min),0.0)
+    #     e_FFA_minus = e_FFA_min+e_rest/3.0
+    #     e_KB_minus = e_KB_min+e_rest/3.0
+    #     e_TG_a_minus = e_rest/3.0
+    
+    # flow_stopping_time = 50.0 #[min] 
+    e_KB_plus = 0.005*e_sigma*Heviside(T_a_t-180.0)
+    J_KB_plus = e_KB_plus*inv_beta_KB_ef*Heviside(T_a_t-180.0)
+    # J_AA_minus  = e_AA_minus*inv_beta_AA_ef*Heviside(AA_ef-flow_stopping_time*e_AA_minus*inv_beta_AA_ef)
+    # J_Glu_minus  = e_Glu_minus*inv_beta_Glu_ef*Heviside(Glu_ef-flow_stopping_time*e_Glu_minus*inv_beta_Glu_ef)
+    # J_FFA_minus  = e_FFA_minus*inv_beta_AA_ef*Heviside(FFA_ef-flow_stopping_time*e_FFA_minus*inv_beta_FFA_ef)
+    # J_KB_minus  =  e_KB_minus*inv_beta_KB_ef*Heviside(KB_ef-flow_stopping_time*e_KB_minus*inv_beta_KB_ef)
+    # J_TG_a_minus = e_TG_a_minus*inv_beta_TG_a*Heviside(TG_a-flow_stopping_time*e_TG_a_minus*inv_beta_TG_a)
+    # J_GG_h_minus = e_GG_h_minus*inv_beta_GG_h*Heviside(GG_h-flow_stopping_time*e_GG_h_minus*inv_beta_GG_h)
+    # J_GG_m_minus = e_GG_m_minus*inv_beta_GG_m*Heviside(GG_m-flow_stopping_time*e_GG_m_minus*inv_beta_GG_m)
+    # J_Muscle_m_minus = e_Muscle_m_minus*inv_beta_Muscle*Heviside(Muscle_m-flow_stopping_time*e_Muscle_m_minus*inv_beta_Muscle)
+
+    # e_KB_plus_arr[t_pos] = e_KB_plus 
+    # e_AA_minus_arr[t_pos] = e_AA_minus 
+    # e_Glu_minus_arr[t_pos] = e_Glu_minus 
+    # e_FFA_minus_arr[t_pos] = e_FFA_minus 
+    # e_KB_minus_arr[t_pos] = e_KB_minus 
+    # e_TG_a_minus_arr[t_pos] = e_TG_a_minus 
+    # e_GG_h_minus_arr[t_pos] = e_GG_h_minus 
+    # e_GG_m_minus_arr[t_pos] = e_GG_m_minus 
+    # e_Muscle_m_minus_arr[t_pos] = e_Muscle_m_minus 
 
     # J_KB_plus_arr[t_pos] = J_KB_plus
     # J_AA_minus_arr[t_pos] = J_AA_minus
@@ -446,11 +525,20 @@ def F_vec(t: float, y_vec: np.array,
     # J_KB_minus_arr[t_pos] = J_KB_minus
 
     
-    J_AA_minus  = 0.0
-    J_Glu_minus  = 0.0
-    J_FFA_minus  = 0.0
-    J_KB_minus  =  0.0
-    J_KB_plus = 0.0
+    # J_AA_minus  = 0.0
+    # J_Glu_minus  = 0.0
+    # J_FFA_minus  = 0.0
+    # J_KB_minus  =  0.0
+    # J_KB_plus = 0.0
+    # J_TG_a_minus  = 0.0 
+    # J_GG_h_minus  = 0.0 
+    # J_GG_m_minus  = 0.0 
+    # J_Muscle_m_minus  = 0.0 
+
+    J_Glu_minus = k_BMR_Glu_ef*Glu_ef
+    J_AA_minus = k_BMR_AA_ef*AA_ef
+    J_FFA_minus = K_BMR_FFF_ef*FFA_ef
+    J_KB_minus = K_BMR_KB_ef*KB_ef
 
     m_2 = m_2_base 
     m_3 = m_3_base 
@@ -498,6 +586,13 @@ def F_vec(t: float, y_vec: np.array,
     j_2 = j_2_base
     j_3 = j_3_base
     j_4 = j_4_base
+
+    alpha = alpha_base
+    beta = beta_base
+    gamma = gamma_base
+    CL_INS = CL_INS_base
+    CL_GLN = CL_GLN_base
+    CL_CAM = CL_CAM_base
 
     # 2. Myocyte
     M_1 = m_1 * Glu_ef
@@ -578,87 +673,64 @@ def F_vec(t: float, y_vec: np.array,
     J_3 = j_3 * FFA_ef
     J_4 = j_4 * AA_ef
     
-
-    
     # вычисление вектора F(t) в точке t
+    # депо
+    right_TG_a =2.0*A_7 - A_3
+    right_AA_a =A_1 - A_17 - A_18 - A_19 
+    right_G6_a =A_4 - A_5 - A_6
+    right_G3_a =A_5 + (1.0/2.0)*A_6 + A_9 - A_7 - A_8
+    right_GG_h = H_10 - H_11
+    right_G6_h = H_3 + H_11 + H_13 - H_2 - H_10 - H_12 - H_14
+    right_G3_h = H_4 + H_12 + (1.0/2.0)*H_14 + H_23 - H_13 - H_15 - H_20
+    right_TG_h = 2.0*H_20 - H_9
+    right_GG_m = M_7 - M_8
+    right_G6_m = M_1 + M_8 - M_7 - M_9
+    right_G3_m = M_9 - M_10
+    right_TG_pl =  J_fat_flow + H_9 - J_0
 
-    #                                 Метаболиты
-    # 1. Adipocyte
-    right_TG_a=2.0*A_7 - A_3
-    right_AA_a=A_1 - A_17 - A_18 - A_19 
-    right_G6_a=A_4 - A_5 - A_6
-    right_G3_a=A_5 + (1.0/2.0)*A_6 + A_9 - A_7 - A_8
-    right_Pyr_a=A_8 + (1.0/2.0)*A_12 + (1.0/2.0)*A_19 - A_10 - A_11
-    right_Ac_CoA_a=A_10 + (1.0/2.0)*A_14 + (1.0/2.0)*A_18 - A_13 - A_16
-    right_FA_CoA_a=A_2 + 2.0*A_13 - A_7
-    right_Cit_a=2.0*A_16 - A_14 - A_15
-    right_OAA_a=A_11 + (1.0/2.0)*A_14 + A_15 +(1.0/2.0)*A_17 - A_9 - A_12 - A_16 
-    right_NADPH_a=(1.0/2.0)*A_6 + (1.0/2.0)*A_12 - A_13
-    # 2. Hepatocyte
-    right_GG_h= H_10 - H_11
-    right_G6_h= H_3 + H_11 + H_13 - H_2 - H_10 - H_12 - H_14
-    right_G3_h= H_4 + H_12 + (1.0/2.0)*H_14 + H_23 - H_13 - H_15 - H_20
-    right_Pyr_h=    H_5 + H_15 + (1.0/2.0)*H_24 + (1.0/2.0)*H_29 - H_16 - H_25
-    right_Ac_CoA_h= H_16 + H_18 + H_26 + (1.0/2.0)*H_27 - H_17 - H_19 - H_6
-    right_FA_CoA_h= H_8 + 2.0*H_19 - H_18 - H_20
-    right_TG_h= 2.0*H_20 - H_9
-    right_MVA_h=    H_17 - H_7
-    right_OAA_h=    H_22 + H_25 + H_26  + (1.0/2.0)*H_28 - H_21 - H_23 - H_24
-    right_Cit_h=    H_21 - H_22 - H_26 
-    right_AA_h= H_1 - H_27 - H_28 - H_29
-    right_NADPH_h=  (1.0/2.0)*H_14 + (1.0/2.0)*H_24 - H_19
-    # 3. Myocyte
-    right_GG_m= M_7 - M_8
-    right_G6_m= M_1 + M_8 - M_7 - M_9
-    right_G3_m= M_9 - M_10
-    right_Pyr_m=    (1.0/3.0)*M_10 + (1.0/2.0)*M_17 - M_11 - M_2
-    right_Ac_CoA_m= (1.0/2.0)*M_3 + (1.0/2.0)*M_11 + (1.0/2.0)*M_12 + (1.0/2.0)*M_18 - M_13
-    right_FA_CoA_m= M_4 - M_12
-    right_AA_m= M_5 + M_21 - M_6 - M_17 - M_18 - M_19 - M_20
-    right_Cit_m=    2.0*M_13 - M_14
-    right_OAA_m=    (1.0/2.0)*M_14 + (1.0/2.0)*M_19 - M_13
-    right_H_cyt_m=  (1.0/3.0)*M_10  - M_15 - M_2
-    right_H_mit_m=  (1.0/2.0)*M_3 + (1.0/2.0)*M_12 + M_15 - M_16
-    right_CO2_m=    (1.0/2.0)*M_11 + (1.0/2.0)*M_14
-    right_H2O_m=    (1.0/2.0)*M_16
-    right_ATP_cyt_m=    (1.0/3.0)*M_10 
-    right_ATP_mit_m=    (1.0/2.0)*M_16 
+    right_Pyr_a =A_8 + (1.0/2.0)*A_12 + (1.0/2.0)*A_19 - A_10 - A_11
+    right_Ac_CoA_a =A_10 + (1.0/2.0)*A_14 + (1.0/2.0)*A_18 - A_13 - A_16
+    right_FA_CoA_a =A_2 + 2.0*A_13 - A_7
+    right_Cit_a =2.0*A_16 - A_14 - A_15
+    right_OAA_a =A_11 + (1.0/2.0)*A_14 + A_15 +(1.0/2.0)*A_17 - A_9 - A_12 - A_16 
+    right_NADPH_a =(1.0/2.0)*A_6 + (1.0/2.0)*A_12 - A_13
 
+    right_Pyr_h =    H_5 + H_15 + (1.0/2.0)*H_24 + (1.0/2.0)*H_29 - H_16 - H_25
+    right_Ac_CoA_h = H_16 + H_18 + H_26 + (1.0/2.0)*H_27 - H_17 - H_19 - H_6
+    right_FA_CoA_h = H_8 + 2.0*H_19 - H_18 - H_20
+    right_MVA_h =    H_17 - H_7
+    right_OAA_h =    H_22 + H_25 + H_26  + (1.0/2.0)*H_28 - H_21 - H_23 - H_24
+    right_Cit_h =    H_21 - H_22 - H_26 
+    right_AA_h = H_1 - H_27 - H_28 - H_29
+    right_NADPH_h =  (1.0/2.0)*H_14 + (1.0/2.0)*H_24 - H_19
 
+    right_Pyr_m =    (1.0/3.0)*M_10 + (1.0/2.0)*M_17 - M_11 - M_2
+    right_Ac_CoA_m = (1.0/2.0)*M_3 + (1.0/2.0)*M_11 + (1.0/2.0)*M_12 + (1.0/2.0)*M_18 - M_13
+    right_FA_CoA_m = M_4 - M_12
+    right_AA_m = M_5 + M_21 - M_6 - M_17 - M_18 - M_19 - M_20
+    right_Cit_m =    2.0*M_13 - M_14
+    right_OAA_m =    (1.0/2.0)*M_14 + (1.0/2.0)*M_19 - M_13
+    right_H_cyt_m =  (1.0/3.0)*M_10  - M_15 - M_2
+    right_H_mit_m =  (1.0/2.0)*M_3 + (1.0/2.0)*M_12 + M_15 - M_16
+    right_CO2_m =    (1.0/2.0)*M_11 + (1.0/2.0)*M_14
+    right_H2O_m =    (1.0/2.0)*M_16
+    right_ATP_cyt_m =    (1.0/3.0)*M_10 
+    right_ATP_mit_m =    (1.0/2.0)*M_16 
     right_Glu_ef = J_carb_flow + H_2 - J_Glu_minus - M_1 - A_4 - H_3   - J_1
     right_AA_ef =  J_prot_flow + M_6  - J_AA_minus - M_5 - A_1 - H_1  - J_4 
     right_FFA_ef= J_0 + (1.0/2.0)*A_3  - J_FFA_minus - M_4 - A_2 - H_8 - J_3  
     right_KB_ef=  - J_KB_minus + J_KB_plus - M_3 - J_2 + H_6
 
-    right_TG_pl =  J_fat_flow + H_9 - J_0
-
+    
     right_Glycerol_ef =    J_0 + (1.0/2.0)*A_3 - H_4
     right_Lac_m=  2.0*M_2 - H_5
-
     right_Urea_ef=    J_4 + (1.0/2.0)*A_17 + (1.0/2.0)*A_18 + (1.0/2.0)*A_19 + (1.0/2.0)*M_17 + (1.0/2.0)*M_18 + (1.0/2.0)*M_19 + (1.0/2.0)*H_27 + (1.0/2.0)*H_28 + (1.0/2.0)*H_29
     right_Cholesterol_pl= H_7
-
-    alpha = alpha_base
-    beta = beta_base
-    gamma = gamma_base
-    CL_INS = CL_INS_base
-    CL_GLN = CL_GLN_base
-    CL_CAM = CL_CAM_base
-
-    # right_INS= alpha * J_carb_flow +beta * J_fat_flow + gamma * J_prot_flow - CL_INS * INS
-    # V_extr_fl = 14.0 [L]
-    # Glu_ef/V_extracerular_fluid [mmol/L]
-    # INS [mmol]
-
-
     right_INS =  - INS * CL_INS  +1.0 * J_carb_flow  +1.0 * J_fat_flow + 1.0 * J_prot_flow  # +1.0 * Glu_ef * Heviside((Glu_ef-5.0)/14.0) #
-    
-    # Glu_ef/V_extracerular_fluid [mmol/L]
-    # GLN [mmol]
     right_GLN = - CL_GLN * GLN  + lambda_ * (1.0/np.maximum(Glu_ef/14.0, 0.1)) # не химическая кинетика
     right_CAM = sigma * HeartRate - CL_CAM * CAM
     right_Muscle_m = M_20 - M_21
-    
+
     buffer[0] = right_Glu_ef
     buffer[1] = right_AA_ef
     buffer[2] = right_Glycerol_ef
@@ -721,57 +793,3 @@ def F_vec(t: float, y_vec: np.array,
     #     where_bad = np.argwhere(np.abs(buffer) > 10**(-3)).flatten()
     #     print(1)
     return buffer
-
-
-
-
-    # buffer[0] = np.maximum(right_Glu_ef,0.0)
-    # buffer[1] = np.maximum(right_AA_ef,0.0)
-    # buffer[2] = np.maximum(right_Glycerol_ef,0.0)
-    # buffer[3] = np.maximum(right_FFA_ef,0.0)
-    # buffer[4] = np.maximum(right_Lac_m,0.0)
-    # buffer[5] = np.maximum(right_KB_ef,0.0)
-    # buffer[6] = np.maximum(right_Cholesterol_pl,0.0)
-    # buffer[7] = np.maximum(right_TG_pl,0.0)
-    # buffer[8] = np.maximum(right_G6_a,0.0)
-    # buffer[9] = np.maximum(right_G3_a,0.0)
-    # buffer[10] = np.maximum(right_Pyr_a,0.0)
-    # buffer[11] = np.maximum(right_Ac_CoA_a,0.0)
-    # buffer[12] = np.maximum(right_FA_CoA_a,0.0)
-    # buffer[13] = np.maximum(right_Cit_a,0.0)
-    # buffer[14] = np.maximum(right_OAA_a,0.0)
-    # buffer[15] = np.maximum(right_AA_a,0.0)
-    # buffer[16] = np.maximum(right_NADPH_a,0.0)
-    # buffer[17] = np.maximum(right_TG_a,0.0)
-    # buffer[18] = np.maximum(right_GG_m,0.0)
-    # buffer[19] = np.maximum(right_G6_m,0.0)
-    # buffer[20] = np.maximum(right_G3_m,0.0)
-    # buffer[21] = np.maximum(right_Pyr_m,0.0)
-    # buffer[22] = np.maximum(right_Ac_CoA_m,0.0)
-    # buffer[23] = np.maximum(right_FA_CoA_m,0.0)
-    # buffer[24] = np.maximum(right_Cit_m,0.0)
-    # buffer[25] = np.maximum(right_OAA_m,0.0)
-    # buffer[26] = np.maximum(right_H_cyt_m,0.0)
-    # buffer[27] = np.maximum(right_H_mit_m,0.0)
-    # buffer[28] = np.maximum(right_AA_m,0.0)
-    # buffer[29] = np.maximum(right_Muscle_m,0.0)
-    # buffer[30] = np.maximum(right_CO2_m,0.0)
-    # buffer[31] = np.maximum(right_H2O_m,0.0)
-    # buffer[32] = np.maximum(right_ATP_cyt_m,0.0)
-    # buffer[33] = np.maximum(right_ATP_mit_m,0.0)
-    # buffer[34] = np.maximum(right_GG_h,0.0)
-    # buffer[35] = np.maximum(right_G6_h,0.0)
-    # buffer[36] = np.maximum(right_G3_h,0.0)
-    # buffer[37] = np.maximum(right_Pyr_h,0.0)
-    # buffer[38] = np.maximum(right_Ac_CoA_h,0.0)
-    # buffer[39] = np.maximum(right_FA_CoA_h,0.0)
-    # buffer[40] = np.maximum(right_MVA_h,0.0)
-    # buffer[41] = np.maximum(right_Cit_h,0.0)
-    # buffer[42] = np.maximum(right_OAA_h,0.0)
-    # buffer[43] = np.maximum(right_NADPH_h,0.0)
-    # buffer[44] = np.maximum(right_AA_h,0.0)
-    # buffer[45] = np.maximum(right_TG_h,0.0)
-    # buffer[46] = np.maximum(right_INS,0.0)
-    # buffer[47] = np.maximum(right_CAM,0.0)
-    # buffer[48] = np.maximum(right_GLN,0.0)
-    # buffer[49] = np.maximum(right_Urea_ef,0.0)
