@@ -10,7 +10,7 @@ INS_check_coeff = 400 # [mmol*s]
 # take grid on from FPC.ipynb file 
 tau_grid = 0.01 # [min]
 t_0 = 400.0 # [min]
-t_end = 3000.0 # [min]
+t_end = 400.0+1440.0*3 # [min]
 # t_end = 500.0 # [min]
 t_0_input= 0.0
 tau_grid_input = 0.1
@@ -93,7 +93,7 @@ m_3_base=            1.0
 m_4_base=            1.0
 m_5_base=            1.0
 
-velocity_depot_power = power_of_coeff + 2
+velocity_depot_power = 1
 # расход из депо
 # a_7 под вопросом
 # h_20 под вопросом
@@ -241,16 +241,7 @@ def F_vec(t: float, y_vec: np.array,
           last_seen_time:np.array,last_time_pos:np.array,
             J_flow_carb_vs:np.array,
             J_flow_prot_vs:np.array,
-            J_flow_fat_vs:np.array,                    
-            e_KB_plus_arr:np.array,
-            e_AA_minus_arr:np.array,
-            e_Glu_minus_arr:np.array,
-            e_FFA_minus_arr:np.array,
-            e_KB_minus_arr:np.array,
-            e_TG_a_minus_arr:np.array,
-            e_GG_h_minus_arr:np.array,
-            e_GG_m_minus_arr:np.array,
-            e_Muscle_m_minus_arr:np.array):
+            J_flow_fat_vs:np.array):
     buffer = np.zeros(shape=(50, ),dtype=np.float32)
     # свободные функции 
     # J_carb_flow = J_flow_carb_func(t)

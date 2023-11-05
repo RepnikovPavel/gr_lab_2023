@@ -10,6 +10,12 @@ from euler import euler_solver
 index_by_name, name_by_index, start_point = get_start_point_names_mapping(start_point_dict)
 # start_point = 0.1+ 10*np.random.rand(len(start_point))
 
+start_point[index_by_name['AA_ef']] = 0.0
+start_point[index_by_name['FFA_ef']] = 0.0
+start_point[index_by_name['KB_ef']] = 0.0
+start_point[index_by_name['Glu_ef']] = 0.0
+start_point[index_by_name['INS']] = 0.0
+
 # J_flow_carb_vs = np.zeros(shape=(len(J_flow_carb_func.values)),dtype=np.float32)
 # J_flow_prot_vs = np.zeros(shape=(len(J_flow_prot_func.values)),dtype=np.float32)
 # J_flow_fat_vs  = np.zeros(shape=(len(J_flow_fat_func.values)),dtype=np.float32) 
@@ -53,16 +59,7 @@ def F_wrapped(t, y):
     return F_vec(t,y,INS_on_grid,INS_AUC_w_on_grid,T_a_on_grid,last_seen_time,last_time_pos,
                  J_flow_carb_vs,
                     J_flow_prot_vs,
-                    J_flow_fat_vs,
-                    e_KB_plus_arr,
-                    e_AA_minus_arr,
-                    e_Glu_minus_arr,
-                    e_FFA_minus_arr,
-                    e_KB_minus_arr,
-                    e_TG_a_minus_arr,
-                    e_GG_h_minus_arr,
-                    e_GG_m_minus_arr,
-                    e_Muscle_m_minus_arr)
+                    J_flow_fat_vs)
 
 solver = ode(f=F_wrapped,jac=None)
 solver.set_initial_value(y=start_point,t=t_0)
