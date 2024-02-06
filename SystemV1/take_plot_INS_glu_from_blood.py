@@ -1,7 +1,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from local_contributor_config import problem_folder
+from SystemV1.local_contributor_config import problem_folder
 from Plotting.plot_semi_latex import *
 from F_vec import *
 from scipy.integrate import odeint

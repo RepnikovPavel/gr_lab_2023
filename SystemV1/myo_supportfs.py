@@ -23,6 +23,7 @@ import plotly.graph_objects as go
 
 def read_diet(path_to_exel):
     diet = pd.read_excel(path_to_exel)
+    print([el for el in diet])
     # diet = pd.read_excel(r"C:\Users\User\PycharmProjects\gr_lab_2023\legacy_code\diet_Mikhail.xlsx")
 
     # Начало приёма пиши
