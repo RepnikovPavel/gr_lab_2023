@@ -59,6 +59,13 @@ cd ./path/to/new/virtual/environment/Scripts
 activate.bat
 pip install -r requirements.txt
 ```
+# как запустить код
+
+1. создаем файл кофиг
+2. создаем папку problem_folder, указанную в конфиге
+3. копируем туда файл diet_Mikhail.xlsx
+4. запустить SystemV1/FPC.ipynb
+5. запустить SystemV1/test_system.py
 
 # Адипоцит, Миоцит pdf
 
