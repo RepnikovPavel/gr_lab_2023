@@ -44,7 +44,7 @@ git clone https://<access__token>@github.com/RepnikovPavel/gr_lab_2023.git
 # После git clone  
 ```console
 cd gr_lab_2023  
-touch local_contributor_config.py
+touch SystemV1/local_contributor_config.py
 ```  
 записать в этот файл абсолютный путь до проекта и до папки, куда будут сохраняться промежуточные файлы:  
 ```python 
