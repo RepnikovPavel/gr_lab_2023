@@ -66,11 +66,3 @@ pip install -r requirements.txt
 3. копируем туда файл diet_Mikhail.xlsx
 4. запустить SystemV1/FPC.ipynb
 5. запустить SystemV1/test_system.py
-
-# Адипоцит, Миоцит pdf
-
-[link to pdf](https://drive.google.com/drive/u/0/folders/1h03NgDYrl5OfgVzO8GumeO7z0DfZlk1M)
-
-
-# Модель Холла  
-[link to info](https://drive.google.com/drive/folders/17gs2YveZCemDOVpd598RsL5xiCdNPUPI) 
